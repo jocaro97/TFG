@@ -393,12 +393,97 @@
 \tableofcontents
 \newpage
 
-\section{Introducción}
+\section{Primera aproximación}
 
-\begin{ndef}[Matriz negativa]
+En primer lugar, para elegir que página web es la primera que mostramos en el buscador y establecer
+un orden, nos basamos en la información que podemos extraer de la red (sitios, contenido, enlaces de una página web a otra).
+Esta información la podemos reflejar en una matriz, por ejemplo si estamos estudiando la información de $n$ páginas llamadas $P1, \dots , Pn$,
+podemos reflejar los enlaces entre una página $j$ a otra página $i$, escribiendo un $1$ en la entrada de la
+matriz $m_{i,j}$ y en el caso de que no haya enlace escribir un $0$.
+
+\includegraphics[width=1.0\textwidth]{./img/matriz}
+
+Por lo tanto en la columna $j$ estarán los enlaces que salen de la página $P_j$ hacia otras páginas
+mientras que en la fila $i$ estarán representados los enlaces a la página $P_i$. Por lo que esta matriz
+no es simétrica ya que una página puede estar citada por otra y ella no citar a ninguna.
+
+En una primera aproximación de querer ordenar las páginas web por ``importancia'' o ``relevancia'' podemos
+pensar que la página a la que le lleguen más enlaces (fila con mayor número de $1$) es la que debería
+mostrarse primero en el \textit{ranking}. Es decir si $x_j$ es la importancia de $P_j$, esta es proporcional
+al número de páginas desde las que hay enlaces a $P_j$.
+
+Sin embargo la realidad es que el número de enlaces a una cierta página no representa del todo su importancia,
+ya que no es lo mismo que esta esté citada por una página cualquiera a que esté citada desde \verb|www.amazon.com| o
+\verb|www.microsoft.com|. Estos dos últimos enlaces deberían ponderar más en importancia que otras citas de
+otras páginas web menos relevantes. Por lo que para asignar importancia a una página web, deberemos tener
+en cuenta tanto si es una página muy citada como si es una página poco citada, pero de sitio ``relevantes''.
+
+Nos damos cuenta de la que importancia de la página citadora también es importante, por lo que pasamos a decir
+que la importancia $x_j$ de una página $P_j$ es proporcional a la suma de las importancias de las páginas que enlazar
+con $P_j$.
+
+Supongamos, por ejemplo, que la página $P_1$ es citada desde las páginas $P_2$,$P_{25}$ y $P_{256}$,
+ que $P_2$ sólo se cita desde $P_1$ y $P_{256}$, etc, mientas que en la última página $P_n$ hay enlaces
+ desde $P_1$, $P_2$, $P_3$, $P_{25}$ y $P_{n-1}$. En nuestra asignación anterior, $x_1, \dots , x_n$ deberían
+ cumplir entonces que:
+ $$ x_1 = K (x_2 + x_{25} + x_{256}) $$
+ $$ x_2 = K (x_1 + x_{256}) $$
+ $$ \vdots $$
+ $$x_n = K (x_1 + x_2 + x_3 + x_25 + x_{n-1}) $$
+
+donde $K$ es una constante de proporcionalidad. Si nos fijamos, hemos construido un sistema de ecuaciones
+donde las soluciones son los posibles valores de $x_1, \dots , x_n$. Este sistema de ecuaciones
+lo podemos escribir en términos matriciales:
+
+\includegraphics[width=1.0\textwidth]{./img/sde}
+
+Si llamamos $X$ al vector de importacias $(x_1 \dots x_n)$, llamamos $\lambda = \frac{1}{K}$ y llamamos
+$M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). Nos encontramos
+con un problema de autovaloes y autovectores:
+$$Mx = \lambda x $$
+
+A este vector $x$ le exigimos que sea no negativo, es decir $x \leq 0$ ya que representa la importancia
+de una página web y también buscamos que sea único ya que como nuestro objetivo final es estrablecer un
+\textit{ranking} de haber más de uno habría que diseñar otro proceso de selección.
+El hecho de que el vector $x$ sea no negativo convierte a la matriz $M$ en no negativa ($M \leq 0$), ya que sus filas
+están los valores $x_1, \dots , x_n$.
+
+\begin{nth}[Perron, 1907]
+Sea $A$ una matriz cuadrada ($A \in M_n(\mathbb{R})$) con estradas positivas, $A > 0$. Entonces:
+\begin{enumerate}
+\item Existe un autovalor (simple) \lamda > 0 tal que $Av = \lambda v$ donde el autovector es $v > 0$.
+\item Este autovalor es mayor, en módulo, que todos los demás autovalores.
+\item Cualquier otro autovector positivo de $A$ es un múltiplo de $v$.
+\end{enumerate}
+\end{nth}
+
+Este teorema demostrado por Perron demostraría la existencia y unicidad de nuestro vector solución $x$,
+sin embargo nuestra matriz $M$ puede tener entradas nulas por lo que no nos serviría el resultado.
+
+\begin{ndef}[Matriz irreducible]
+Se dice que una matriz $A \in M_n(\mathbb{R})$ es irreducible, cuando cumple alguna de las siguientes:
+\begin{enumerate}
+\item No existe ninguna permutación (de filas y columnas) que transforma $A$ en una matriz del tipo:
+\begin{center}
+\includegraphics[width=0.2\textwidth]{./img/mcuadrada}
+\end{center}
+donde $A_{11}$ y $A_{22}$ son matrices cuadradas.
+\item La matriz $(I + A)^{n - 1}$, donde $I$ es la identidad $n x n$, tiene todas sus entradas positivas.
+\item Si $A$ es la matriz de adyacencia de un grafo, entonces el grafo está fuertemente conectado.
+\end{enumerate}
 \end{ndef}
 
+\begin{nth}[Frobenius, 1908-1912]
+Sea $A $ una matriz cuadrada con entradas no negativas ($A \leq 0$). Si $A$ es irreducible, entonces:
+\begin{enumerate}
+\item Existe un autorvalor (simple) $\lambda > 0$ tal que $A v = \lambda v$, donde el autovector es
+$v > 0$. Además, $\lambda \leq |\mu|$, para cualquier otro autorvalor $\mu$ de $A$.
+\item Cualquier autovector $\leq 0$ es múltiplo de $v$.
+\item Si hay $k$ autovalores de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
+\end{enumerate}
+\end{nth}
 
+¿¿FALTARÍA DEMOSTRAR QUE LA MATRIZ M ES UNA MATRIZ DE ADYACENCIA DE UN GRAFO FUERTEMENTE CONECTADO??
 %printbibliography
 
 \end{document}
