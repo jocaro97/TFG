@@ -416,19 +416,19 @@ Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
 
 \subsection{Modelo matemático}
 
-El algoritmo de PageRank utilizado para ordenar las páginas web tiene una base matemática basado en el álgebra lineal, veamos como se transforma el problema de ordenar las páginas web según su interés en un problema clásico de autovalores y autovectores.
+El algoritmo de PageRank utilizado para ordenar las páginas web tiene una base matemática basado en el álgebra lineal, veamos como se transforma el problema de ordenar las páginas web según su interés en un problema clásico de valores propios y vectores propios.
 
 En primer lugar, vamos a definir el marco donde nos encontramos. Nuestro problema actual es establecer un criterio para ordenar las páginas de la red. Si llamamos $P_1, \dots, P_n$ a cada una de las páginas, siendo $n$ un número natural ($n \in \mathbb{N}$), definimos entonces la importancia $x_i$  de la página $P_i$ como un número real entre $0$ y $1$.
 
 Esta importancia la utilizaremos para elegir que páginas web son las primeras que mostramos en el buscador, ordenándolas de mayor  a menor valor de importancia.
 Para calcular este número nos basamos en la información que podemos extraer de la red (sitios, contenido, enlaces de una página web a otra, etc).
 
-En el primer modelo nos quedamos solo con los enlaces entre páginas web. Estos enlaces los podemos representar mediante un grafo dirigido (G), en la cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$ indicando el final con una punta de flecha, como se indica en la imagen.
+En el primer modelo nos quedamos solo con los enlaces entre páginas web. Estos enlaces los podemos representar mediante un grafo dirigido (G), en la cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$ indicando el final con una punta de flecha, como se muestra en la imagen.
 
 \includegraphics[width=1.0\textwidth]{./img/grafoini}
 
 Esta información la podemos reflejar en una matriz M de dimensión $nxn$. Tanto en las filas como en las columnas representamos las $n$ páginas y por cada enlace entre una página $j$ a otra página $i$, escribimos un $1$ en la entrada de la
-matriz $m_{i,j}$ y en el caso de que no haya enlace escribimos un $0$.
+matriz $m_{ij}$ y en el caso de que no haya enlace escribimos un $0$.
 
 \includegraphics[width=1.0\textwidth]{./img/matriz}
 
@@ -462,63 +462,302 @@ donde las soluciones son los posibles valores de $x_1, \dots , x_n$. Este sistem
 lo podemos escribir en términos matriciales:
 
 \includegraphics[width=1.0\textwidth]{./img/matrizejemplo}
-
-Si llamamos $X$ al vector de importacias $(x_1 \dots x_n)$, llamamos $\lambda = \frac{1}{K}$ y llamamos
+%% TODO: cambiar plantilla
+Si llamamos $\boldsymbol{x}$ al vector de importacias $(x_1 \dots x_n)$, llamamos $\lambda = \frac{1}{K}$ y llamamos
 $M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). Nos encontramos
-con un problema de autovalores y autovectores:
-$$Mx = \lambda x $$
+con un problema de valores propios y vectores propios:
+$$M \boldsymbol{x} = \lambda \boldsymbol{x} $$
 
-A este vector $x$ le exigimos que sea no negativo, es decir $x \leq 0$ ya que representa la importancia
+A este vector $\boldsymbol{x}$ le exigimos que sea no negativo, es decir $\boldsymbol{x} \leq 0$ ya que representa la importancia
 de una página web y también buscamos que sea único ya que como nuestro objetivo final es establecer un
 \textit{ranking} de haber más de uno habría que diseñar otro proceso de selección.
-El hecho de que el vector $x$ sea no negativo convierte a la matriz $M$ en no negativa ($M \leq 0$), ya que sus filas
-están los valores $x_1, \dots , x_n$.
 
-\subsection{Justificación matemática}
+\subsection{Las matemáticas entran en juego}
 
-Hemos conseguido ver que resolver el problema de ordenar las páginas web por importancia equivale a resolver un problema de autovalores y autovectores, por lo que solo nos falta ver si ese $\lambda$ que estamos buscando existe.
+En una primera aproximación, se ha reducido el problema de ordenar las páginas web por importancia a resolver un problema de valores propios y vectores propios.
 
-En primer lugar, vamos a definir el marco donde nos encontramos. Al igual que antes llamamos $P_1, \dots, P_n$ a cada una de las páginas, siendo $n$ un número natural ($n \in \mathbb{N}$), definimos entonces la importancia $x_i$  de la página $P_i$ como un número real entre $0$ y $1$.
+En primer lugar, vamos a definir el marco donde nos encontramos. Como hemos dicho llamamos $P_1, \dots, P_n$ a cada una de las páginas, siendo $n$ un número natural ($n \in \mathbb{N}$), definimos entonces la importancia $x_i$  de la página $P_i$ como un número real entre $0$ y $1$.
 
-Llamamos $G$ al grafo que representa los enlaces entre páginas web, en el cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$. Por último llamamos $M \in  M_n(\mathbb{R})$ a la matriz de adyacencia del grafo, es decir aquella matriz en la que se representan tanto en las filas como en la columnas los nodos y por cada enlace entre $P_i$ y $P_j$ sumamos 1 en la celda M[j,i].
+Llamamos $G$ al grafo que representa los enlaces entre páginas web, en el cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$. Por último llamamos $M \in  M_n(\mathbb{R})$ a la matriz de adyacencia del grafo, es decir aquella matriz en la que se representan tanto en las filas como en la columnas los nodos y por cada enlace entre $P_i$ y $P_j$ sumamos 1 en la celda m_{ji}$. Por último, llamamos $\boldsymbol{x}$ al vector formado por las importancias de las páginas  $\boldsymbol{x} = (x_1, x_2, \dots , x_n)^T$.
+
+Usaremos la siguiente notación. Dadas $A = (a_{ij}),B = (b_{ij}) \in M_d(\mathbb{C})$ y $x = (x_1, \dots, x_n)\in \mathbb{C}^d$:
+\begin{enumerate}
+\item $A\geq 0$ si $a_{ij}\geq 0$ , $1 \leq i,j \leq n$. En este caso diremos que la matriz $A$ es no negativa.
+\item $A > 0$ si $a_{ij} > 0$ , $1 \leq i, j \leq n$. En este caso diremos que la matriz $A$ es positiva.
+\item $A \leq B$ si $a_{ij} \leq b_{ij}$, $1 \leq i,j \leq n$.
+\item $x \geq 0$ si $x_i \geq 0$ , $1 \leq i \leq n$. En este caso diremos que el vector $x$ es no negativo.
+\item $x > 0$ si $x_i > 0$ , $1 \leq i \leq n$. En esta caso diremos que el vector $x$ es positivo.
+\end{enumerate}
+
+No olvidemos que nuestro objetivo es probar que existe un $\lambda$ tal que $M\boldsymbol{x} = \lambda \boldsymbol{x}$, siendo nuestra matriz $M \geq 0$ una matriz no negativa ya que sus entradas son 0 y 1. A continuación trabajaremos con matrices no negativas.
+%% TODO Buscar de donde sale esto.
+\begin{nprop}
+Sean $A \in M_d(\mathbb{C})$ y $x,y \in \mathbb{C}^d$. Si $A > 0$ y $x < y$. Entonces $Ax < Ay$.
+\end{nprop}
 
 \begin{ndef}[Matriz irreducible]
-Se dice que una matriz $A \in M_n(\mathbb{R})$ es irreducible cuando cumple alguna de las siguientes:
+Se dice que una matriz $A \in M_d(\mathbb{R})$ no negativa ($A \leq 0$) es irreducible si no existe ninguna permutación (de filas y columnas) que transforma $A$ en una matriz del tipo:
+$$\left(
+      \begin{array}{{c|c}}
+            A_{11}    &    A_{12}  \\\hline
+            0         &    A_{22}     \\
+      \end{array}   \right)$$
+donde $A_{11}$ y $A_{22}$ son matrices cuadradas.
+\end{ndef}
+\begin{nprop} Sea $A \in M_d(\mathbb{R})$ una matriz no negativa ($A \leq 0$). Son equivalentes:
 \begin{enumerate}
 \item No existe ninguna permutación (de filas y columnas) que transforma $A$ en una matriz del tipo:
-\begin{center}
-\includegraphics[width=0.2\textwidth]{./img/mcuadrada}
-\end{center}
+$$\left(
+      \begin{array}{{c|c}}
+            A_{11}    &    A_{12}  \\\hline
+            0         &    A_{22}     \\
+      \end{array}   \right)$$
 donde $A_{11}$ y $A_{22}$ son matrices cuadradas.
 \item La matriz $(I + A)^{n - 1}$, donde $I$ es la identidad $n x n$, tiene todas sus entradas positivas.
 \item Si $A$ es la matriz de adyacencia de un grafo, entonces el grafo está fuertemente conectado.
 \end{enumerate}
+\end{nprop}
+
+Después de esta proposición, si nuestro grafo $(G)$ estuviera fuertemente conectado podríamos decir que su matriz de adyacencia $M$ es irreducible.
+
+\begin{ndef}[Valor propio]
+$\lambda$ es valor propio de $A \in M_d(\mathbb{C})$ si y solo si existe un vector no nulo $v \in \mathbb{C}^d$ tal que
+$$Av = \lambda v$$
+El vector $v$ se llama \textbf{vector propio asociado al valor propio} $\lambda$.
 \end{ndef}
 
-\textbf{?`?`Grafo fuertemente conectado o fuertemente conexo??}
+\begin{ndef}[Radio espectral]
+Sea $A \in M_d(\mathbb{C})$ una matriz y $\sigma (A)$ el conjunto de valores propios de $A$. Definimos el radio espectral de una matriz, denotado por $r(A)$,  como:
+$$r(A) = \max \{ | \lambda| : \lambda \in \sigma (A) \} $$
+\end{ndef}
 
-Por lo tanto por definición, nuestra matriz $M$ sería irreducible si el grafo $G$ estuviera fuertemente conectado. Por otro lado el teorema de Perron demostraría la existencia y unicidad de nuestro vector solución $x$, sin embargo nuestra matriz $M$ puede tener entradas nulas por lo que no nos serviría el resultado.
+\begin{ndef}[Polinomio característico]
+Sea $A \in M_d(\mathbb{C})$, definimos el polinomio característico de A, denotado por $p_A(\lambda)$, como:
+$$p_A(\lambda) = \det (A - \lambda I) $$
+Donde $I$ es la matriz identidad de dimensión $dxd$. Si $\dim(A) = d$, entonces $p(\lambda)$ es de grado $d$.
+\end{ndef}
+\begin{ndef}[Ecuación característica]
+Sea $A \in M_d(\mathbb{C})$, definimos como la ecuación característica a la ecuación $p_A(\lambda) = 0$.
+\end{ndef}
+
+\begin{nth}
+Sea $A \in M_d(\mathbb{C})$. Entonces, $\lambda \in \mathbb{C}$ es un valor propio de $A$ si y solo si $p_A(\lambda) = 0$. Es decir si $\lambda$ es solución de la ecuación característica.
+\end{nth}
+
+\begin{ndef}[Valor propio dominante]
+Sea $A \in M_n(\mathbb{C})$S, se dice que tiene valor propio dominante si el espectro
+$$\sigma (A) = \{ \lambda_1, \lambda_2 \dots \lambda_n \} \   (r \leq n)$$
+cumple:
+\begin{itemize}
+\item $\lambda_1 > 0$.
+\item $\lambda_1$ es una raíz simple del polinomio característico
+\item $|\lambda_i| < \lambda_1$ para $i = 2, \dots , r$.
+\end{itemize}
+A este valor propio dominante lo notaremos como $\lambda_p$.
+\end{ndef}
 
 \begin{nth}[Perron, 1907]
-Sea $A$ una matriz cuadrada ($A \in M_n(\mathbb{R})$) con entradas positivas, $A > 0$. Entonces:
+Sea $A$ una matriz cuadrada ($A \in M_d(\mathbb{C})$) positiva, $A > 0$. Entonces:
 \begin{enumerate}
-\item Existe un autovalor (simple) \lamda > 0 tal que $Av = \lambda v$ donde el autovector es $v > 0$.
-\item Este autovalor es mayor, en módulo, que todos los demás autovalores.
-\item Cualquier otro autovector positivo de $A$ es un múltiplo de $v$.
+\item Existe un valor propio dominante $\lambda_p > 0$ tal que $Av = \lambda_p v$ donde el vector propio es $v > 0$.
+\item Cualquier otro vector propio positivo de $A$ es un múltiplo de $v$.
 \end{enumerate}
 \end{nth}
 
-Unos años después Frobenius publica un resultado similar para las matrices de entradas no negativas e irreducibles. Para aplicar este teorema solo faltaría demostrar que nuestra matriz $M$ es irreducible.
+Unos años después Frobenius publica un resultado similar para matrices no negativas e irreducibles.
 
 \begin{nth}[Frobenius, 1908-1912]
-Sea $A $ una matriz cuadrada con entradas no negativas ($A \leq 0$). Si $A$ es irreducible, entonces:
+Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \leq 0$). Si $A$ es irreducible, entonces:
 \begin{enumerate}
-\item Existe un autovalor (simple) $\lambda > 0$ tal que $A v = \lambda v$, donde el autovector es
-$v > 0$. Además, $\lambda \leq |\mu|$, para cualquier otro autovalor $\mu$ de $A$.
-\item Cualquier autovector $\leq 0$ es múltiplo de $v$.
-\item Si hay $k$ autovalores de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
+\item Existe un valor propio dominante $\lambda_p > 0$ tal que $A v = \lambda_p v$, donde el vector propio es
+$v > 0$.
+\item Cualquier vector propio $u \geq 0$ es múltiplo de $v$.
+\item Si hay $k$ valores propios de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
 \end{enumerate}
 \end{nth}
+
+Con este último teorema quedaría demostrada la existencia de ese $\lambda$ que cumple $Mx = \lambda x$, suponiendo que nuestra matriz $M$ fuera irreducible. Antes de pasar a demostrar estos teoremas veamos unas propiedades y resultados previos que ayudaran en la demostración de estos.
+
+\section{Resultados previos}
+
+%% TODO preguntar si estoy hay que demostrarlo:
+\begin{nprop}
+\label{res1}
+Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $r(A)$ su radio espectral. Entonces:
+$$A^n \rightarrow 0 \ ,  n \rightarrow \infty \Leftrightarrow r(A) < 1 $$
+\end{nprop}
+
+\begin{ndef}[Multiplicidad algebraica]
+Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $\lambda_1, \lambda_2, \dots, \lambda_r$ los distintos valores propios de $A$. LLamamos multiplicidad algebraica de $\lambda_i$, a la multiplicidad de $\lambda_i$ como raíz de $p(\lambda)$. A la multiplicidad algebraica de $\lambda_i$ la notamos como $m_i$ y se cumple que $m_1 + m_2 + \dots + m_r = d$.
+\end{ndef}
+
+\begin{ndef}[Subespacio propio]
+Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada denotamos como $\mathscr{V}_\lambda$ al subespacio vectorial formado por vectores propios asociados al vector propio $\lamdba$. Además se cumple que  $\mathscr{V}_\lambda = Ker(A - \lambda I) = \{ v \in \mathbb{C}^d : Av = \lambda v \}$.
+\end{ndef}
+
+\begin{ndef}[Multiplicidad geométrica]
+Sea $A \in M_d(\mathbb{C})$ matriz cuadrada y $\lambda_1, \lambda_2, \dots, \lambda_r$ los distintos valores propios de $A$. LLamamos multiplicidad geométrica de $\lambda_i$ a la dimensión del subespacio propio $\mathscr{V}_\lambda_i$. A la multiplicidad geométrica de $\lambda_i$ la denotaremos como $\sigma_i$.
+\end{ndef}
+
+\begin{ndef}[Matrices semejantes]
+Sean $A, B \in M_d(\mathbb{C})$ dos matrices cuadradas. Se dice que $A$ y $B$ son semejantes si existe una matriz $P \in M_d(\mathbb{C})$ invertible tal que:
+$$A = P B P^{-1} $$
+\end{ndef}
+
+\begin{nth}[Forma canónica de Jordan]
+Toda matriz $A \in M_d(\mathbb{C})$ es semejante a una matriz diagonal por bloques
+$$J = \left(
+      \begin{array}{{cccc}}
+        J_1   &           &         &     \\
+              &    J_2    &         &     \\
+              &           & \ddots  &     \\
+              &           &         & J_r
+      \end{array}
+\right)$$
+donde $1 \leq r \leq d$, y
+$$J_i = \left(
+      \begin{array}{{ccccc}}
+        \lambda_i   &   1       &         &    & \\
+              &    \lambda_i    &    1     &    & \\
+              &           & \ddots  &     & \\
+              &           &         & \lambda_i & 1 \\
+              &           &         &           & \lambda_i
+      \end{array}
+\right), \ \lambda_i \in \sigma(A)$$
+La forma canónica de Jordan de una matriz $A$ es única salvo permutaciones de los bloques.
+\end{nth}
+
+Para construir esta matriz observamos que cada valor propio aparece en la diagonal de $J$ tantas veces como indique la multiplicidad algebraica. Por ejemplo, si $A$ es una matriz $4x4$ y $p_A(\lambda) = (\lambda - 3)^3 (\lambda - 5)$, las posibles formas de Jordan son:
+$$J = \left(
+      \begin{array}{{cccc}}
+        3   &           &         &     \\
+              &    3    &         &     \\
+              &         & 3       &     \\
+              &        &         & 5
+      \end{array}
+\right) \ ,  J = \left(
+      \begin{array}{{cccc}}
+        3   &    1      &         &     \\
+            &    3      &         &     \\
+            &           & 3       &     \\
+            &           &         & 5
+      \end{array}
+\right)\ , J = \left(
+      \begin{array}{{cccc}}
+        3     &     1     &         &     \\
+              &    3      &   1     &     \\
+              &           & 3       &     \\
+              &           &         & 5
+      \end{array}
+\right) $$
+
+\begin{nprop} Sea $A \in M_d(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^n } A^n \}_{n\geq 0}$ converge a una matriz $Q \in M_d(\mathbb{C})$ que cumple:
+$$ImQ = Ker ( A - \lambda_p I) \ , Q^2 = Q \ , QA = AQ $$
+Se dice que $Q$ es una \textbf{proyección espectral de A}.
+\end{nprop}
+
+\begin{proof}
+Como $\lambda_p$ es simple la matriz de Jordan asociada quedaría $$
+  J =
+    \left(
+      \begin{array}{{c|ccc}}
+        \lambda_p     &    0      &   \dots    & 0\\\hline
+            0         &           &        &  \\
+            \vdots    &           & J^{\star} &  \\
+           0          &           &        &
+      \end{array}
+    \right)
+$$ donde $J^{\star}$ contiene los valores propios restantes $\lambda_2, \dots, \lambda_n$.
+Como $\lambda_p$ es valor propio dominante tenemos,
+$$r(J^{\star}) = \max \{ |\lambda_i| : i = 2, \dots , r \} < \lambda_p $$
+Esto equivale a $r(\frac{1}{\lambda_p} J^{\star}) < 1$, si aplicamos el resultado \ref{res1} a la matriz $\frac{1}{\lambda_p} J^{\star}$ obtenemos que $\frac{1}{\lambda_p}^n (J^{\star})^n \rightarrow 0$.
+
+Si vemos $J$ como una matriz diagonal por bloques podemos deducir:
+$$J^n =      \left(
+      \begin{array}{{c|ccc}}
+        \lambda_p^n     &    0      &   \dots    & 0\\\hline
+            0         &           &        &  \\
+            \vdots    &           & (J^{\star})^n &  \\
+           0          &           &        &
+      \end{array}
+    \right)$$
+Utilizando la continuidad del producto tenemos
+$$\frac{1}{\lambda_p^n} A^n = P (\frac{1}{\lambda_p^n}  J^n)P^{-1} \rightarrow P \left(
+      \begin{array}{{c|ccc}}
+            1         &    0      &   \dots    & 0\\\hline
+            0         &    0       &    \dots    & 0 \\
+            \vdots    &    \vdots  &  \ddots &  \vdots \\
+           0          &     0       &    \dots    & 0
+      \end{array}   \right) P^{-1}$$
+Por lo que queda probada la existencia del límite
+$$\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n  = Q \  \textrm{con} \ Q = P \left(
+      \begin{array}{{c|ccc}}
+            1         &    0      &   \dots    & 0\\\hline
+            0         &    0       &    \dots    & 0 \\
+            \vdots    &    \vdots  &  \ddots &  \vdots \\
+           0          &     0       &    \dots    & 0
+      \end{array}   \right) P^{-1} $$
+Comprobamos la propiedades que debe cumplir $Q$.
+\begin{itemize}
+\item $Im Q = Ker (A - \lambda_p I)$.
+
+Si expresamos la matriz de paso por columnas $P = (p_1 | p_2 | \dots | p_d)$ de la identidad $AP = PJ$ podemos deducir que $Ap_1 = \lambda_p p_1$, ya que:
+$$AP = A (p_1 | p_2 | \dots | p_d) = (A p_1 |A p_2 | \dots |A p_d)$$
+$$PJ =  (p_1 | p_2 | \dots | p_d) \left(
+  \begin{array}{{c|ccc}}
+    \lambda_p     &    0      &   \dots    & 0\\\hline
+        0         &           &        &  \\
+        \vdots    &           & J^{\star} &  \\
+       0          &           &        &
+  \end{array}
+\right)  = ( \lambda_p p_1 | \star | \dots | \star) $$
+Y como $\det(P) \neq 0$ el vector $p_1$ no es nulo, de donde deducimos que $ker(A - \lambda_p I)$ tiene dimensión $1$ ya que $ker(A - \lambda_p I) = <p_1>$, a este vector que genera $Q$ se le llama \textbf{vector de Perrón}.
+
+De la definición de $Q$ deducimos
+$$QP = P \left(
+      \begin{array}{{c|ccc}}
+            1         &    0      &   \dots    & 0\\\hline
+            0         &    0       &    \dots    & 0 \\
+            \vdots    &    \vdots  &  \ddots &  \vdots \\
+           0          &     0       &    \dots    & 0
+      \end{array}   \right) $$
+$$QP = Q (p_1 | p_2 | \dots | p_d) = (Q p_1 |Q p_2 | \dots |Q p_d) $$
+$$P \left(
+      \begin{array}{{c|ccc}}
+            1         &    0      &   \dots    & 0\\\hline
+            0         &    0       &    \dots    & 0 \\
+            \vdots    &    \vdots  &  \ddots &  \vdots \\
+           0          &     0       &    \dots    & 0
+      \end{array}   \right) = (p_1 | p_2 | \dots | p_d) \left(
+            \begin{array}{{c|ccc}}
+                  1         &    0      &   \dots    & 0\\\hline
+                  0         &    0       &    \dots    & 0 \\
+                  \vdots    &    \vdots  &  \ddots &  \vdots \\
+                 0          &     0       &    \dots    & 0
+            \end{array}   \right) = (p_1 | 0 | \dots | 0) $$
+Por lo que $Qp_1 = p_1$, $Qp_2 = 0$ , $\dots$, $Qp_d = 0$. Y como $p_1, \dots , p_d$ es una base de \mathbb{C}^d$ deducimos que $ImQ = <p_1>$.
+\item $Q^2 = Q$.
+
+$$Q^2 = P \left(
+      \begin{array}{{c|ccc}}
+            1         &    0      &   \dots    & 0\\\hline
+            0         &    0       &    \dots    & 0 \\
+            \vdots    &    \vdots  &  \ddots &  \vdots \\
+           0          &     0       &    \dots    & 0
+      \end{array}   \right)^2 P^{-1} = P \left(
+            \begin{array}{{c|ccc}}
+                  1         &    0      &   \dots    & 0\\\hline
+                  0         &    0       &    \dots    & 0 \\
+                  \vdots    &    \vdots  &  \ddots &  \vdots \\
+                 0          &     0       &    \dots    & 0
+            \end{array}   \right) P^{-1} = Q $$
+\item $QA = AQ$
+
+Utilizando la continuidad del producto tenemos que
+$$QA = (\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n)A = \lim_{n \to \infty} (\frac{1}{\lambda_p^n} A^n \cdot A) = \lim_{n \to \infty} (A \cdot \frac{1}{\lambda_p^n} A^n) \overset{\textrm{c.p.}} = A ( \lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n) = AQ$$
+
+\end{itemize}
+\end{proof}
 
 \newpage
 
