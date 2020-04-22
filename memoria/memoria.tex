@@ -9,10 +9,15 @@
 
 % MATEMÁTICAS
 \usepackage{amsmath}    % Paquete básico de matemáticas
-\usepackage{amssymb}	% Fuentes matemáticas
+%\usepackage{amssymb}	% Fuentes matemáticas
 \usepackage{upgreek}
 \usepackage{amsthm}     % Teoremas
 \usepackage{mathrsfs}   % Fuente para ciertas letras utilizadas en matemáticas
+\usepackage{bm}
+
+\usepackage{tgpagella}  % text only
+\usepackage{mathpazo}   % math & text
+
 
 % LISTAS
 \usepackage{enumitem}       % Mejores listas
@@ -205,7 +210,7 @@
 %\usepackage{hyperref}
 
 % Fuentes
-\usepackage{newpxtext,newpxmath}
+%\usepackage{newpxtext,newpxmath}
 \usepackage[scale=.9]{FiraMono}
 \usepackage{FiraSans}
 \usepackage[T1]{fontenc}
@@ -400,9 +405,7 @@ Un buscador o motor de búsqueda es un sistema de recuperación de información,
 
 PageRank, es un algoritmo basado en el Álgebra lineal, Teoría de Grafos y Probabilidad, fue diseñado por Sergey Brin y Lawrence Page, el primero graduado en Matemáticas y el segundo en Informática y ambos estudiantes de doctorado de Informática de la Universidad de Standford. La pregunta que buscaban resolver era clara ``?`en qué orden mostrar los resultados de la búsqueda?''. En 1997 cuando Brin y Page empezaron a trabajar en el diseño del algoritmo se plantearon como objetivo principal que en el gran número de los casos, al menos una de las primeras páginas que se muestran como resultado contenga información útil para el usuario. Hay que tener en cuenta que en esta época Internet no era tan grande como ahora, habían censadas en torno a 100 millones de páginas web y los buscadores más famosos de la época eran capaces de atender 20 millones de consultas al día, mientras que hoy en día Google es capaz de atender a 200 millones de consultas diarias. Pasaremos a explicar como el algoritmo de PageRank es capaz de ordenar estas millones de páginas web en tan poco tiempo.
 
-\section{El modelo}
-
-\subsection{Introducción al modelo}
+\section{Introducción al modelo}
 Lo primero que hace Google, incluso antes de que el usuario realice la búsqueda es organizar el contenido de Internet ayudándose de un índice. Este índice se va actualizando y va añadiendo páginas nuevas y modificando la información de las páginas ya añadidas en un proceso llamado ``rastreo'', en el cual adquiere información de esas páginas incluyendo los enlaces hacia otra páginas. El índice se ordena con el algoritmo de \textbf{PageRank}, el cual se explicará a continuación, que ordena la lista asignando un PageRank más alto a las páginas que calificará de ``más interesantes'' y un PageRank bajo a las páginas ``menos interesantes''.
 
 Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
@@ -414,7 +417,22 @@ Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
 \item Análisis del contexto. Esta fase no se realiza siempre, en ella se busca ``personalizar'' la búsqueda con datos como la ubicación o historial de búsqueda. Con ello se consigue reducir la búsqueda a su entorno, por ejemplo si el usuario es español y busca ``baloncesto'' le saldrá antes información sobre el baloncesto en España que sobre el de otros países o si el usuario busca ``conciertos cerca de mi'' aparecerán los conciertos más cercanos a su residencia. Además mediante el historial de búsqueda personal el buscador consigue mejorar la interpretación de la búsqueda, por ejemplo si el usuario ha buscado anteriormente ``Granada vs Osasuna'' y más adelante busca ``Granada'' puede considerar que el usuario se refiere al equipo de fútbol y no a la ciudad.
 \end{itemize}
 
-\subsection{Modelo matemático}
+\newpage
+
+\section{Descripción del problema}
+El problema que se va a abordar en este trabajo es conseguir un método de \textit{ranking} para ordenar la información según el interés del usuario. Para ello se investigará las ténicas utilizadas por uno de los mayores motores de búsqueda Google y se aplicarán sobre la base de datos PMSC-UGR. Para abordar el problema nos centramos en la parte preliminar a una búsqueda. Como ya se comentó anteriormente, antes de que el usuario realice una búsqueda en Google las páginas web ya se encuentran previamente ordenadas por el algoritmo PageRank. Este algoritmo  es en el que se centrará este trabajo dividido en dos grandes partes:
+\begin{itemize}
+\item En la primera parte se realizará un estudio teórico del algoritmo PageRank, en el que se datallará la base matemática de manera formal. En primer lugar se ajustara nuestro problema a un problema de valores y vectores propios y a continuación se desarrollaran varios resultados matemáticos que garantizan la existencia de una solución. (Poner si se llegar a demostrar el teorema ??)
+\item En la segunda parte se realizará un estudio práctica sobre el algoritmo PageRank sobre una base de datos y a continuación (... ??)
+\end{itemize}
+
+\section{Planificación}
+
+\newpage
+
+\part{Matemáticas}
+
+\section{Modelo matemático}
 
 El algoritmo de PageRank utilizado para ordenar las páginas web tiene una base matemática basado en el álgebra lineal, veamos como se transforma el problema de ordenar las páginas web según su interés en un problema clásico de valores propios y vectores propios.
 
@@ -463,12 +481,12 @@ lo podemos escribir en términos matriciales:
 
 \includegraphics[width=1.0\textwidth]{./img/matrizejemplo}
 %% TODO: cambiar plantilla
-Si llamamos $\boldsymbol{x}$ al vector de importacias $(x_1 \dots x_n)$, llamamos $\lambda = \frac{1}{K}$ y llamamos
+Si llamamos $\bm{x}$ al vector de importacias $(x_1 \dots x_n)$, llamamos $\lambda = \frac{1}{K}$ y llamamos
 $M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). Nos encontramos
 con un problema de valores propios y vectores propios:
-$$M \boldsymbol{x} = \lambda \boldsymbol{x} $$
+$$M \bm{x} = \lambda \bm{x} $$
 
-A este vector $\boldsymbol{x}$ le exigimos que sea no negativo, es decir $\boldsymbol{x} \leq 0$ ya que representa la importancia
+A este vector $\bm{x}$ le exigimos que sea no negativo, es decir $\bm{x} \leq 0$ ya que representa la importancia
 de una página web y también buscamos que sea único ya que como nuestro objetivo final es establecer un
 \textit{ranking} de haber más de uno habría que diseñar otro proceso de selección.
 
@@ -761,6 +779,7 @@ $$QA = (\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n)A = \lim_{n \to \infty} (\
 
 \newpage
 
+\part{Informática}
 \section{Pseudocódigo}
 
 \begin{algorithm}[H]
