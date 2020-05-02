@@ -10,7 +10,7 @@
 % MATEMÁTICAS
 \usepackage{amsmath}    % Paquete básico de matemáticas
 %\usepackage{amssymb}	% Fuentes matemáticas
-\usepackage{upgreek}
+%\usepackage{upgreek}
 \usepackage{amsthm}     % Teoremas
 \usepackage{mathrsfs}   % Fuente para ciertas letras utilizadas en matemáticas
 \usepackage{bm}
@@ -55,7 +55,7 @@
 {}                                  % Espacio por debajo
 {}                                  % Fuente del cuerpo
 {}                                  % Identación
-{\bfseries\sffamily}                      % Fuente para la cabecera
+{\bfseries\tgpaella}                      % Fuente para la cabecera
 {.}                                 % Puntuación tras la cabecera
 {.5em}                              % Espacio tras la cabecera
 {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}  % Especificación de la cabecera
@@ -66,7 +66,7 @@
 {10pt}
 {}
 {}
-{\itshape \sffamily}
+{\itshape \tgpaella}
 {.}
 {.5em}
 {}
@@ -77,7 +77,7 @@
 {}
 {}
 {}
-{\bfseries \sffamily}
+{\bfseries \tgpaella}
 {.}
 {.5em}
 {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
@@ -88,7 +88,7 @@
 {10pt}
 {}
 {}
-{\bfseries \sffamily}
+{\bfseries \tgpaella}
 {}
 {.5em}
 {\thmname{#1}\thmnumber{ #2.}\thmnote{ #3.}}
@@ -96,7 +96,7 @@
 % Nuevo estilo para la demostración
 
 \makeatletter
-\renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\itshape\sffamily#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
+\renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\itshape\tgpaella#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
 \makeatother
 
 %% ASIGNACIÓN DE LOS ESTILOS
@@ -106,7 +106,7 @@
 \newtheorem{nth}{Teorema}[section]
 \newtheorem{nprop}{Proposición}[section]
 \newtheorem{ncor}{Corolario}[section]
-\newtheorem{lema}{Lema}[section]
+\newtheorem{nlema}{Lema}[section]
 
 % Definiciones
 \theoremstyle{definition-style}
@@ -249,7 +249,7 @@
   colback=black!10,
 	lefttitle=0pt,
   coltitle=black,
-  fonttitle=\bfseries\sffamily\scshape,
+  fonttitle=\bfseries\tgpaella\scshape,
   titlerule=0.8mm,
   titlerule style=black,
   title=\raisebox{-0.6ex}{\small RECUERDA}
@@ -262,7 +262,7 @@
   colback=black!10,
 	lefttitle=0pt,
   coltitle=black,
-  fonttitle=\bfseries\sffamily\scshape,
+  fonttitle=\bfseries\tgpaella\scshape,
   titlerule=0.8mm,
   titlerule style=black,
   title=\raisebox{-0.6ex}{\small NOTA}
@@ -275,7 +275,7 @@
   colback=error!10,
 	lefttitle=0pt,
   coltitle=error,
-  fonttitle=\bfseries\sffamily\scshape,
+  fonttitle=\bfseries\tgpaella\scshape,
   titlerule=0.8mm,
   titlerule style=error,
   title=\raisebox{-0.6ex}{\small ERROR}
@@ -288,7 +288,7 @@
   frame hidden,
   opacityback=0,
   coltitle=black,
-  fonttitle=\bfseries\sffamily\scshape,
+  fonttitle=\bfseries\tgpaella\scshape,
   %titlerule=0.8mm,
   %titlerule style=black,
   %title=Consola,
@@ -309,7 +309,7 @@
   frame hidden,
   colback=white,
   coltitle=black,
-  fonttitle=\bfseries\sffamily,
+  fonttitle=\bfseries\tgpaella,
   %separator sign=\raisebox{-0.65ex}{\Large\MI\symbol{58828}},
   description font=\itshape
 }{teor}
@@ -320,7 +320,7 @@
   frame hidden,
   colback=white,
   coltitle=black,
-  fonttitle=\bfseries\sffamily,
+  fonttitle=\bfseries\tgpaella,
   %separator sign=\raisebox{-0.65ex}{\Large\MI\symbol{58828}},
   description font=\itshape
 }{prop}
@@ -331,7 +331,7 @@
   frame hidden,
   colback=white,
   coltitle=black,
-  fonttitle=\bfseries\sffamily,
+  fonttitle=\bfseries\tgpaella,
   %separator sign=\raisebox{-0.65ex}{\Large\MI\symbol{58828}},
   description font=\itshape
 }{cor}
@@ -342,7 +342,7 @@
   frame hidden,
   colback=white,
   coltitle=black,
-  fonttitle=\bfseries\sffamily,
+  fonttitle=\bfseries\tgpaella,
   %separator sign=\raisebox{-0.65ex}{\Large\MI\symbol{58828}},
   description font=\itshape
 }{defi}
@@ -355,7 +355,7 @@
   right=0mm,
   colback=white,
   coltitle=black,
-  fonttitle=\bfseries\sffamily,
+  fonttitle=\bfseries\tgpaella,
   %separator sign=\raisebox{-0.65ex}{\Large\MI\symbol{58828}},
   description font=\itshape,
   nameref/.style={},
@@ -366,8 +366,8 @@
 
 % CABECERAS
 \pagestyle{headings}
-\setkomafont{pageheadfoot}{\normalfont\normalcolor\sffamily\small}
-\setkomafont{pagenumber}{\normalfont\sffamily}
+\setkomafont{pageheadfoot}{\normalfont\normalcolor\tgpaella\small}
+\setkomafont{pagenumber}{\normalfont\tgpaella}
 
 % ALGORITMOS
 \usepackage[vlined,linesnumbered]{algorithm2e}
@@ -381,9 +381,12 @@
 %\usepackage[sorting=none]{biblatex}
 %\addbibresource{bibliografia.bib}
 
+% REFERENCIAS
+\usepackage[bookmarks = true, colorlinks=true, linkcolor = black, citecolor = black, menucolor = black, urlcolor = black]{hyperref}
+
 \begin{document}
 
-\renewcommand{\proofname}{\normalfont\sffamily\bfseries\small DEMOSTRACIÓN}
+\renewcommand{\proofname}{\normalfont\tgpaella\bfseries\small DEMOSTRACIÓN}
 
 \title{Método de ranking en el diseño de un sistema de acceso a la información}
 \subject{Trabajo fin de grado}
@@ -423,10 +426,11 @@ Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
 El problema que se va a abordar en este trabajo es conseguir un método de \textit{ranking} para ordenar la información según el interés del usuario. Para ello se investigará las ténicas utilizadas por uno de los mayores motores de búsqueda Google y se aplicarán sobre la base de datos PMSC-UGR. Para abordar el problema nos centramos en la parte preliminar a una búsqueda. Como ya se comentó anteriormente, antes de que el usuario realice una búsqueda en Google las páginas web ya se encuentran previamente ordenadas por el algoritmo PageRank. Este algoritmo  es en el que se centrará este trabajo dividido en dos grandes partes:
 \begin{itemize}
 \item En la primera parte se realizará un estudio teórico del algoritmo PageRank, en el que se datallará la base matemática de manera formal. En primer lugar se ajustara nuestro problema a un problema de valores y vectores propios y a continuación se desarrollaran varios resultados matemáticos que garantizan la existencia de una solución. (Poner si se llegar a demostrar el teorema ??)
-\item En la segunda parte se realizará un estudio práctica sobre el algoritmo PageRank sobre una base de datos y a continuación (... ??)
+\item En la segunda parte se realizará un estudio práctico sobre el algoritmo PageRank sobre una base de datos y a continuación (... ??)
 \end{itemize}
 
 \section{Planificación}
+Hacer diagrama de Grannt cada 2 o 3 semanas.
 
 \newpage
 
@@ -490,15 +494,15 @@ A este vector $\bm{x}$ le exigimos que sea no negativo, es decir $\bm{x} \leq 0$
 de una página web y también buscamos que sea único ya que como nuestro objetivo final es establecer un
 \textit{ranking} de haber más de uno habría que diseñar otro proceso de selección.
 
-\subsection{Las matemáticas entran en juego}
+\newpage
 
-En una primera aproximación, se ha reducido el problema de ordenar las páginas web por importancia a resolver un problema de valores propios y vectores propios.
+\section{Teorema de Perron-Frobenius}
 
-En primer lugar, vamos a definir el marco donde nos encontramos. Como hemos dicho llamamos $P_1, \dots, P_n$ a cada una de las páginas, siendo $n$ un número natural ($n \in \mathbb{N}$), definimos entonces la importancia $x_i$  de la página $P_i$ como un número real entre $0$ y $1$.
+En esta sección nos centraremos en el Teorema de Perron-Frobenius. Este resultado garantiza la existencia de un valor propio dominante que es la base del algoritmo del Pagerank.
 
-Llamamos $G$ al grafo que representa los enlaces entre páginas web, en el cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$. Por último llamamos $M \in  M_n(\mathbb{R})$ a la matriz de adyacencia del grafo, es decir aquella matriz en la que se representan tanto en las filas como en la columnas los nodos y por cada enlace entre $P_i$ y $P_j$ sumamos 1 en la celda m_{ji}$. Por último, llamamos $\boldsymbol{x}$ al vector formado por las importancias de las páginas  $\boldsymbol{x} = (x_1, x_2, \dots , x_n)^T$.
+En primer lugar pasamos a introducir algunas notaciones y definiciones que usaremos posteriormente.
 
-Usaremos la siguiente notación. Dadas $A = (a_{ij}),B = (b_{ij}) \in M_d(\mathbb{C})$ y $x = (x_1, \dots, x_n)\in \mathbb{C}^d$:
+Dadas $A = (a_{ij}),B = (b_{ij}) \in M_d(\mathbb{C})$ y $x = (x_1, \dots, x_n)\in \mathbb{C}^d$:
 \begin{enumerate}
 \item $A\geq 0$ si $a_{ij}\geq 0$ , $1 \leq i,j \leq n$. En este caso diremos que la matriz $A$ es no negativa.
 \item $A > 0$ si $a_{ij} > 0$ , $1 \leq i, j \leq n$. En este caso diremos que la matriz $A$ es positiva.
@@ -507,10 +511,12 @@ Usaremos la siguiente notación. Dadas $A = (a_{ij}),B = (b_{ij}) \in M_d(\mathb
 \item $x > 0$ si $x_i > 0$ , $1 \leq i \leq n$. En esta caso diremos que el vector $x$ es positivo.
 \end{enumerate}
 
-No olvidemos que nuestro objetivo es probar que existe un $\lambda$ tal que $M\boldsymbol{x} = \lambda \boldsymbol{x}$, siendo nuestra matriz $M \geq 0$ una matriz no negativa ya que sus entradas son 0 y 1. A continuación trabajaremos con matrices no negativas.
-%% TODO Buscar de donde sale esto.
 \begin{nprop}
-Sean $A \in M_d(\mathbb{C})$ y $x,y \in \mathbb{C}^d$. Si $A > 0$ y $x < y$. Entonces $Ax < Ay$.
+Sean $A \in M_d(\mathbb{C})$ y $x,y \in \mathbb{C}^d$. Entonces se veirfica lo siguiente:
+\begin{equation}\label{eq1} A > 0, x \geq 0, x \neq 0 \Rightarrow Ax > 0 \end{equation}
+\begin{equation} A \geq 0, x \geq y \geq 0 \Rightarrow Ax > Ay \end{equation}
+\begin{equation} A \geq 0, x > 0, Ax = 0 \Rightarrow A = 0 \end{equation}
+\begin{equation} A > 0, y > x > 0 \Rightarrow Ay > Ax \end{equation}
 \end{nprop}
 
 \begin{ndef}[Matriz irreducible]
@@ -522,7 +528,9 @@ $$\left(
       \end{array}   \right)$$
 donde $A_{11}$ y $A_{22}$ son matrices cuadradas.
 \end{ndef}
-\begin{nprop} Sea $A \in M_d(\mathbb{R})$ una matriz no negativa ($A \leq 0$). Son equivalentes:
+\begin{nprop}
+\label{irreducible}
+Sea $A \in M_d(\mathbb{R})$ una matriz no negativa ($A \leq 0$). Son equivalentes:
 \begin{enumerate}
 \item No existe ninguna permutación (de filas y columnas) que transforma $A$ en una matriz del tipo:
 $$\left(
@@ -536,74 +544,14 @@ donde $A_{11}$ y $A_{22}$ son matrices cuadradas.
 \end{enumerate}
 \end{nprop}
 
-Después de esta proposición, si nuestro grafo $(G)$ estuviera fuertemente conectado podríamos decir que su matriz de adyacencia $M$ es irreducible.
-
-\begin{ndef}[Valor propio]
-$\lambda$ es valor propio de $A \in M_d(\mathbb{C})$ si y solo si existe un vector no nulo $v \in \mathbb{C}^d$ tal que
-$$Av = \lambda v$$
-El vector $v$ se llama \textbf{vector propio asociado al valor propio} $\lambda$.
+\begin{ndef}[Grafo fuertemente conectado]
+Un grafo dirigido $G$ se dice fuertemente conexo si para cada par de nodos distintos $P_i$, $P_j$ en $G$ hay un camino de longitud finita que comienza en $P_i$ y termina en $P_j$.
 \end{ndef}
 
 \begin{ndef}[Radio espectral]
-Sea $A \in M_d(\mathbb{C})$ una matriz y $\sigma (A)$ el conjunto de valores propios de $A$. Definimos el radio espectral de una matriz, denotado por $r(A)$,  como:
-$$r(A) = \max \{ | \lambda| : \lambda \in \sigma (A) \} $$
+Sea $A \in M_d(\mathbb{C})$ una matriz y $\sigma (A)$ el conjunto de valores propios de $A$. Definimos el radio espectral de una matriz, denotado por $\rho(A)$,  como:
+$$\rho(A) = \max \{ | \lambda| : \lambda \in \sigma (A) \} $$
 \end{ndef}
-
-\begin{ndef}[Polinomio característico]
-Sea $A \in M_d(\mathbb{C})$, definimos el polinomio característico de A, denotado por $p_A(\lambda)$, como:
-$$p_A(\lambda) = \det (A - \lambda I) $$
-Donde $I$ es la matriz identidad de dimensión $dxd$. Si $\dim(A) = d$, entonces $p(\lambda)$ es de grado $d$.
-\end{ndef}
-\begin{ndef}[Ecuación característica]
-Sea $A \in M_d(\mathbb{C})$, definimos como la ecuación característica a la ecuación $p_A(\lambda) = 0$.
-\end{ndef}
-
-\begin{nth}
-Sea $A \in M_d(\mathbb{C})$. Entonces, $\lambda \in \mathbb{C}$ es un valor propio de $A$ si y solo si $p_A(\lambda) = 0$. Es decir si $\lambda$ es solución de la ecuación característica.
-\end{nth}
-
-\begin{ndef}[Valor propio dominante]
-Sea $A \in M_n(\mathbb{C})$S, se dice que tiene valor propio dominante si el espectro
-$$\sigma (A) = \{ \lambda_1, \lambda_2 \dots \lambda_n \} \   (r \leq n)$$
-cumple:
-\begin{itemize}
-\item $\lambda_1 > 0$.
-\item $\lambda_1$ es una raíz simple del polinomio característico
-\item $|\lambda_i| < \lambda_1$ para $i = 2, \dots , r$.
-\end{itemize}
-A este valor propio dominante lo notaremos como $\lambda_p$.
-\end{ndef}
-
-\begin{nth}[Perron, 1907]
-Sea $A$ una matriz cuadrada ($A \in M_d(\mathbb{C})$) positiva, $A > 0$. Entonces:
-\begin{enumerate}
-\item Existe un valor propio dominante $\lambda_p > 0$ tal que $Av = \lambda_p v$ donde el vector propio es $v > 0$.
-\item Cualquier otro vector propio positivo de $A$ es un múltiplo de $v$.
-\end{enumerate}
-\end{nth}
-
-Unos años después Frobenius publica un resultado similar para matrices no negativas e irreducibles.
-
-\begin{nth}[Frobenius, 1908-1912]
-Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \leq 0$). Si $A$ es irreducible, entonces:
-\begin{enumerate}
-\item Existe un valor propio dominante $\lambda_p > 0$ tal que $A v = \lambda_p v$, donde el vector propio es
-$v > 0$.
-\item Cualquier vector propio $u \geq 0$ es múltiplo de $v$.
-\item Si hay $k$ valores propios de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
-\end{enumerate}
-\end{nth}
-
-Con este último teorema quedaría demostrada la existencia de ese $\lambda$ que cumple $Mx = \lambda x$, suponiendo que nuestra matriz $M$ fuera irreducible. Antes de pasar a demostrar estos teoremas veamos unas propiedades y resultados previos que ayudaran en la demostración de estos.
-
-\section{Resultados previos}
-
-%% TODO preguntar si estoy hay que demostrarlo:
-\begin{nprop}
-\label{res1}
-Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $r(A)$ su radio espectral. Entonces:
-$$A^n \rightarrow 0 \ ,  n \rightarrow \infty \Leftrightarrow r(A) < 1 $$
-\end{nprop}
 
 \begin{ndef}[Multiplicidad algebraica]
 Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $\lambda_1, \lambda_2, \dots, \lambda_r$ los distintos valores propios de $A$. LLamamos multiplicidad algebraica de $\lambda_i$, a la multiplicidad de $\lambda_i$ como raíz de $p(\lambda)$. A la multiplicidad algebraica de $\lambda_i$ la notamos como $m_i$ y se cumple que $m_1 + m_2 + \dots + m_r = d$.
@@ -644,6 +592,159 @@ $$J_i = \left(
 \right), \ \lambda_i \in \sigma(A)$$
 La forma canónica de Jordan de una matriz $A$ es única salvo permutaciones de los bloques.
 \end{nth}
+
+\begin{ndef}[Valor propio dominante]
+Sea $A \in M_n(\mathbb{C})$S, se dice que tiene valor propio dominante si el espectro
+$$\sigma (A) = \{ \lambda_1, \lambda_2 \dots \lambda_n \} \   (r \leq n)$$
+cumple:
+\begin{itemize}
+\item $\lambda_1 > 0$.
+\item $\lambda_1$ es una raíz simple del polinomio característico
+\item $|\lambda_i| < \lambda_1$ para $i = 2, \dots , r$.
+\end{itemize}
+A este valor propio dominante lo notaremos como $\lambda_p$ y a su vector propio asociado lo llamaremos \textbf{vector de Perron}.
+\end{ndef}
+
+\newpage
+
+\subsection{Resultados previos}
+
+Antes de demostrar el Teorema de Perron-Frobenius veamos unos resultados previos que ayudaran a su demostración.
+\begin{nprop}
+\label{nomasvalores}
+Sea $A \in M_n(\mathbb{C})$, $A> 0$. Entonces no hay más valores propios no negativos $(\lambda \geq 0)$ de $A$ que no sean el vector de Perron y sus múltiplos positivos.
+\end{nprop}
+\begin{proof}
+Llamamos $(\lambda, y)$ al par propio de $A$ tal que $y \geq 0$ y llamamos $x > 0$ al vector de Perron para $A^T$, entonces por \ref{eq1} tenemos que $x^T y > 0$. Por lo tanto:
+$$\rho(A)x^T = x^T A \Rightarrow \rho(A)x^Ty = x^T A y = \lambda x^T y \Rightarrow \rho(A) = \lambda $$
+\end{proof}
+
+\begin{nprop}
+Sea $A \in M_n(\mathbb{C})$, $A \geq 0$ con $r = \rho(A)$, entonces se cumple:
+\begin{equation} r \in \sigma(A) \textrm{(r = 0 es posible)} \end{equation}
+\begin{equation} \label{vectorpropio} Az = rz \textrm{ para cualquier } z \in N = \{x | x \geq 0 \textrm{ con } x \neq 0 \} \end{equation}
+\begin{equation}r = \max_{x \in N} f(x) \textrm{, donde } f(x)= \min_{\substack{1 \leq i \leq n \\ x_i \neq 0}} \frac{[Ax]_i}{x_i} \end{equation}
+\end{nprop}
+
+\begin{nprop}
+\label{positiva}
+Sea $A \in M_n(\mathbb{C})$, $A \geq 0$. Si $A$ es irreducible entonces $(I+A)^{n-1} > 0$.
+\end{nprop}
+\begin{proof}
+LLamamos $a_{ij}^{(k)}$ a la entrada $(i,j)$ de la matriz $A^{(k)}$, esta entrada tendrá la siguiente forma:
+$$ a_{ij}^{(k)} = \sum_{h_1,\dots, h_{k-1}} a_{ih_1}a_{h_1h_2} \cdots a_{h_{k-1}j}$$
+Por lo tanto $a_{ij}^{(k)} >0 $ si y solo si existen indices $h_1,h_2, \dots , h_{k-1}$ tal que
+$$a_{ih_1} > 0 \textrm{ y } a_{h_1h_2}  > 0\textrm{ y } \cdots \textrm{ y } a_{h_{k-1}j}>0$$
+En otras palabras, $a_{ij}^{(k)} > 0$ si existe un camino de $k$ pasos del nodo $N_i$ al nodo $N_j$ en $G(A)$,  $N_i \rightarrow N_{h_1} \rightarrow N_{h_2} \rightarrow \cdots \rightarrow N_j$. Pero como $A$ es irreducible por \ref{irreducible} sabemos que $G(A)$ esta fuertemente conectado y por lo tanto existe un camino de longitud $k < n$ del nodo $N_i$ al nodo $N_j$. Esto significa que para cada posición $(i,j)$, exsite algún $k$, $0 \leq k \leq n - 1$ tal que
+$a_{ij}^{(k)} > 0$ y  verificando que para todo $i$ y $j$ se cumple:
+$$\big[(I+A)^{n-1}\big]_{ij} = \left[ \sum_{k=0}^{n-1} {{n-1}\choose{k}} A^k \right]_{ij} = \sum_{k=0}^{n-1}  {{n-1}\choose{k}} a_{ij}^{(k)} > 0 $$
+\end{proof}
+
+\begin{ndef}[Indice de un valor propio]
+Sea $A \in M_n(\mathbb{C})$, llamamos indice de $\lambda$ al indice de la matriz $(A-\lambda I)$. En otras palabras llamamos indice($\lambda$) al entero positivo más pequeño que cumpla alguno de los siguientes:
+\begin{itemize}
+\item $\rango ((A - \lambda I)^k) = \rango ((A - \lambda I)^{k+1})$
+\item $R((A - \lambda I)^k) = R ((A - \lambda I)^{k+1})$
+\item $N((A - \lambda I)^k) = N ((A - \lambda I)^{k+1})$
+\item $R((A - \lambda I)^k) \cap N((A -\lambda I)^k) =0$
+\item $ \mathbb{C}^n = R((A - \lambda I)^k) \oplus N((A- \lambda I)^k)$
+\end{itemize}
+Se entiende que $index(\mu) = 0$ si y solo si $\mu \notin \sigma(A)$.
+\end{ndef}
+
+\begin{nprop}
+\label{funcionjordan}
+Sea $A \in M_n(\mathbb{C})$ con $\sigma(A) = \{ \lambda_1, \lambda_2, \dots , \lambda_s\}$ tal que $k_i = index(\lambda_i)$. Entonces:
+\begin{itemize}
+\item Se dice que una funcion $f:\mathbb{C} \rightarrow \mathbb{C}$ existe para $A$ cuando existen $f(\lambda_i), f'(\lambda_i), \dots , f^{(k_i - 1)}(\lambda_i)$ para cada $\lambda_i \in \sigma(A)$
+\item Si $A = P JP^{-1}$ donde $J$ es la forma de Jordan y si $f$ existe para $A$ entonces:
+$$f(A) = P f(J) P^{-1} = P \begin{pmatrix}
+\ddots & & \\
+  & f(J_i) $ \\
+  & & \ddots \end{pmatrix} P^{-1}$$
+  donde $J_i$ es un bloque de Jordan.
+\end{itemize}
+\end{nprop}
+
+\begin{nprop}
+\label{radioespectral}
+Sea $A \in M_n(\mathbb{C})$ con $\sigma(A) = \{ \lambda_1, \lambda_2, \dots , \lambda_s\}$ tal que $k_i = index(\lambda_i)$ y sea $f:\matbb{C} \rightarrow \mathbb{C}$ tal que $f(\lambda_i), f'(\lambda_i), \dots , f^{(k_i - 1)}(\lambda_i)$ existen para cada $\lambda_i \in \sigma(A)$, entonces:
+$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
+donde $G_i$ es el proyector espectral, el cual tiene la siguientes propiedades:
+\begin{itemize}
+\item $G_i$ es el proyector en el espacio propio generalizado $N((A - \lambda_i I)^{k_i})$ sobre $R((A - \lambda_i I)^{k_i})$
+\item $G_1 + G_2 + \cdots + G_s = I$
+\item $G_i G_j = 0$ cuando $i \neq j$
+\item $N_i = (A - \lambda_i I)G_i = G_i(A - \lambda_i I)$ es nilpotente de indice $k_i$
+\end{itemize}
+\end{nprop}
+
+\newpage
+
+\subsection{Enunciado del teorema}
+
+\begin{nth}[Perron, 1907]
+Sea $A$ una matriz cuadrada ($A \in M_d(\mathbb{C})$) positiva, $A > 0$. Entonces:
+\begin{enumerate}
+\item Existe un valor propio dominante $\lambda_p > 0$ tal que $Ap = \lambda_p p$ donde el vector propio es $p > 0$, llamado vector de Perron.
+\item Cualquier otro vector propio positivo de $A$ es un múltiplo de $p$.
+\end{enumerate}
+\end{nth}
+
+Unos años después Frobenius publica un resultado similar para matrices no negativas e irreducibles.
+
+\begin{nth}[Frobenius, 1908-1912]
+Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \leq 0$). Si $A$ es irreducible, entonces:
+\begin{enumerate}
+\item Existe un valor propio dominante $\lambda_p > 0$.
+\item Existe un valor propio $x > 0$ tal que $Ax = \lambda_p x$.
+\item El único vector definido por:
+$$Ap = \lambda_p p  \ , \ p> 0 \ , \textrm{y} \ \|p\|_1 = 1 $$
+es llamado vector de Perron. No hay ningún vector propio no negativo para $A$ excepto los multiplos positivos de $p$, independientemente del valor propio.
+\item Si hay $k$ valores propios de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
+\end{enumerate}
+\end{nth}
+
+Esencialmente el teorema de Perron-Frobenius nos asegura la existencia de un vector propio que es mayor en módulo que todos los demás vectores propios asociados a la matriz.
+
+\subsection{Demostración del teorema}
+\underline{Demostración del apartado 1, 2 y 3}
+\begin{proof}
+Para demostrar que $\lambda_p$ es un valor propio dominante, veamos primero que es una raíz simple del polinomio característico, es decir que su multiplicidad algebraica sea $1$. Para ello llamamos $B = (I + A)^{n-1}$, la cual sabemos que es positiva por \ref{positiva}. Por \ref{funcionjordan} sabemos que $\lambda \in \sigma(A)$ si y solo si $(1 + \lambda)^{n-1} \in \sigma (B)$ y $alg mult_A(\lambda) = alg mult_B((1 + \lambda)^{n-1}).
+
+Si llamamos $\mu = \rho(B)$, entonces tenemos:
+$$\mu = \max_{\lambda \in \sigma(A)} |(1+ \lambda)|^{n-1} = \Big\{ \max_{\lambda \in \sigma(A)} |(1 + \lambda )| \Big\}^{n-1} = (1 + \lambda_p)^{n-1} $$
+
+ya que si trasladamos el disco $|z| \leq \rho$ una unidad a la derecha obtenemos que el punto de módulo máximo del disco $|z+1| \leq \rho$ se alcanza en el punto $z = 1 + \rho$. \colorbox{yellow}{ Por lo tanto $alg\ mult_A(\lambda_p)=1$, ya que en otro caso $alg\ mult_B(\mu) > 1$, algo imposible} \colorbox{yellow}{ya que $B > 0$. ¿Por el teorema de Perron sobre B?}
+
+Para ver que $A$ tiene un vector propio positivo asociado con $\lambda_p$, recordamos de \ref{vectorpropio} que existe un vector propio no negativo $x \geq 0$ asociado con $\lambda_p$.
+\colorbox{yellow}{Una consecuencia de \ref{radioespectral} es que si $(\lambda, x)$} \colorbox{yellow}{es un par propio de $A$, entonces $(f(\lambda),x)$ es un par propio de $f(A)$}:
+
+Por \ref{radioespectral} sabemos que:
+$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
+Supongamos que x es el valor propio de $\lambda_h$. Multiplicando por el vector $x$ a ambos lados tenemos:
+$$f(A)x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i \right] x = \left[ \sum_{j = 0}^{k_h -1} \frac{f^{(j)}(\lambda_h)}{j!} (A - \lambda_hI)^j \right] x = $$ $$ = \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} A^l \right) \right]x = \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l x \right) = $$ $$=  \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l \right) \right]x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (\lambda_h - \lambda_i)^j G_i \right] x = f(\lambda_h)x $$
+\begin{center} \colorbox{yellow}{¿Es por lo que he puesto antes?} \end{center}
+Por lo tanto que $(\lambda_p, x)$ sea un par propio para $A$ implica que $(\mu, x)$ sea un par propio para $B$. De \ref{nomasvalores} se deduce que $x$ será un múltiplo positivo del vector de Perron de $B$, por lo que $x$ es positivo.
+
+Además $\lambda_p$ es positivo, ya que de lo contrario $Ax = 0$, algo imposible ya que si $A \geq 0$ y $x > 0$ entonces se da que $Ax > 0$. El mismo argumento que prueba \ref{nomasvalores}
+demuestra el apartado 3.
+\end{proof}
+
+\underline{Demostración del apartado 4}
+
+\newpage
+
+\section{Otros resultados}
+Veamos a continuación un resultado que nos ayuda a justificar el método de las potencias. Este método lo utilizaremos para hallar el valor propio dominante de nuestra matriz.
+
+\begin{nprop}
+\label{res1}
+Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $r(A)$ su radio espectral. Entonces:
+$$A^n \rightarrow 0 \ ,  n \rightarrow \infty \Leftrightarrow r(A) < 1 $$
+\end{nprop}
+
+
 
 Para construir esta matriz observamos que cada valor propio aparece en la diagonal de $J$ tantas veces como indique la multiplicidad algebraica. Por ejemplo, si $A$ es una matriz $4x4$ y $p_A(\lambda) = (\lambda - 3)^3 (\lambda - 5)$, las posibles formas de Jordan son:
 $$J = \left(
@@ -777,20 +878,83 @@ $$QA = (\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n)A = \lim_{n \to \infty} (\
 \end{itemize}
 \end{proof}
 
+
+
 \newpage
 
 \part{Informática}
+
+\section{Modificaciones previas}
+
+En primer lugar, vamos a enfocar el problema desde otro punto de vista. Supongamos que el usuario se encuentra navegando por la red, por ejemplo, en la primera página $P_1$ y cuando se aburre decide saltar a una de las páginas con las que enlaza $P_1$. Supongamos que hay $N_1$ páginas que enlazan desde $P_1$, es lógico pensar que todas tienen una probabilidad de ser elegidas del $\frac{1}{N_1}$ es decir que siguen una distribución de probabilidad uniforme (discreta) en $[1, N_1]$.
+
+Construimos entonces un modelo probabilístico, es decir no sabemos que camino elegirá el usuario pero si sabemos con que probabilidad estará en cada uno de los destinos posibles. Por ejemplo, en el siguiente grafo, si el usuario se encuentra en $P_1$ puede elegir entre dos páginas $P_2$ y $P_3$. Por lo que el usuario tiene una probabilidad de $\frac{1}{2}$ de elegir cada una de ellas. Si por ejemplo, finalmente elige la página $P_3$, entonces volvería a sortear su elección pero esta vez cada página de destino tiene una probabilidad de $\frac{1}{4}$ de ser elegida.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{./img/grafoprob}
+\end{center}
+
+Volvemos a considerar las mismas paginas web $P_1, P_2, \dots, P_n$ y $M$ la matriz de adyacencia del grafo, cuyas entradas $m_{ij}$ son $0$ y $1$. Llamamos $N_j$ al número de enlaces de la página $P_j$,  es decir al número de entradas de la columna $j$. Construimos una nueva matriz $M'$ a partir de la $M$ original sustituyendo cada $m_{ij}$ por
+$$m'_{ij} = \frac{m_{ij}}{N_j} $$
+La transformación sería la siguiente:
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{./img/markov}
+\end{center}
+
+La nueva matriz $M'$ esta compuesta por números no negativos entre $0$ y $1$, a esta matriz así construida se le llama una matriz estocástica (o de Markov).
+
+Con este modelo podemos conocer con que probabilidad estará el usuario en cada una de las páginas tras cada instante de tiempo. Por ejemplo si el usuario parte de la página k-ésima $P_k$ para saber con que probabilidad tiene de cambiar a cada uno de los posibles destinos solo tenemos que multiplicar la matriz $M'$ por el vector inicial. En este caso el vector inicial es un vector de ceros y un $1$ en la posición k-ésima, ya que sabemos que el usuario se encuentra en la página $P_k$ con una probabilidad del $100\%$.
+
+Si multiplicamos $M'$ por el vector inicial, obtenemos:
+$$\begin{pmatrix}
+\cdots & \cdots & m'_{1k} & \cdots \\
+\vdots & \ddots & \vdots & \vdots \\
+\cdots & \cdtos & m'_{kk} & \cdots \\
+\vdots & \vdots & \vdots & \ddots \\
+\cdots & \cdots & m'_{nk} & \cdots \end{pmatrix} \begin{pmatrix}
+0 \\
+\vdots \\
+1 \\
+\vdots \\
+0 \end{pmatrix} = \begin{pmatrix}
+m'_{1k}\\
+\vdots \\
+m'_{kk} \\
+\vdots \\
+m'_{nk} \end{pmatrix}$$
+
+Este vector resultante, cuyas entradas son o $0$ o $1/N_k$, describe con que probabilidad estará el usuario en cada una de las páginas tras una unidad de tiempo. Para saber con que probabilidad estará en cada uno de los posibles destinos dentro de dos unidades de tiempo solo debemos multiplicar el vector inicial por $(M')^2$, si lo queremos saber para dentro de tres unidades de tiempo lo multiplicaremos por $(M')^3$ y así sucesivamente.
+
+La matriz $M'$ recibe el nombre de matriz de transición del sistema, ya que en cada entrada $m'_{ij}$ se refleja la probabilidad de pasar de la página $P_j$ a la página $P_i$. Y además las matrices que se corresponden con sus respectivas potencias también reflejan la probabilidad de pasar de $P_j$ a $P_i$ tras varios instantes de tiempo.
+
+Sin embargo podría ocurrir que alguna de las páginas no citaran a ninguna otra, es decir que ese nodo del grafo no tuviera enlaces salientes. Esto se traduce en que en nuestra matriz $M'$ aparece una columna de ceros, por lo que esta matriz dejaría de ser estocástica y además el grafo del que partimos no estaría fuertemente conectado. Para solucionarlo se añade una probabilidad de transición a todos los vértices, es decir añadimos la posibilidad de que el usuario se "aburra" y decida cambiar a otra página que no esté enlazada con la página en la que se encontraba. En términos matriciales se traduce en lo siguiente:
+
+$$M'' = cM' + (1-c)\begin{pmatrix}
+p_1 \\
+\vdots \\
+p_n \end{pmatrix} (1, \dots, 1)$$
+
+\spanishdecimal{.}
+Donde $p_1, \dots , p_n$ es una distribución de probabilidad y $c$ es un parámetro entre $0$ y $1$, el cual Google estima que se encuentra sobre $0,85$. La distribución de probabilidad a tomar puede ser una distribución uniforme que asigne una probabilidad de $p_i = 1/n$ a cada página, aunque también se podría elegir otras, ponderando unas páginas más que otras consiguiendo así búsquedas más personalizadas.
+
+
+
+\newpage
+
 \section{Pseudocódigo}
 
 \begin{algorithm}[H]
-  \KwData{Matriz de enlaces (m); Número de interaciones (num\_iter); Factor (d)}
+  \KwData{Matriz de enlaces (m); Número de interaciones (num\_iter)}
   \KwResult{Vector de pesos del PageRank (v)}
 
   N = M[0].size()\;
+  m\_seg = (C * m + (1 - C)/N)
+
   v = random(N, 1)\;
   v = v / max(v)\;
   \For{i $\in$ num\_iter}{
-    v = d * m * v + (1 - d)/ N
+    v = m\_seg\cdot v
   }
   \Return v
 
