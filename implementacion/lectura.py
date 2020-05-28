@@ -207,6 +207,60 @@ class PageRank:
                         res.append(v[i])
         return res
 
+    def calcular(self, sentencia, resultados, sitio):
+        i = 0
+        if(sentencia[0] == "("):
+            sentencia.remove(sentencia[0])
+            resultados.remove(resultados[0])
+
+        if(sentencia[len(sentencia)-1] == ")"):
+            sentencia.remove(sentencia[len(sentencia)-1])
+
+        print(sentencia)
+        while(len(sentencia) > 1):
+            if(sentencia[0] == "NOT"):
+                if(sentencia[1] != "SeNtenCia"):
+                    primero = self.buscar(sentencia[1], sitio, resultados[1])
+                else:
+                    primero = resultados[1]
+                primero = resultados[1] - primero
+                i = 1
+            else:
+                if(sentencia[0] != "SeNtenCia"):
+                    primero = self.buscar(sentencia[0], sitio, resultados[0])
+                else:
+                    primero = resultados[0]
+
+            if(sentencia[2+i] == "NOT"):
+                if(sentencia[3+i] != "SeNtenCia"):
+                    segundo = self.buscar(sentencia[3+i], sitio, resultados[3+i])
+                else:
+                    segundo = resultados[3+i]
+                segundo = resultados[3+i] - segundo
+                final = 3+i
+            else:
+                if(sentencia[2+i] != "SeNtenCia"):
+                    segundo = self.buscar(sentencia[2+i], sitio, resultados[2+i])
+                else:
+                    segundo = resultados[2+i]
+                final = 2+i
+
+            if(sentencia[1+i] == 'AND'):
+                resultados[0] = [value for value in primero if value in segundo]
+            else:
+                resultados[0] = primero + segundo
+                resultados[0] = list(set(resultados[0]))
+
+
+            sentencia[0] = "SeNtenCia"
+            for j in range(0,final):
+                sentencia.remove(sentencia[1])
+                resultados.remove(resultados[1])
+
+            i = 0
+
+        return resultados[0]
+
     def filtrar(self, texto, sitio):
         texto = re.split('(\W)', texto)
         print(texto)
@@ -217,7 +271,6 @@ class PageRank:
             else:
                 if(texto[i] == '"'):
                     while(i+1 < len(texto) and texto[i+1] != '"'):
-                        print(texto[i])
                         texto[i] = texto[i] + texto[i+1]
                         texto.remove(texto[i+1])
 
@@ -232,12 +285,35 @@ class PageRank:
             if(i == ' '):
                 texto.remove(i)
         print(texto)
-        palabras = texto
-        res = self.v
-        for palabra in palabras:
-            if((palabra != '(') and (palabra != ")")):
-                print(palabra)
-                res = self.buscar(palabra, sitio, res)
+        resultados = []
+        for j in range(len(texto)):
+            resultados.append(self.v.copy())
+
+        i = 0
+        sentencia = []
+        copiar = False
+        while(i < len(texto)):
+            if(texto[i] == '('):
+                ind_start = i
+                sentencia = []
+                copiar = True
+
+            if(copiar):
+                sentencia.append(texto[i])
+
+            if(texto[i] == ")"):
+                copiar = False
+                res = self.calcular(sentencia,  resultados[ind_start:i], sitio)
+                texto[ind_start] = "SeNtenCia"
+                resultados[ind_start] = res
+                for j in range(ind_start+1, i+1):
+                    texto.remove(texto[ind_start +1])
+                    resultados.remove(resultados[ind_start + 1])
+                i = 0
+            else:
+                i += 1
+
+        res = self.calcular(texto, resultados, sitio)
 
         return res
 
