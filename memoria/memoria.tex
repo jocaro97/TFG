@@ -27,7 +27,7 @@
 % Dibujos Tikz
 \usepackage{pgf,tikz}
 \usepackage{tkz-euclide}
-\usetkzobj{all}
+%\usetkzobj{all}
 \usepackage{mathrsfs}
 \usetikzlibrary{arrows, calc,intersections,through,backgrounds}
 
@@ -484,7 +484,7 @@ $M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). N
 con un problema de valores propios y vectores propios:
 $$M \vec{x} = \lambda \vec{x} $$
 
-A este vector $\vec{x}$ le exigimos que sea no negativo, es decir, que todas sus componentes sean no negativas, ya que representa la importancia de una página web y también buscamos que sea ``único'', en el sentido de que cualquier otro vector propio asociado a ese mismo vector sea múltiplo de este, ya que como nuestro objetivo final es establecer un \textit{ranking}, de haber dos vectores linealmente independientes tendríamos dos formas distintas de ordenar y habría que diseñar otro proceso de selección.
+A este vector $\vec{x}$ le exigimos que sea no negativo, es decir, que todas sus componentes sean no negativas, ya que representa la importancia de una página web y también buscamos que sea ``único'', en el sentido de que cualquier otro vector propio asociado a ese mismo valor propio sea múltiplo de este, ya que como nuestro objetivo final es establecer un \textit{ranking}, de haber dos vectores linealmente independientes tendríamos dos formas distintas de ordenar y habría que diseñar otro proceso de selección.
 
 El estudio de la existencia de vector propio con esas propiedades para matrices con todas sus entradas no negativas es el objetivo de la Teoría de Perron-Frobenius que desarrollaremos en la siguiente sección.
 
@@ -494,7 +494,7 @@ El estudio de la existencia de vector propio con esas propiedades para matrices 
 
 Como hemos dicho anteriormente, en esta sección nos centraremos en el Teorema de Perron-Frobenius. Este resultado garantiza la existencia de un valor propio cumpliendo las propiedades que son la base del algoritmo del Pagerank.
 
-Todos los resultados aquí expuestos se pueden encontrar en \cite{algebralineal}.
+Todos los resultados aquí expuestos se pueden encontrar, por ejemplo, en \cite{algebralineal}.
 
 En primer lugar pasamos a introducir algunas notaciones y definiciones que usaremos posteriormente.
 
@@ -502,18 +502,21 @@ Dadas $A = (a_{ij}),B = (b_{ij}) \in M_n(\mathbb{C})$ y $\vec{x} = (x_1, \dots, 
 \begin{enumerate}
 \item Diremos que $A$ es no negativa si $a_{ij}\geq 0$ , $1 \leq i,j \leq n$ y lo notaremos
 $A\geq 0$.
-\item Diremos que $A$ es positiva. si $a_{ij} > 0$ , $1 \leq i, j \leq n$ y lo notaremos $A > 0$.
+\item Diremos que $A$ es positiva si $a_{ij} > 0$ , $1 \leq i, j \leq n$ y lo notaremos $A > 0$.
 \item Diremos que $B$ es mayor o igual que $A$ si $a_{ij} \leq b_{ij}$, $1 \leq i,j \leq n$ y lo notaremos $A \leq B$.
-\item Diremos que el vector $x$ es no negativo si $x_i \geq 0$ , $1 \leq i \leq n$ y lo notaremos $\vec{x} \geq 0$.
+\item Diremos que el vector $\vec{x}$ es no negativo si $x_i \geq 0$ , $1 \leq i \leq n$ y lo notaremos $\vec{x} \geq 0$.
+\item Análogamente diremos que el vector $\vec{x}$ es positivo si $x_i > 0$, $1 \leq i \leq n$ y lo notaremos $\vec{x} > 0$.
 \end{enumerate}
 
 Denotaremos, como es habitual:
 \begin{enumerate}
-\item $\sigma (A)$ al espectro de $A$, es decir $\sigma(A) = \{ \lambda \in \mathbb{C} : A\vec{x} = \lambda \vec{x}\}$
-\item $\rho(A)$ al al radio espectral de $A$, es decir $\rho(A) = \max\{|\lambda| : \lambda \in \sigma(A) \}$.
-\item $m(\lambda)$ a la multiplicidad algebraica del valor propio $\lambda$, es decir $m(\lambda)$ es la multiplicidad de $\lambda$ como raíz del polinomio característico $p(\lambda)$.
-\item $\mathcal{V}(\lambda)$ a la multiplicidad geométrica del valor propio $\lambda$, es decir $\mathcal{V}(\lambda)$ es la dimensión del subespacio propio generado por $\lambda$.
+\item $\sigma (A)$ al espectro de $A$, es decir $\sigma(A) = \{ \lambda \in \mathbb{C} : det(A - \lambda I)= 0\}$
+\item $\rho(A)$ al radio espectral de $A$, es decir $\rho(A) = \max\{|\lambda| : \lambda \in \sigma(A) \}$.
+\item $m(\lambda)$ a la multiplicidad algebraica del valor propio $\lambda$, es decir $m(\lambda)$ es la multiplicidad de $\lambda$ como raíz del polinomio característico $p(\lambda) = det(A - \lambda I)$.
+\item $\nu(\lambda)$ a la multiplicidad geométrica del valor propio $\lambda$, es decir $\nu(\lambda)$ es la dimensión del subespacio propio generado por $\lambda$.
 \end{enumerate}
+
+Además llamaremos par propio a la pareja $(\lambda, \vec{x})$ donde $\lambda$ es un valor propio y $\vec{x}$ un vector propio asociado a $\lambda$.
 
 Además de estos elementos básicos del Álgebra Lineal, también utilizaremos las formas canónicas de Jordan. La demostración de este resultado, que se estudia habitualmente en el grado, puede verse, por ejemplo en \cite{jordan}.
 
@@ -522,7 +525,7 @@ Existe una matriz $P \in M_n(\mathbb{C})$, $det P \neq 0$ y $J \in M_n(\mathbb{C
 $$A = P J P^{-1} $$
 $J$ se denomina ``forma canónica'' de $A$ y a cada unos de los bloque $J_i$, $i = 1, \dots, s$,  ``bloques elementales'' de Jordan. $J$ viene determinada por las siguientes propiedades:
 \begin{enumerate}
-\item Cada uno de los bloques elementales, $J_i$, está asociado a un mismo valor propio, $\lambda \in \sigma(A) \cup \mathbb{R}$, y es de la forma:
+\item Cada uno de los bloques elementales, $J_i$, está asociado a un mismo valor propio, $\lambda \in \sigma(A)$, y es de la forma:
 $$J_i = \left(
       \begin{array}{{ccccc}}
         \lambda_i   &   1       &         &    & \\
@@ -541,15 +544,15 @@ $$J_i = \left(
       \end{array}
 \right)$$
 \item Cada valor propio $\lambda$ se repite exactamente $m(\lambda)$ veces en la diagonal de $J$.
-\item El número de bloques elementales correspondiente al valor propio $\lambda$ es $\mathcal{V}(\lambda)$.
+\item El número de bloques elementales correspondiente al valor propio $\lambda$ es $\nu(\lambda)$.
 \item El número de bloques elementales de dimensión $l$, si $\lambda$ es real, viene dado por
-$$2 \mathcal{V}_l(\lambda) - \mathcal{V}_{l-1}(\lambda) \textrm{ , } 1 \leq l \leq m(\lambda)$$
-tomando $\mathcal{V}_0(\lambda) = 0$, por definición.
+$$2 \nu_l(\lambda) - \nu_{l-1}(\lambda) \textrm{ , } 1 \leq l \leq m(\lambda)$$
+tomando $\nu_0(\lambda) = 0$, por definición. Donde $\nu_l(\lambda)$ es el número de bloques elementales correspondiente al valor propio $\lambda$ con multiplicidad geométrica $l$.
 \end{enumerate}
 La forma canónica de Jordan de una matriz es única salvo reordenación de los bloques.
 \end{nth}
 
-También utilizaremos la siguiente propiedad.
+También utilizaremos la siguiente propiedad, cuya demostración se puede encontrar en \cite{modelos}
 
 \begin{nprop}
 \label{res1}
@@ -565,13 +568,13 @@ $$\sigma (A) = \{ \lambda_1, \lambda_2 \dots \lambda_n \} \   (r \leq n)$$
 cumple:
 \begin{itemize}
 \item $\lambda_1 > 0$.
-\item $m_1 = 1$.
+\item $m(\lambda_1) = 1$.
 \item $|\lambda_i| < \lambda_1$ para $i = 2, \dots , r$.
 \end{itemize}
 \end{ndef}
-A este valor propio dominante lo notaremos como $\lambda_p$. El siguiente resultado es fundamental.
+En lo sucesivo, si una matriz tiene valor propio dominante lo notaremos como $\lambda_p$. El siguiente resultado nos va a resultar fundamental. La demostración ha sido extraída de \cite{modelos}
 
-\begin{nprop} Sea $A \in M_d(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^n } A^n \}_{n\geq 0}$ converge a una matriz $Q \in M_d(\mathbb{C})$ que cumple:
+\begin{nprop} Sea $A \in M_n(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^n } A^n \}_{n\geq 0}$ converge a una matriz $Q \in M_d(\mathbb{C})$ que cumple:
 $$ImQ = Ker ( A - \lambda_p I) \ , Q^2 = Q \ , QA = AQ $$
 Se dice que $Q$ es una \textbf{proyección espectral de A}.
 \label{converge}
@@ -684,7 +687,7 @@ Tras estos resultados, vemos la importancia de que una matriz $A$ tenga valor pr
 
 \subsection{Matrices positivas}
 
-Comenzamos esta sección con unas definiciones básicas de las matrices positivas y no negativas.
+Comenzamos esta sección enumerando algunas propiedades elementales de las matrices positivas y no negativas, cuya demostración es un simple ejercicio.
 
 \begin{nprop}
 Sean $A \in M_d(\mathbb{C})$ y $\vec{x},\vec{y} \in \mathbb{C}^d$. Entonces se veirfica lo siguiente:
@@ -705,9 +708,9 @@ Sea $A \in M_n(\mathbb{C}), A > 0$, entonces se cumple:
 \end{itemize}
 \end{nprop}
 \begin{proof}
-Podemos asumir que $\rho(A) = 1$ sin perder generalidad ya que $A$ siempre puede ser normalizada por su radio espectral ($A >0 \Leftrightarrow A / \rho(A) > 0$ y $\rho(A) = r \Leftrightarrow \rho(A/r) = 1$). Si $(\lambda, \vec{x})$ es un par propio de $A$ tal que $|\lambda| = 1$ entonces se cumple que:
-\begin{equation} \label{antes} |\vec{x}| = |\lambda||\vec{x}| = |\lambda \vec{x}| \leq |A \vec{x}| \leq |A||\vec{x}| = A |\vec{x}| \Rightarrow |\vec{x}| \leq A |\vec{x}|.  \end{equation}
-Buscamos la igualdad. Por comodidad llamamos $\vec{z} = A |\vec{x}|$ y llamamos $\vec{y} = \vec{z} - |\vec{x}|$, por \ref{antes} tenemos que $\vec{y} \geq 0$. Supongamos que $\vec{y} \neq 0$, es decir que alguna de sus componentes es positiva ($y_i > 0$). En este caso por \ref{eq1} sabemos que $A \vec{y} > 0$ y $\vec{z} > 0$, por lo tanto debe existir un $\epsilon >0$ tal que $A\vec{y} > \epsilon \vec{z}$ o equivalentemente:
+Podemos asumir que $\rho(A) = 1$ sin perder generalidad ya que $A$ siempre puede ser normalizada por su radio espectral ($A >0 \Leftrightarrow \frac{1}{\rho(A)} A > 0$ y $\rho(A) = r \Leftrightarrow \rho(\frac{1}{r}A) = 1$). Si $(\lambda, \vec{x})$ es un par propio de $A$ tal que $|\lambda| = 1$ entonces se cumple que:
+\begin{equation} \label{cinco} |\vec{x}| = |\lambda||\vec{x}| = |\lambda \vec{x}| = |A \vec{x}| \leq |A||\vec{x}| = A |\vec{x}| \Rightarrow |\vec{x}| \leq A |\vec{x}|.  \end{equation}
+Donde $|\vec{x}|$ es el módulo del vector \vec{x}. Por comodidad llamamos $\vec{z} = A |\vec{x}|$ y llamamos $\vec{y} = \vec{z} - |\vec{x}|$, por \ref{cinco} tenemos que $\vec{y} \geq 0$. Supongamos que $\vec{y} \neq 0$, es decir que alguna de sus componentes es positiva ($y_i > 0$). En este caso por \ref{eq1} sabemos que $A \vec{y} > 0$ y $\vec{z} > 0$, por lo tanto debe existir un $\epsilon >0$ tal que $A\vec{y} > \epsilon \vec{z}$ o equivalentemente:
 $$\frac{A}{1 + \epsilon} \vec{z} > \vec{z} $$
 Si escribimos esta inecuación como $B \vec{z} > \vec{z}$ donde $B = A /(1 + \epsilon)$, y multiplicamos sucesivamente a ambos lados por $B$ utilizando \ref{eq4} tenemos que:
 $$B^2 \vec{z} > B \vec{z} > \vec{z} \ , \ B^3 \vec{z} > B^2 \vec{z} > \vec{z} \ , \ \dots \Rightarrow B^k \vec{z} > \vec{z} \ \ \forall k = 1, 2, \dots $$
@@ -729,10 +732,10 @@ $$\lambda \vec{x} = A \vec{x} \Rightarrow \lambda \vec{p} = A \vec{p} = |A \vec{
 
 \begin{nprop}
 \label{vpropio}
-Sea $A \in M_n(\mathbb{C}), A > 0$ y $r = \rho(A) = \sigma(A)$. Entonces $m(r) = \mathcal{V}(r)$, es decir, el radio espectral es un valor propio semisimple.
+Sea $A \in M_n(\mathbb{C}), A > 0$ y $r = \rho(A) = \sigma(A)$. Entonces $m(r) = \nu(r)$, es decir, el radio espectral es un valor propio semisimple.
 \end{nprop}
 \begin{proof}
-Como en las demostraciones anteriores, suponemos que $\rho(A) = 1$. Además sabemos que es valor propio; supongamos que $m(1) > \mathcal{V}(1)$ y lleguemos a una contradicción (rercordamos $m(\lambda) \geq \mathcal{V}(\lambda)$, para cualquier $\lambda \in \sigma(A)$).
+Como en las demostraciones anteriores, suponemos que $\rho(A) = 1$. Además sabemos que es valor propio; supongamos que $m(1) > \nu(1)$ y lleguemos a una contradicción (rercordamos $m(\lambda) \geq \nu(\lambda)$, para cualquier $\lambda \in \sigma(A)$).
 La forma canónica de Jordan de $A$ tiene entonces un bloque de Jordan asociado al valor propio $1$ de orden de al menos dos.
 Reordenando apropieadamente los bloques de Jordan,
 $$A = P \left(
@@ -764,25 +767,26 @@ Como $\min_j v_j > 0$ puesto que $\vec{v} > 0$, $\|A^k\|_{\infty} \nrightarrow \
 Sea $A \in M_n(\mathbb{C}), A > 0$ entonces $m(\rho(A))=1$ y $\rho(A)$ es el valor propio dominante de $A$.
 \end{nprop}
 \begin{proof}
-Supongamos de nuevo que $\rho(A) = 1$ sin perder generalidad y supongamos también que $m(\lambda = 1) = m_1 > 1$. Sabemos de la proposición anterior que $\lambda = 1$ es un valor semisimple ($m(\lambda) = \mathcal{V}(\lambda)$), por lo tanto hay $m_1$ vectores propios linealmente independientes asociados con $\lambda = 1$. Sean $\vec{x}$ e $\vec{y}$ dos vectores propios asociados con $\lambda = 1$, entonces $\vec{x} \neq \alpha \vec{y}$ para todo $\alpha \in \mathbb{C}$. Si elegimos una componente de $\vec{y}$ no negativa, por ejemplo $y_i \neq 0$, y definimos $\vec{z} = \vec{x} - (x_i/y_i)\vec{y}$, entonces $A\vec{z} = \vec{z}$, además de \ref{existevector} sabemos que $A |\vec{z}| = |\vec{z}| >0$. Pero esto contradice el hecho de $z_i = x_i - (x_i/y_i)y_i = 0$. Por lo tanto la suposición $m_1 > 1$ es falsa, concluimos que $m_1 = 1$.
+Supongamos de nuevo que $\rho(A) = 1$ sin perder generalidad y supongamos también que $m(\lambda = 1) = m_1 > 1$. Sabemos de la proposición anterior que $\lambda = 1$ es un valor semisimple ($m(\lambda) = \nu(\lambda)$), por lo tanto hay $m_1$ vectores propios linealmente independientes asociados con $\lambda = 1$. Sean $\vec{x}$ e $\vec{y}$ dos vectores propios asociados con $\lambda = 1$, entonces $\vec{x} \neq \alpha \vec{y}$ para todo $\alpha \in \mathbb{C}$. Si elegimos una componente de $\vec{y}$ no nula, por ejemplo $y_i \neq 0$, y definimos $\vec{z} = \vec{x} - (x_i/y_i)\vec{y}$, entonces $A\vec{z} = \vec{z}$, además de \ref{existevector} sabemos que $A |\vec{z}| = |\vec{z}| >0$. Pero esto contradice el hecho de $z_i = x_i - (x_i/y_i)y_i = 0$. Por lo tanto la suposición $m_1 > 1$ es falsa, concluimos que $m_1 = 1$.
 \end{proof}
 
-Dado que $m(\lambda_p) = 1$, $\mathcal{V}(\lambda_p) = 1$ denotaremos por $\vec{p}$ al vector propio asociado a $\lambda_p$ que cumple $\|\vec{p}\| = 1 = \sum \|p_i\| = 1$ y lo llamaremos \textbf{vector de Perron}.
+Dado que $m(\lambda_p) = 1$, $\nu(\lambda_p) = 1$ denotaremos por $\vec{p}$ al vector propio asociado a $\lambda_p$ que cumple $\|\vec{p}\|_1 = 1 = \sum \|p_i\|_1 = 1$ y lo llamaremos \textbf{vector de Perron}.
 
 Otro resultado importante de las matrices positivas, que posteriormente tomará un papel importante en la demostración del Teorema de Perron-Frobenius es el siguiente:
 
 \begin{nprop}
 \label{nomasvalores}
-Sea $A \in M_n(\mathbb{C})$, $A> 0$. Entonces no hay más vectores propios no negativos $(\lambda \geq 0)$ de $A$ que no sean el vector de Perron y sus múltiplos positivos.
+Sea $A \in M_n(\mathbb{C})$, $A> 0$. Entonces no hay más vectores propios no negativos ($\vec{x} \geq 0$) de $A$ que no sean el vector de Perron y sus múltiplos positivos.
 \end{nprop}
 \begin{proof}
-Llamamos $(\lambda, \vec{y})$ al par propio de $A$ tal que $\vec{y} \geq 0$ y llamamos $\vec{p}^T > 0$ al vector de Perron para $A^T$, como $y \neq 0$ por ser vector propio, entonces por \ref{eq1} tenemos que $\vec{p}^T \vec{y} > 0$. Por lo tanto:
+Llamamos $(\lambda, \vec{y})$ al par propio de $A$ tal que $\vec{y} \geq 0$ y llamamos $\vec{p}^T > 0$ al vector de Perron para $A^T$. Como $y \neq \vec{0}$ por ser vector propio, entonces por \ref{eq1} tenemos que $\langle \vec{p}^T, \vec{y} \rangle> 0$. Por lo tanto:
 $$\rho(A)\vec{p}^T = \vec{p}^T A \Rightarrow \langle \rho(A)\vec{p}^T, \vec{y} \rangle = \langle \vec{p}^TA, \vec{y} \rangle = \langle \lambda \vec{p}^T, \vec{y}\rangle \Rightarrow \rho(A) = \lambda $$
 \end{proof}
 
 Todas esta propiedades sobre las matrices positivas las podemos resumir en el teorema de Perron.
 
 \begin{nth}[Perron, 1907]
+\label{perron}
 Sea $A \in M_n(\mathbb{C})$, $A > 0$ con $\lambda_p = \rho(A)$. Entonces:
 \begin{enumerate}
 \item $\lambda_p >0$.
@@ -807,7 +811,7 @@ Como hemos dicho antes en esta sección vemos como se adaptan los resultados ant
 \begin{nprop}
 Sea $A \in M_n(\mathbb{C})$, $A \geq 0$ con $r = \rho(A)$, entonces se cumple:
 \begin{equation} r \in \sigma(A) \textrm{(r = 0 es posible)} \end{equation}
-\begin{equation} \label{vectorpropio} A\vec{z} = r\vec{z} \textrm{ para cualquier } z \in N = \{x | x \geq 0 \textrm{ con } x \neq 0 \} \end{equation}
+\begin{equation} \label{vectorpropio} A\vec{z} = r\vec{z} \textrm{ para algún } z \in N = \{x | x \geq 0 \textrm{ con } x \neq 0 \} \end{equation}
 \end{nprop}
 
 \begin{proof}
@@ -821,7 +825,7 @@ Concluimos $\lambda_p^* = r$, y $A \vec{z} = r \vec{z}$ con $z \geq 0$ y $z \neq
 \end{proof}
 
 \begin{ndef}[Matriz irreducible]
-Se dice que una matriz $A \in M_d(\mathbb{R})$ no negativa ($A \leq 0$) es irreducible si no existe ninguna permutación simétrica (de filas y columnas) que transforma $A$ en una matriz del tipo:
+Se dice que una matriz $A \in M_d(\mathbb{R})$ no negativa ($A \geq 0$) es irreducible si no existe ninguna permutación simétrica (de filas y columnas) que transforma $A$ en una matriz del tipo:
 $$\left(
       \begin{array}{{c|c}}
             A_{11}    &    A_{12}  \\\hline
@@ -845,65 +849,41 @@ Sea $A \in M_n(\mathbb{R})$ una matriz no negativa ($A \leq 0$). Son equivalente
 Un grafo dirigido $G$ se dice fuertemente conectado si para cada par de nodos distintos $P_i$, $P_j$ en $G$ hay un camino de longitud finita que comienza en $P_i$ y termina en $P_j$.
 \end{ndef}
 
-Con las últimas equivalencias podemos ver como relacionar las propiedades de un grafo con las de su matriz de adyacencia. Algo realmente interesante para nuestro problema, ya que la información que originalmente tenemos proviene de un grafo. Veamos a continuación unos resultados previos que se utilizarán en la demostración del teorema.
+Con las últimas equivalencias podemos ver como relacionar las propiedades de un grafo con las de su matriz de adyacencia. Algo realmente interesante para nuestro problema, ya que la información que originalmente tenemos proviene de un grafo. Por último, antes de pasar a demostrar el teorema de Perron-Frobenius veamos un resultado que nos ayudará a simplificar su demostración.
+
+\begin{nprop}
+\label{antes}
+Sea $A\in M_n(\mathbb{C})$ y $\lambda \in \sigma(A)$. Dado $k \in \mathbb{N}$ fijo, ponemos $B = (A + I)^k$ y $\mu = (1 + \lambda)^k$. Entonces, $\mu \in \sigma(B)$ y $\ker(A - \lambda I) \subseteq \ker(B - \mu I)$. Además, $\ker(A - \lambda I)^2 \subseteq \ker(B - \mu I)^2$.
+\end{nprop}
+\begin{proof}
+La demostración se basa en que, como $A$ y $I$ conmutan $$B = (A + I)^k = \sum_{j = 0}^k {k \choose j} A^j $$
+Sea $\vec{v} \in \ker(A- \lambda I) \Leftrightarrow A \vec{v} = \lambda \vec{v}$ y , por consiguiente, $A^j \vec{v} = \lambda^j \vec{v}$, $\forall j \in \mathbb{N}$.
+Vamos a demostrar que $\vec{v} \in \ker(B - \mu I)$. En efecto
+$$B \vec{v} = \left( \sum_{j = 0}^k {k \choose j} A^j \right) \vec{v} = \sum_{j=0}^k {k \choose j} A^j \vec{v} = \sum_{j = 0}^k {k \choose j} \lambda^j \vec{v} = \left(\sum_{j = 0}^k {k \choose j} \lambda^j \right) \vec{v} = (1 + \lambda)^k \vec{v} = \mu \vec{v}$$
+entonces $\mu \in \sigma(B)$ y $\ker(A - \lambda I) \subseteq \ker(B - \mu I)$.
+Veamos ahora que $\ker(A - \lambda I)^2 \subseteq \ker(B - \mu I)^2$.
+Sea $\vec{w} \in \ker(A - \lambda I)^2$. Como $\ker(A - \lambda I) \subseteq \ker(B - \mu I) \subseteq \ker(B - \mu I)^2$ solo tenemos que probarlo para $\vec{w} \in \ker(A - \lambda I)^2 \textbackslash \ker(A -\lambda I)$. Si tal $\vec{w}$ existe, entonces lamando $\vec{v} = (A - \lambda I)\vec{w}$, tenemos que   $\vec{v} \neq 0$ y $\vec{v} \in \ker(A - \lambda I)$.
+Ahora bien, $\vec{v} = (A - \lambda I)\vec{w}$ implica que $A \vec{w} = \vec{v} + \lambda \vec{w}$, por tanto $$A^2 \vec{w} = A \vec{v} + \lambda A \vec{w} = \lambda \vec{v} + \lambda \vec{v} + \lambda^2 \vec{w} = 2 \lambda \vec{v} + \lambda^2 \vec{w}$$
+Por recurrencia,
+$$A^j \vec{w} = j \lambda^{j - 1} \vec{v} + \lambda^j \vec{w} $$
+Entonces,
+$$B \vec{w} = \left( \sum_{j = 0}^k {k \choose j} A^j \right)\vec{w} = \sum_{j = 0}^k {k \choose j} \left( j \lambda^{j - 1} \vec{v} + \lambda^j \vec{w} \right) =$$ $$= \left( \sum_{j=0}^k {k \choose j} \lambda^j \right) \vec{w} + \left(  \sum_{j = 1}^k {k \choose j} j \lambda^{j - 1} \right) \vec{v}  = \mu \vec{w} + a \vec{v}$$
+con $a \in \mathbb{C}$, luego $(B - \mu I)\vec{w} = a \vec{v} \in \ker(A - \lambda I) \subseteq \ker(B - \mu I) \Rightarrow (B - \mu I)^2 \vec{w} = 0$; esto es, $\vec{w} \in \ker(B - \mu I)^2$.
+\end{proof}
 
 \newpage
 
-\subsection{Resultados previos}
-
-Antes de demostrar el Teorema de Perron-Frobenius veamos unos resultados previos que ayudaran a su demostración.
-
-\begin{ndef}[Índice de un valor propio]
-\label{index}
-Sea $A \in M_n(\mathbb{C})$, llamamos índice de $\lambda$ al índice de la matriz $(A-\lambda I)$. En otras palabras llamamos index($\lambda$) al entero positivo más pequeño que cumpla alguno de los siguientes:
-\begin{itemize}
-\item $\rango ((A - \lambda I)^k) = \rango ((A - \lambda I)^{k+1})$
-\item $R((A - \lambda I)^k) = R ((A - \lambda I)^{k+1})$
-\item $N((A - \lambda I)^k) = N ((A - \lambda I)^{k+1})$
-\item $R((A - \lambda I)^k) \cap N((A -\lambda I)^k) =0$
-\item $ \mathbb{C}^n = R((A - \lambda I)^k) \oplus N((A- \lambda I)^k)$
-\end{itemize}
-Se entiende que $index(\mu) = 0$ si y solo si $\mu \notin \sigma(A)$.
-\end{ndef}
-
-\begin{nprop}
-\label{funcionjordan}
-Sea $A \in M_n(\mathbb{C})$ con $\sigma(A) = \{ \lambda_1, \lambda_2, \dots , \lambda_s\}$ tal que $k_i = index(\lambda_i)$. Entonces:
-\begin{itemize}
-\item Se dice que una funcion $f:\mathbb{C} \rightarrow \mathbb{C}$ existe para $A$ cuando existen $f(\lambda_i), f'(\lambda_i), \dots , f^{(k_i - 1)}(\lambda_i)$ para cada $\lambda_i \in \sigma(A)$
-\item Si $A = P JP^{-1}$ donde $J$ es la forma de Jordan y si $f$ existe para $A$ entonces:
-$$f(A) = P f(J) P^{-1} = P \begin{pmatrix}
-\ddots & & \\
-  & f(J_i) $ \\
-  & & \ddots \end{pmatrix} P^{-1}$$
-  donde $J_i$ es un bloque de Jordan.
-\end{itemize}
-\end{nprop}
-
-\begin{nprop}
-\label{radioespectral}
-Sea $A \in M_n(\mathbb{C})$ con $\sigma(A) = \{ \lambda_1, \lambda_2, \dots , \lambda_s\}$ tal que $k_i = index(\lambda_i)$ y sea $f:\matbb{C} \rightarrow \mathbb{C}$ tal que $f(\lambda_i), f'(\lambda_i), \dots , f^{(k_i - 1)}(\lambda_i)$ existen para cada $\lambda_i \in \sigma(A)$, entonces:
-$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
-donde $G_i$ es el proyector espectral, el cual tiene la siguientes propiedades:
-\begin{itemize}
-\item $G_i$ es el proyector en el espacio propio generalizado $N((A - \lambda_i I)^{k_i})$ sobre $R((A - \lambda_i I)^{k_i})$
-\item $G_1 + G_2 + \cdots + G_s = I$
-\item $G_i G_j = 0$ cuando $i \neq j$
-\item $N_i = (A - \lambda_i I)G_i = G_i(A - \lambda_i I)$ es nilpotente de indice $k_i$
-\end{itemize}
-\end{nprop}
-
-\newpage
 
 \subsection{Enunciado del teorema}
 
 Unos años después Frobenius publica un resultado similar para matrices no negativas e irreducibles.
 
 \begin{nth}[Frobenius, 1908-1912]
-Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \leq 0$). Si $A$ es irreducible, entonces:
+Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \geq 0$). Si $A$ es irreducible, entonces para $r = \rho(A)$ se cumple que:
 \begin{enumerate}
-\item Existe un valor propio dominante $\lambda_p > 0$.
-\item Existe un valor propio $\vec{x} > 0$ tal que $A\vec{x} = \lambda_p \vec{x}$.
+\item $r >0$.
+\item $m(r) = 1$.
+\item Existe un vector propio $\vec{x} > 0$.
 \item El único vector definido por:
 $$Ap = \lambda_p \vec{p}  \ , \ \vec{p}> 0 \ , \textrm{y} \ \|\vec{p}\|_1 = 1 $$
 es el vector de Perron. No hay ningún vector propio no negativo para $A$ excepto los múltiplos positivos de $\vec{p}$, independientemente del valor propio.
@@ -911,36 +891,38 @@ es el vector de Perron. No hay ningún vector propio no negativo para $A$ except
 \end{enumerate}
 \end{nth}
 
-Esencialmente el teorema de Perron-Frobenius nos asegura que toda matriz no negativa e irreducible siempre tiene un valor propio que es mayor en módulo que todos los demás valores propios y que lleva asociado un vector propio postivo.
+Esencialmente el teorema de Perron-Frobenius nos asegura que toda matriz no negativa e irreducible siempre tiene un valor propio que es mayor en módulo que todos los demás valores propios y que lleva asociado un vector propio positivo.
 
 \subsection{Demostración del teorema}
-\underline{Demostración del apartado 1, 2 y 3}
+\underline{Demostración del apartado 1, 2, 3 y 4}
 \begin{proof}
-Para demostrar que $\lambda_p$ es un valor propio dominante, veamos primero que es una raíz simple del polinomio característico, es decir que su multiplicidad algebraica sea $1$. Para ello llamamos $B = (I + A)^{n-1}$, la cual sabemos que es positiva por \ref{positiva}. Por \ref{funcionjordan} sabemos que $\lambda \in \sigma(A)$ si y solo si $(1 + \lambda)^{n-1} \in \sigma (B)$ y $alg mult_A(\lambda) = alg mult_B((1 + \lambda)^{n-1}).
+Por la proposición anterior \ref{antes} tenemos que $\mu = (1+ r)^{n-1} \in \sigma(B)$ y $\vec{v} \in \ker(B - \mu I)$. Además como $A$ es irreducible, entonces $(A + I)^{n-1} = B >0$. Por el teorema de Perron \ref{perron} necesariamente $\mu = \rho(B)$. Aplicando la propiedad \ref{eq1}, como $B > 0$, $\vec{v} \geq 0$, entonces $\mu \vec{v} = B \vec{v} > 0$ y como $\mu > 0$ por el teorema de Perron \ref{perron} tenemos $\vec{v} > 0$.
 
-Si llamamos $\mu = \rho(B)$, entonces tenemos:
-$$\mu = \max_{\lambda \in \sigma(A)} |(1+ \lambda)|^{n-1} = \Big\{ \max_{\lambda \in \sigma(A)} |(1 + \lambda )| \Big\}^{n-1} = (1 + \lambda_p)^{n-1} $$
+Sea $\vec{x}$ el vector propio asociado a $r$ para $A$, entonces $\vec{x}$ es vector propio asociado a $\mu$ para la matriz $B$ ya que por la proposición anterior $\ker(A - rI) \subseteq \ker(B - \mu I)$. Por lo tanto $\vec{x} > 0$ por lo demostrado anteriormente.
 
-ya que si trasladamos el disco $|z| \leq \rho$ una unidad a la derecha obtenemos que el punto de módulo máximo del disco $|z+1| \leq \rho$ se alcanza en el punto $z = 1 + \rho$. \colorbox{yellow}{ Por lo tanto $alg\ mult_A(\lambda_p)=1$, ya que en otro caso $alg\ mult_B(\mu) > 1$, algo imposible} \colorbox{yellow}{ya que $B > 0$. ?`Por el teorema de Perron sobre B?}
+Por reducción al absurdo $r$ es positivo, pues si $r = 0$ entonces $ 0 = r \vec{x} = A \vec{x}$, lo cual es una contradicción pues $A \geq 0$ y $\vec{x} > 0$ implica que $A\vec{x} > 0$.
 
-Para ver que $A$ tiene un vector propio positivo asociado con $\lambda_p$, recordamos de \ref{vectorpropio} que existe un vector propio no negativo $\vec{x} \geq 0$ asociado con $\lambda_p$.
-\colorbox{yellow}{Una consecuencia de \ref{radioespectral} es que si $(\lambda, \vec{x})$} \colorbox{yellow}{es un par propio de $A$, entonces $(f(\lambda),\vec{x})$ es un par propio de $f(A)$}:
+Por otro lado $\mu$ es un valor propio dominante para $B$. En particular $m_B(\mu) = \nu_B (1) = 1$ (multpilicidades algebraica y geométrica de $\mu$ como valor propio de $B$). Pero por la proposición anterior, $\ker(A - r I) \subseteq \ker(B - \mu I)$, luego $\nu_A(r) = 1$ y se tiene que
+$$1 \leq m_A(r) \leq \nu_A(r) = 1 \Rightarrow r \textrm{ es simple} $$
 
-Por \ref{radioespectral} sabemos que:
-$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
-Supongamos que $\vec{x}$ es el valor propio de $\lambda_h$. Multiplicando por el vector $\vec{x}$ a ambos lados tenemos:
-$$f(A)x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i \right] x = \left[ \sum_{j = 0}^{k_h -1} \frac{f^{(j)}(\lambda_h)}{j!} (A - \lambda_hI)^j \right] x = $$ $$ = \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} A^l \right) \right]x = \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l x \right) = $$ $$=  \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l \right) \right]x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (\lambda_h - \lambda_i)^j G_i \right] x = f(\lambda_h)x $$
-\begin{center} \colorbox{yellow}{?`Es por lo que he puesto antes?} \end{center}
-Por lo tanto que $(\lambda_p, \vec{x})$ sea un par propio para $A$ implica que $(\mu, \vec{x})$ sea un par propio para $B$. De \ref{nomasvalores} se deduce que $x$ será un múltiplo positivo del vector de Perron de $B$, por lo que $\vec{x}$ es positivo.
-
-Además $\lambda_p$ es positivo, ya que de lo contrario $A\vec{x} = 0$, algo imposible ya que si $A \geq 0$ y $\vec{x} > 0$ entonces se da que $A\vec{x} > 0$. El mismo argumento que prueba \ref{nomasvalores}
-demuestra el apartado 3.
+El mismo argumento que prueba \ref{nomasvalores}
+demuestra el apartado 4.
 \end{proof}
 
-\underline{Demostración del apartado 4}
+\underline{Demostración del apartado 5}
 \textbf{?`?}
 
-El teorema anterior nos garantiza la existencia de valor propio dominante y vector de Perrón la matriz de nuestro problema inicial, pero ?`como hallamos este vector cuando nuestra matriz es de grandes dimensiones?. En la siguiente sección se explicará un método para poder aproximar este vector.
+El teorema anterior nos garantiza que el radio espectral es positivo y simple. Sin embargo, para poder afirmar que es dominante, éste debe ser mayor estricto en módulo que los demás valores propios. En el teorema anterior nada nos asegura que sea único, de hecho podría existir otro valor propio en el circulo espectral cuyo módulo sea igual al radio espectral. Por lo tanto para garantizar que el el radio espectral sea el valor propio dominante debemos exigirle a la matriz que sea también primitiva.
+
+\begin{ndef}[Matriz primitiva]
+Una matriz $A$ no negativa e irreducible se dice que es una matriz primitiva si tiene un solo valor propio, $r = \rho(A)$, en su circulo espectral.
+\end{ndef}
+
+\begin{ndef}[Matriz imprimitiva]
+Una matriz no negativa e irreducible se dice que es imprimitiva si tiene $h > 1$ valores propios en su circulo espectral y $h$ se conoce como el índice de imprimitividad.
+\end{ndef}
+
+Por lo tanto si nuestra matriz $A \geq 0$ es irreducible y primitiva si podemos asegurar que el radio espectral es dominante. Por otro lado, el teorema anterior nos garantiza la existencia del vector de Perrón de la matriz de nuestro problema inicial, pero ?`como hallamos este vector cuando nuestra matriz es de grandes dimensiones?. En la siguiente sección se explicará un método para poder aproximar este vector.
 
 \newpage
 
@@ -1297,15 +1279,43 @@ Sea $A \in M_n(\mathbb{C}), A > 0$, se cumplen las siguientes propiedades:
 \item Si $\lambda \in \sigma(A)$ y $|\lambda| = \rho(A) \Rightarrow \lambda = \rho(A)$.
 \end{enumerate}
 
+\begin{proof}
+Para demostrar que $\lambda_p$ es un valor propio dominante, veamos primero que es una raíz simple del polinomio característico, es decir que su multiplicidad algebraica sea $1$. Para ello llamamos $B = (I + A)^{n-1}$, la cual sabemos que es positiva por \ref{positiva}. Por \ref{funcionjordan} sabemos que $\lambda \in \sigma(A)$ si y solo si $(1 + \lambda)^{n-1} \in \sigma (B)$ y $alg mult_A(\lambda) = alg mult_B((1 + \lambda)^{n-1}).
+
+Si llamamos $\mu = \rho(B)$, entonces tenemos:
+$$\mu = \max_{\lambda \in \sigma(A)} |(1+ \lambda)|^{n-1} = \Big\{ \max_{\lambda \in \sigma(A)} |(1 + \lambda )| \Big\}^{n-1} = (1 + \lambda_p)^{n-1} $$
+
+ya que si trasladamos el disco $|z| \leq \rho$ una unidad a la derecha obtenemos que el punto de módulo máximo del disco $|z+1| \leq \rho$ se alcanza en el punto $z = 1 + \rho$. \colorbox{yellow}{ Por lo tanto $alg\ mult_A(\lambda_p)=1$, ya que en otro caso $alg\ mult_B(\mu) > 1$, algo imposible} \colorbox{yellow}{ya que $B > 0$. ?`Por el teorema de Perron sobre B?}
+
+Para ver que $A$ tiene un vector propio positivo asociado con $\lambda_p$, recordamos de \ref{vectorpropio} que existe un vector propio no negativo $\vec{x} \geq 0$ asociado con $\lambda_p$.
+\colorbox{yellow}{Una consecuencia de \ref{radioespectral} es que si $(\lambda, \vec{x})$} \colorbox{yellow}{es un par propio de $A$, entonces $(f(\lambda),\vec{x})$ es un par propio de $f(A)$}:
+
+Por \ref{radioespectral} sabemos que:
+$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
+Supongamos que $\vec{x}$ es el valor propio de $\lambda_h$. Multiplicando por el vector $\vec{x}$ a ambos lados tenemos:
+$$f(A)x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i \right] x = \left[ \sum_{j = 0}^{k_h -1} \frac{f^{(j)}(\lambda_h)}{j!} (A - \lambda_hI)^j \right] x = $$ $$ = \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} A^l \right) \right]x = \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l x \right) = $$ $$=  \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l \right) \right]x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (\lambda_h - \lambda_i)^j G_i \right] x = f(\lambda_h)x $$
+\begin{center} \colorbox{yellow}{?`Es por lo que he puesto antes?} \end{center}
+Por lo tanto que $(\lambda_p, \vec{x})$ sea un par propio para $A$ implica que $(\mu, \vec{x})$ sea un par propio para $B$. De \ref{nomasvalores} se deduce que $x$ será un múltiplo positivo del vector de Perron de $B$, por lo que $\vec{x}$ es positivo.
+
+Además $\lambda_p$ es positivo, ya que de lo contrario $A\vec{x} = 0$, algo imposible ya que si $A \geq 0$ y $\vec{x} > 0$ entonces se da que $A\vec{x} > 0$. El mismo argumento que prueba \ref{nomasvalores}
+demuestra el apartado 3.
+\end{proof}
+
+
+\newpage
 
 \begin{thebibliography}{9}
 \bibitem{algebralineal}
 Carl D. Meyer
-\textit{Matrix Analysis and Applied Linear Algebra}.
+\textit{Matrix Analysis and Applied Linear Algebra}. Siam. 2000.
 
 \bibitem{jordan}
 Luis Merino y Evangelina Santos
-\textit{Álgebra lineal con métodos elementales}.
+\textit{Álgebra lineal con métodos elementales}. Paraninfo. 1999.
+
+\bibitem{modelos}
+Rafael Ortega Rios.
+\textit{Modelos matemáticos}. Editorial Universidad de Granada. 2013.
 
 \end{thebibliography}
 %printbibliography
