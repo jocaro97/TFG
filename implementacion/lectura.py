@@ -293,16 +293,16 @@ class PageRank:
         i = 0
         while(i < len(texto)):
             if(texto[i] == ''):
-                texto.remove(texto[i])
+                texto.pop(i)
             else:
                 if(texto[i] == '"'):
                     while(i+1 < len(texto) and texto[i+1] != '"'):
                         texto[i] = texto[i] + texto[i+1]
-                        texto.remove(texto[i+1])
+                        texto.pop(i+1)
 
                     if(i+1 < len(texto)):
                         texto[i] = texto[i] + texto[i+1]
-                        texto.remove(texto[i+1])
+                        texto.pop(i+1)
                     else:
                         error = True
                         res = "Error no se encontro \" de cerrar."
@@ -312,7 +312,7 @@ class PageRank:
         if(not error):
             for i in texto:
                 if(i == ' '):
-                    texto.remove(i)
+                    texto.pop(i)
             print(texto)
             resultados = []
             for j in range(len(texto)):
