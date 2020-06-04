@@ -209,7 +209,6 @@ class PageRank:
 
     def calcular(self, sentencia, resultados, sitio):
         i = 0
-        error = False
         if(sentencia[0] == "("):
             sentencia.pop(0)
             resultados.pop(0)
@@ -218,7 +217,7 @@ class PageRank:
             sentencia.pop(len(sentencia)-1)
 
         print(sentencia)
-        while(len(sentencia) > 1 and not error):
+        while(len(sentencia) > 1):
             if(sentencia[0] == "NOT"):
                 if(sentencia[1] != "SeNtenCia"):
                     primero = self.buscar(sentencia[1], sitio, resultados[1])
@@ -253,29 +252,26 @@ class PageRank:
                         segundo = resultados[2+i]
                     final = 2+i
             else:
-                error = True
+                return "Error en el operador lógico."
 
-            if(not error):
-                if(sentencia[1+i] == 'AND'):
-                    resultados[0] = [value for value in primero if value in segundo]
-                elif(sentencia[1+i] == 'OR'):
-                    resultados[0] = primero + segundo
-                    resultados[0] = list(set(resultados[0]))
-                else:
-                    error = True
-
-
-                sentencia[0] = "SeNtenCia"
-                for j in range(0,final):
-                    sentencia.pop(1)
-                    resultados.pop(1)
-
-                i = 0
+            if(sentencia[1+i] == 'AND'):
+                resultados[0] = [value for value in primero if value in segundo]
+            elif(sentencia[1+i] == 'OR'):
+                resultados[0] = primero + segundo
+                resultados[0] = list(set(resultados[0]))
+            else:
+                return "Error en el operador lógico."
 
 
-        if(error):
-            resultados[0] = "Error en el operador lógico."
-        elif(len(sentencia) == 1 and sentencia[0] != "SeNtenCia"):
+            sentencia[0] = "SeNtenCia"
+            for j in range(0,final):
+                sentencia.pop(1)
+                resultados.pop(1)
+
+            i = 0
+
+
+        if(len(sentencia) == 1 and sentencia[0] != "SeNtenCia"):
             resultados[0] = self.buscar(sentencia[0], sitio, resultados[0])
 
         print(resultados[0])
