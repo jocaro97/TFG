@@ -78,8 +78,11 @@ class Aplicacion():
         if(not res):
             texto_info = "No hay articulos que coincidan con su búsqueda \n"
         else:
-            for r in res:
-                texto_info += r.titulo + "\n"
+            if(isinstance(res, list)):
+                for r in res:
+                    texto_info += r.titulo + "\n"
+            else:
+                texto_info = res
 
         self.tinfo.insert("1.0", texto_info)
 
