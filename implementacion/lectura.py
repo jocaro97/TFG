@@ -325,7 +325,7 @@ class PageRank:
             i = 0
             sentencia = []
             copiar = False
-            while(i < len(texto) and not error):
+            while(i < len(texto)):
                 if(texto[i] == '('):
                     ind_start = i
                     sentencia = []
@@ -338,7 +338,7 @@ class PageRank:
                     copiar = False
                     res = self.calcular(sentencia,  resultados[ind_start:i], sitio)
                     if(res == "Error en el operador lógico."):
-                        error = True
+                        return "Error en el operacor lógico"
                     texto[ind_start] = "SeNtenCia"
                     resultados[ind_start] = res
                     for j in range(ind_start+1, i+1):
@@ -351,8 +351,6 @@ class PageRank:
             if(copiar):
                 print("Error no se encontro ) de cerrar")
                 res = "Error no se encontro ) de cerrar"
-            elif(error):
-                res = "Error en el operador lógico."
             else:
                 res = self.calcular(texto, resultados, sitio)
                 if(res != "Error en el operador lógico."):
