@@ -287,7 +287,6 @@ class PageRank:
         return res
 
     def filtrar(self, texto, sitio):
-        error = False
         texto = re.split('(\W)', texto)
         print(texto)
         i = 0
@@ -304,53 +303,53 @@ class PageRank:
                         texto[i] = texto[i] + texto[i+1]
                         texto.pop(i+1)
                     else:
-                        error = True
                         res = "Error no se encontro \" de cerrar."
                         print("Error no se encontro \" de cerrar.")
+                        return res
                 i += 1
 
-        if(not error):
-            for i in texto:
-                if(i == ' '):
-                    texto.pop(i)
-            print(texto)
-            resultados = []
-            for j in range(len(texto)):
-                resultados.append(self.v.copy())
 
-            i = 0
-            sentencia = []
-            copiar = False
-            while(i < len(texto)):
-                if(texto[i] == '('):
-                    ind_start = i
-                    sentencia = []
-                    copiar = True
+        for i in texto:
+            if(i == ' '):
+                texto.remove(i)
+        print(texto)
+        resultados = []
+        for j in range(len(texto)):
+            resultados.append(self.v.copy())
 
-                if(copiar):
-                    sentencia.append(texto[i])
-
-                if(texto[i] == ")"):
-                    copiar = False
-                    res = self.calcular(sentencia,  resultados[ind_start:i], sitio)
-                    if(res == "Error en el operador lógico."):
-                        return "Error en el operacor lógico"
-                    texto[ind_start] = "SeNtenCia"
-                    resultados[ind_start] = res
-                    for j in range(ind_start+1, i+1):
-                        texto.pop(ind_start +1)
-                        resultados.pop(ind_start + 1)
-                    i = 0
-                else:
-                    i += 1
+        i = 0
+        sentencia = []
+        copiar = False
+        while(i < len(texto)):
+            if(texto[i] == '('):
+                ind_start = i
+                sentencia = []
+                copiar = True
 
             if(copiar):
-                print("Error no se encontro ) de cerrar")
-                res = "Error no se encontro ) de cerrar"
+                sentencia.append(texto[i])
+
+            if(texto[i] == ")"):
+                copiar = False
+                res = self.calcular(sentencia,  resultados[ind_start:i], sitio)
+                if(res == "Error en el operador lógico."):
+                    return "Error en el operacor lógico"
+                texto[ind_start] = "SeNtenCia"
+                resultados[ind_start] = res
+                for j in range(ind_start+1, i+1):
+                    texto.pop(ind_start +1)
+                    resultados.pop(ind_start + 1)
+                i = 0
             else:
-                res = self.calcular(texto, resultados, sitio)
-                if(res != "Error en el operador lógico."):
-                    res = self.ordenarresultados(res)
+                i += 1
+
+        if(copiar):
+            print("Error no se encontro ) de cerrar")
+            res = "Error no se encontro ) de cerrar"
+        else:
+            res = self.calcular(texto, resultados, sitio)
+            if(res != "Error en el operador lógico."):
+                res = self.ordenarresultados(res)
 
         return res
 
