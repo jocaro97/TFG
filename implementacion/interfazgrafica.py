@@ -93,7 +93,7 @@ class Aplicacion():
             self.tinfo.delete("1.0", END)
             palabra = self.tentry.get()
 
-            res = self.pagerank.busquedapersonalizada(palabra)
+            res = self.pagerank.busquedapersonalizada(palabra, self.variable2.get())
             texto_info = ""
             if(not res):
                 texto_info = "No hay articulos que coincidan con su búsqueda \n"

@@ -81,13 +81,20 @@ class PageRank:
             resultado = self.metodopotencias(self.m)
             resultado = resultado.tolist()
             self.v = self.ordenar(self.nodos.copy(),resultado)
-            print(self.autores)
+
             self.palabras = list(self.palabras)
-            print(self.palabras)
+            print("----------------ORDENADOS---------------------------")
             for articulo in self.v:
                 print(articulo.titulo)
                 print(articulo.abstract)
                 print(articulo.keywords)
+
+            print("---------------NO-ORDENADOS-------------------------")
+            for articulo in self.nodos:
+                print(articulo.titulo)
+                print(articulo.abstract)
+                print(articulo.keywords)
+
 
             self.calcularmatrizfrecuencias()
 
@@ -118,13 +125,12 @@ class PageRank:
     def metodopotencias(self, m, num_iterations=100):
         N = m.shape[1]
         # Añadimos el porcentaje de "aburrimiento"
-        m_seg = (C * m + (1 - C)/N)
 
         v = np.random.rand(N, 1)
         v = v / np.linalg.norm(v, 1)
 
         for i in range(num_iterations):
-            v = m_seg @ v
+            v = m @ v
 
         return v
 
@@ -188,7 +194,8 @@ class PageRank:
         np.save("/home/johanna/Documentos/TFG/implementacion/matriz", m)
         np.save("/home/johanna/Documentos/TFG/implementacion/v", v)
         print(m)
-        resultado = self.metodopotencias(m)
+        m_seg = (C * m + (1 - C)/N)
+        resultado = self.metodopotencias(m_seg)
 
         print(resultado)
 
@@ -210,6 +217,18 @@ class PageRank:
                 t[i,j] = len(index[0])
 
         self.t = t
+        n = self.t > 0
+        n = n.astype(np.int)
+        w = np.zeros((len(self.nodos), len(self.palabras)))
+        for i in range(len(w)):
+            for j in range(len(w[i])):
+                w[i,j] = self.t[i,j] * math.log((len(self.nodos))/ sum(n[:,j]))
+
+        for i in range(len(w)):
+            w[i] = w[i] / np.linalg.norm(w[i])
+
+        self.w = w
+
 
     def buscar(self, palabra, sitio, v):
         res = []
@@ -227,10 +246,9 @@ class PageRank:
 
         if(sitio == "Palabras clave" or sitio == "Todos los campos"):
             for i in range(len(v)):
-                if v[i].keywords:
-                    for word in v[i].keywords[0]:
-                        if(re.findall(palabra, word)):
-                            res.append(v[i])
+                for word in v[i].keywords[0]:
+                    if(re.findall(palabra, word)):
+                        res.append(v[i])
         return res
 
     def calcular(self, sentencia, resultados, sitio):
@@ -391,9 +409,8 @@ class PageRank:
 
         return res
 
-    def busquedapersonalizada(self,texto):
+    def busquedapersonalizada(self,texto, autor):
         texto = re.split('(\W)', texto)
-        print(texto)
         i = 0
         while(i < len(texto)):
             if(texto[i] == ''):
@@ -422,32 +439,68 @@ class PageRank:
         for i in texto:
             if(i == ' '):
                 texto.remove(i)
+        print(texto)
 
-        w = np.zeros((len(self.nodos)+1, len(self.palabras)))
-        q = np.zeros(len(self.palabras))
+        t_q = np.zeros(len(self.palabras))
         nodos = np.array(self.nodos)
+        for n in nodos:
+            print(n.titulo)
         palabras = np.array(self.palabras)
         texto = np.array(texto)
-        for j in range(len(q)):
-            index = np.where(texto == palabras[j])
-            q[j] = len(index[0])
-        self.t = np.vstack((self.t, q))
         n = self.t > 0
         n = n.astype(np.int)
-        for i in range(len(w)):
-            for j in range(len(w[i])):
-                w[i,j] = self.t[i,j] * math.log((len(self.nodos))/ sum(n[:,j]))
+        for j in range(len(t_q)):
+            index = np.where(texto == palabras[j])
+            t_q[j] = len(index[0])
+
+        q = np.zeros(len(self.palabras))
+        for i in range(len(q)):
+            q[i] = t_q[i] * math.log((len(self.nodos))/ sum(n[:,i]))
 
 
-        for i in range(len(w)):
-            w[i] = w[i] / np.linalg.norm(w[i])
-            if( i < len(nodos)):
-                print(nodos[i].titulo)
-                print(w[i])
+        q = q / np.linalg.norm(q)
 
-        print(w)
+        relevantes = []
+        for n in nodos:
+            for a in n.autores:
+                if(a == autor):
+                    indices, = np.where(nodos == n)
+                    relevantes.append(indices[0])
 
-        return "Resultado"
+        for i in relevantes:
+            print(nodos[i].titulo)
+
+        aux = np.zeros(len(self.palabras))
+        for i in relevantes:
+            aux += 0.75 * self.w[i] / (len(relevantes))
+
+        rocchio = q + aux
+        q_prima = np.zeros(len(self.palabras))
+        for i in range(5):
+            q_prima[np.argmax(rocchio)] = np.max(rocchio)
+            rocchio[np.argmax(rocchio)] = -1
+
+        sim = np.zeros(len(self.nodos))
+        for i in range(len(sim)):
+            sim[i] = sum(q_prima * self.w[i]) / (np.linalg.norm(self.w[i]) * np.linalg.norm(q_prima))
+
+        pesos = np.zeros((self.m.shape))
+        #for i in range(len(pesos)):
+        #    pesos[i,i] = sim[i]
+        #print(pesos)
+        #m = self.m @ pesos
+        #print(m)
+        for i in range(len(pesos)):
+            pesos[i] = sim
+        m_seg = (C * self.m + (1 - C) * pesos)
+        v = self.metodopotencias(m_seg)
+        v = v.tolist()
+        print(v)
+        res = self.ordenar(self.nodos.copy(), v)
+
+        return res
+
+
 
 def main():
     pg = PageRank()
