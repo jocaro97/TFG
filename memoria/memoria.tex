@@ -225,6 +225,7 @@
 
 % Mejores tablas
 \usepackage{booktabs}
+\usepackage{multirow}
 
 \usepackage{adjustbox}
 
@@ -385,7 +386,7 @@
 % REFERENCIAS
 \usepackage[bookmarks = true, colorlinks=true, linkcolor = black, citecolor = black, menucolor = black, urlcolor = black]{hyperref}
 
-\begin{document}
+
 
 \renewcommand{\proofname}{\normalfont\tgpaella\bfseries\small DEMOSTRACIÓN}
 
@@ -394,25 +395,54 @@
 \author{Johanna Capote Robayna\\
     Doble Grado en Ingeniería Informática y Matemáticas}
 \date{}
-\publishers{\vspace{2cm}\includegraphics[height=2.5cm]{UGR}\vspace{1cm}}
+\publishers{\vspace{2cm}\includegraphics[height=2.5cm]{UGR}
+\vfill
+\vspace{2cm}
+\Large
+
+
+Tutoras: \\
+Silvia Acid Carrillo \\
+Margarita Arias López}
+
+
+\begin{document}
 \maketitle
+\thispagestyle{empty}
+
+\newpage
+\pagestyle{empty}
+\tableofcontents
+\clearpage
+\pagestyle{headings}
+\newpage
+
+\section{Resumen}
+El objetivo de este trabajo es estudiar y entender el funcionamiento del algoritmo PageRank, además se implementa un buscador, cuya base es este algoritmo, que a través de consultas consiga recuperar información útil para el usuario.
+
+En cuanto a la parte matemática se ha realizado un estudio del modelo utilizado en dicho algoritmo adaptándolo a un problema de valores y vectores propios. Se ha estudiado las propiedades de las matrices y los requisitos que deben cumplir estas para que nuestro problema tenga solución. Además se han estudiado métodos numéricos como el método de las potencias, algoritmo clave para calcular el vector solución de nuestro problema, ya que se utiliza una cantidad de datos considerablemente grandes.
+
+Para la parte de informática se ha implementado un buscador en lenguaje python, que consigue ordenar los archivos de la conjunto de datos siguiendo el algoritmo PageRank. Adicionalmente se ha implementado una interfaz gráfica para mostrar con mayor comodidad los resultados del algoritmo. Para poder realizar consultas en el sistema se ha estudiado e implementado los diferentes modelos de la Recuperación de Información, tanto el modelo booleano como el modelo vectorial. Por último, con el objetivo de realizar consultas personalizadas se ha estudiado e implementado la pseudo-realimentación de consulta, la cual extiende la consulta dependiendo de los documentos que le hayan resultado relevantes al usuario que realiza la consulta.
+
+\textbf{\underline{Palabras clave}}: PageRank, Perron-Frobenius, método de las potencias, Recuperación de Información, buscador.
 
 \newpage
 
-\tableofcontents
+\section{Extended Abstract}
+
 \newpage
 
 \section{Introducción}
-Fue en la década de los 80 cuando Internet empieza a darse a conocer con unas primeras páginas web de estilo muy básico y sencillo que tardaban mucho en cargarse. Con el transcurso del tiempo la Red fue creciendo a pasos agigantados almacenando un gran volumen de información lo que provocó  un sinfín de procesos y cambios en las formas de gestionarla, y es en ese contexto donde surgen los buscadores para dar respuesta a la necesidad de clasificar y gestionar gran cantidad de información lo más rápido posible.
+Fue en la década de los 80 cuando Internet empezaba a darse a conocer con unas primeras páginas web \footnote{En el contexto de R.I. se suelen denominar documentos.} de estilo muy básico y sencillo que tardaban mucho en cargarse. Con el transcurso del tiempo la Red fue creciendo a pasos agigantados almacenando un gran volumen de información lo que provocó  un sinfín de procesos y cambios en las formas de gestionarla, y es en ese contexto donde surgen los buscadores para dar respuesta a la necesidad de clasificar y gestionar gran cantidad de información lo más rápido posible.
 
-Un buscador o motor de búsqueda es un sistema de recuperación de información, donde el usuario introduce una serie de términos o palabras clave y el buscador le devuelve una lista de resultados ordenados bajo una serie de criterios. WebCrawler, Lycos, AltaVista o Yahoo entre otros, son los primeros buscadores de la Historia que funcionaban de una forma muy similar, rastreaban la Red y clasificaban las páginas en función de las veces que contenían las palabras clave introducidas. Eran los más utilizados en esa época hasta que en 1998 son desbancados por Google, el mayor motor de búsqueda de todos los tiempos,  que consigue imponerse al resto de buscadores gracias a un nuevo algoritmo de búsqueda (PageRank), capaz de ordenar una gran cantidad de información en poco tiempo.
+Un buscador o motor de búsqueda es un sistema de recuperación de información, donde el usuario introduce un conjunto de términos \footnote{En el contexto de R.I. se suele denominar consulta (\textit{query}).} o palabras clave y el buscador le devuelve una lista de resultados \footnote{En el contexto de R.I. los resultados son los documentos o páginas relevantes de la consulta.} ordenados bajo una serie de criterios. WebCrawler, Lycos, AltaVista o Yahoo entre otros, son los primeros buscadores de la Historia que funcionaban de una forma muy similar, rastreaban la Red y clasificaban las páginas en función de las veces que contenían las palabras clave introducidas. Eran los más utilizados en esa época hasta que en 1998 son desbancados por Google, el mayor motor de búsqueda de todos los tiempos,  que consigue imponerse al resto de buscadores gracias a un nuevo algoritmo de búsqueda (PageRank), capaz de ordenar una gran cantidad de información en poco tiempo.
 
-PageRank, es un algoritmo basado en el Álgebra lineal, Teoría de Grafos y Probabilidad, fue diseñado por Sergey Brin y Lawrence Page, el primero graduado en Matemáticas y el segundo en Informática y ambos estudiantes de doctorado de Informática de la Universidad de Standford. La pregunta que buscaban resolver era clara ``?`en qué orden mostrar los resultados de la búsqueda?''. En 1997 cuando Brin y Page empezaron a trabajar en el diseño del algoritmo se plantearon como objetivo principal que en el gran número de los casos, al menos una de las primeras páginas que se muestran como resultado contenga información útil para el usuario. Hay que tener en cuenta que en esta época Internet no era tan grande como ahora, habían censadas en torno a 100 millones de páginas web y los buscadores más famosos de la época eran capaces de atender 20 millones de consultas al día, mientras que hoy en día Google es capaz de atender a 200 millones de consultas diarias. Pasaremos a explicar cómo el algoritmo de PageRank es capaz de ordenar estas millones de páginas web en tan poco tiempo.
+PageRank es un algoritmo basado en el Álgebra lineal, Teoría de Grafos y Probabilidad, fue diseñado por Sergey Brin y Lawrence Page, el primero graduado en Matemáticas y el segundo en Informática y ambos estudiantes de doctorado de Informática de la Universidad de Standford. La pregunta que buscaban resolver era clara ``?`en qué orden mostrar los resultados de la búsqueda?''. En 1997 cuando Brin y Page empezaron a trabajar en el diseño del algoritmo se plantearon como objetivo principal que en el gran número de los casos, al menos una de las primeras páginas que se muestran como resultado contenga información útil para el usuario. Hay que tener en cuenta que en esta época Internet no era tan grande como ahora, habían censadas en torno a 100 millones de páginas web y los buscadores más famosos de la época eran capaces de atender 20 millones de consultas al día, mientras que hoy en día Google es capaz de atender a 200 millones de consultas diarias. Pasaremos a explicar cómo el algoritmo de PageRank es capaz de ordenar estas millones de páginas web en tan poco tiempo.
 
 \section{Introducción al modelo}
-Lo primero que hace Google, incluso antes de que el usuario realice la búsqueda es organizar el contenido de Internet ayudándose de un índice. Este índice se va actualizando y va añadiendo páginas nuevas y modificando la información de las páginas ya existentes en un proceso llamado ``rastreo'', en el cual adquiere información de esas páginas incluyendo los enlaces hacia otra páginas. El índice se ordena con el algoritmo de \textbf{PageRank}, el cual se explicará a continuación, que ordena la lista asignando un PageRank más alto a las páginas que calificará de ``más interesantes'' y un PageRank bajo a las páginas ``menos interesantes''.
+Lo primero que hace Google, incluso antes de que el usuario realice la búsqueda es organizar el contenido de Internet ayudándose de un índice. Este índice se va actualizando y va añadiendo páginas nuevas y modificando la información de las páginas ya existentes en un proceso llamado ``rastreo'', en el cual adquiere información de esas páginas incluyendo los enlaces hacia otra páginas. El índice se ordena con el algoritmo de \textbf{PageRank}, se explicará a continuación, que ordena la lista asignando un PageRank más alto a las páginas que calificará de ``más interesantes'' y un PageRank bajo a las páginas ``menos interesantes''.
 
-Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
+En un buscador cuando el usuario introduce su búsqueda esta pasa por varias fases:
 \begin{itemize}
 \item Análisis de las palabras del usuario. En esta fase se busca entender el significado de la búsqueda, para ello se analiza las palabras usadas y se interpreta lo que el usuario quiere decir con ellas. Este proceso incluye varios pasos como \textbf{interpretar los errores de ortografía} o entender el significado que el usuario le está dando a una palabra con varias acepciones ayudándose de un \textbf{sistema de sinónimos}. Otro aspecto importante de esta fase es el \textbf{algoritmo de novedades}, el cual deduce que en ciertas búsquedas debe mostrar la información más actual, como por ejemplo si el usuario busca ``horóscopo'' o ``resultados del fútbol club Granada'' se está interesando por las últimas publicaciones.
 \item Búsqueda de coincidencias. En esta fase se busca entre las páginas del índice aquellas con información coincidente con la búsqueda. Se analiza la frecuencia con la que aparecen las palabras introducidas en las páginas web candidatas y su localización; es decir, si aparecen en el título, encabezamientos o en el cuerpo del texto. Además existen otros algoritmos que analizan si las páginas candidatas pueden resultar interesantes para el usuario, ya que si por ejemplo el usuario busca ``pájaros'' lo más probable es que no quiera encontrar una página con poca información relevante sobre el tema pero en la que se repite muchas veces la palabra ``pájaro''.
@@ -424,15 +454,62 @@ Una vez que el usuario introduce su búsqueda esta pasa por varias fases:
 \newpage
 
 \section{Descripción del problema}
-El problema que se va a abordar en este trabajo es conseguir un método de \textit{ranking} para ordenar la información según el interés del usuario. Para ello se investigarán las ténicas utilizadas por uno de los mayores motores de búsqueda, Google, y se aplicarán sobre la base de datos PMSC-UGR. Para abordar el problema nos centramos en la parte preliminar a una búsqueda. Como ya se comentó anteriormente, antes de que el usuario realice una búsqueda en Google las páginas web ya se encuentran previamente ordenadas por el algoritmo PageRank. Este algoritmo  es en el que se centrará este trabajo dividido en dos grandes partes:
+El problema que se va a abordar en este trabajo es conseguir un método de \textit{ranking} para ordenar la información según el interés del usuario. Para ello se investigarán las ténicas utilizadas por uno de los mayores motores de búsqueda, Google, y se aplicarán sobre un conjunto de datos específico PMSC-UGR para realizar la parte experimental, que se detallará en la sección \ref{Base de datos}. Para abordar el problema nos centramos en la parte preliminar a una búsqueda. Como ya se comentó anteriormente, antes de que el usuario realice una búsqueda en Google las páginas web ya se encuentran previamente ordenadas por el algoritmo PageRank. Este algoritmo  es en el que se centrará este trabajo dividido en dos grandes partes:
 \begin{itemize}
 \item En la primera parte se realizará un estudio teórico del algoritmo PageRank, en el que se datallará la base matemática de manera formal. En primer lugar se ajustara nuestro problema a un problema de valores y vectores propios y a continuación se desarrollaran varios resultados matemáticos que garantizan la existencia de una solución.
-\item En la segunda parte se realizará un estudio práctico sobre el algoritmo PageRank sobre una base de datos y a continuación (... ??)
+\item En la segunda parte se realizará un estudio práctico del algoritmo PageRank sobre el conjunto de datos comentado, además se utilizan distintos modelos de Recuperación de Información en los cuales a partir de consultas el usuario podrá obtener documentos que le resulten interesantes.
 \end{itemize}
 
-\section{Planificación}
-Hacer diagrama de Grannt cada 2 o 3 semanas.
+\newpage
 
+\section{Planificación}
+En esta sección mostramos las distintas tareas desarrolladas durante el proyecto y su duración.
+\begin{itemize}
+\item Documentación: 2 semanas.
+\item Marco teórico: 2 semanas.
+\item Estudio del método de las potencias: 2 semanas.
+\item Implementación del método de las potencias: 6 semanas.
+\begin{itemize}
+\item Implementación: 2 semanas.
+\item Pruebas: 2 semanas.
+\item Dudas: 2 semanas.
+\end{itemize}
+\item Implementación de la lectura de datos: 2 semanas.
+\begin{itemize}
+\item Implementación: 1 semana.
+\item Pruebas y dudas: 1 semana.
+\end{itemize}
+\item Estudio teórico de las propiedades de las matrices positivas: 2 semanas.
+\item Implementación del PageRank: 2 semanas.
+\begin{itemize}
+\item Implementación: 1 semana.
+\item Pruebas y dudas: 1 semana.
+\end{itemize}
+\item Estudio teórico de las matrices no negativas: 2 semanas.
+\item Implementación del modelo booleano: 4 semanas.
+\begin{itemize}
+\item Implementación: 2 semanas.
+\item Pruebas y dudas: 2 semanas.
+\end{itemize}
+\item Estudio teórico del Teorema de Perron-Frobenius: 2 semanas.
+\item Implementación de la interfaz gráfica: 2 semanas.
+\begin{itemize}
+\item Implementación: 1 semana.
+\item Pruebas y dudas: 1 semana.
+\end{itemize}
+\item Implementación del modelo vectorial: 2 semanas.
+\begin{itemize}
+\item Implementación: 1 semana.
+\item Pruebas y dudas: 1 semana.
+\end{itemize}
+\end{itemize}
+
+La planificación temporal que se ha seguido en este trabajo es la siguiente:
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.1\textwidth]{grantt}
+\caption{Diagrama de Gantt del proyecto.}
+\end{figure}
 \newpage
 
 \part{Matemáticas}
@@ -484,7 +561,7 @@ $M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). N
 con un problema de valores propios y vectores propios:
 $$M \vec{x} = \lambda \vec{x} $$
 
-A este vector $\vec{x}$ le exigimos que sea no negativo, es decir, que todas sus componentes sean no negativas, ya que representa la importancia de una página web y también buscamos que sea ``único'', en el sentido de que cualquier otro vector propio asociado a ese mismo valor propio sea múltiplo de este, ya que como nuestro objetivo final es establecer un \textit{ranking}, de haber dos vectores linealmente independientes tendríamos dos formas distintas de ordenar y habría que diseñar otro proceso de selección.
+A este vector $\vec{x}$ le exigimos que sea no negativo, es decir, que todas sus componentes sean no negativas, ya que cada una de sus componentes representa la importancia de una página web y también buscamos que sea ``único'', en el sentido de que cualquier otro vector propio asociado a ese mismo valor propio sea múltiplo de este, ya que como nuestro objetivo final es establecer un \textit{ranking}, de haber dos vectores linealmente independientes tendríamos dos formas distintas de ordenar y habría que diseñar otro proceso de selección.
 
 El estudio de la existencia de vector propio con esas propiedades para matrices con todas sus entradas no negativas es el objetivo de la Teoría de Perron-Frobenius que desarrollaremos en la siguiente sección.
 
@@ -494,7 +571,7 @@ El estudio de la existencia de vector propio con esas propiedades para matrices 
 
 Como hemos dicho anteriormente, en esta sección nos centraremos en el Teorema de Perron-Frobenius. Este resultado garantiza la existencia de un valor propio cumpliendo las propiedades que son la base del algoritmo del Pagerank.
 
-Todos los resultados aquí expuestos se pueden encontrar, por ejemplo, en \cite{algebralineal}.
+La mayoría de los resultados aquí expuestos se pueden encontrar, por ejemplo, en \cite{algebralineal}.
 
 En primer lugar pasamos a introducir algunas notaciones y definiciones que usaremos posteriormente.
 
@@ -530,11 +607,11 @@ $$J_i = \left(
       \begin{array}{{ccccc}}
         \lambda_i   &   1       &         &    & \\
               &    \lambda_i    &    1     &    & \\
-              &           & \ddots  &     & \\
+              &           & \ddots  &  \ddots   & \\
               &           &         & \lambda_i & 1 \\
               &           &         &           & \lambda_i
       \end{array}
-\right) = \lambda I_{p_i} + N_{p_i} \textrm{ siendo } N_{p_i} = \left(
+\right) = \lambda_i I_{p_i} + N_{p_i} \textrm{ siendo } N_{p_i} = \left(
       \begin{array}{{ccccc}}
             0   &   1       &         &    & \\
               &    0    &    1     &    & \\
@@ -547,12 +624,12 @@ $$J_i = \left(
 \item El número de bloques elementales correspondiente al valor propio $\lambda$ es $\nu(\lambda)$.
 \item El número de bloques elementales de dimensión $l$, si $\lambda$ es real, viene dado por
 $$2 \nu_l(\lambda) - \nu_{l-1}(\lambda) \textrm{ , } 1 \leq l \leq m(\lambda)$$
-tomando $\nu_0(\lambda) = 0$, por definición. Donde $\nu_l(\lambda)$ es el número de bloques elementales correspondiente al valor propio $\lambda$ con multiplicidad geométrica $l$.
+tomando $\nu_0(\lambda) = 0$, por definición. Donde $\nu_l(\lambda) := \dim  \ker(A - \lambda I_n)^l $
 \end{enumerate}
 La forma canónica de Jordan de una matriz es única salvo reordenación de los bloques.
 \end{nth}
 
-También utilizaremos la siguiente propiedad, cuya demostración se puede encontrar en \cite{modelos}
+También utilizaremos la siguiente propiedad conocida, cuya demostración se puede encontrar en \cite{modelos}
 
 \begin{nprop}
 \label{res1}
@@ -560,7 +637,8 @@ Sea $A \in M_n(\mathbb{C})$ una matriz cuadrada y $\rho(A)$ su radio espectral. 
 $$A^m \rightarrow 0 \ ,  m \rightarrow \infty \Leftrightarrow \rho(A) < 1 $$
 \end{nprop}
 
-Antes de ver el siguiente resultado en el que se basa el método que utilizaremos para hallar el valor propio dominante a partir de nuestra matriz, recordemos que estamos buscando un vector propio que cumpla ciertas reglas. Este vector que vamos a encontrar es el asociado al valor propio dominante que definimos a continuación.
+
+A continuación presentamos una definición que será clave para encontrar el vector propio que estamos buscando.
 
 \begin{ndef}[Valor propio dominante]
 Sea $A \in M_n(\mathbb{C})$, se dice que tiene valor propio dominante si el espectro
@@ -574,7 +652,7 @@ cumple:
 \end{ndef}
 En lo sucesivo, si una matriz tiene valor propio dominante lo notaremos como $\lambda_p$. El siguiente resultado nos va a resultar fundamental. La demostración ha sido extraída de \cite{modelos}
 
-\begin{nprop} Sea $A \in M_n(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^n } A^n \}_{n\geq 0}$ converge a una matriz $Q \in M_d(\mathbb{C})$ que cumple:
+\begin{nprop} Sea $A \in M_n(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^k } A^k \}_{k\geq 0}$ converge a una matriz $Q \in M_n(\mathbb{C})$ que cumple:
 $$ImQ = Ker ( A - \lambda_p I) \ , Q^2 = Q \ , QA = AQ $$
 Se dice que $Q$ es una \textbf{proyección espectral de A}.
 \label{converge}
@@ -591,22 +669,22 @@ Como $\lambda_p$ es simple la matriz de Jordan asociada quedaría $$
            0          &           &        &
       \end{array}
     \right)
-$$ donde $J^{\star}$ contiene los valores propios restantes $\lambda_2, \dots, \lambda_n$.
+$$ donde $J^{\star}$ contiene los valores propios restantes $\lambda_2, \dots, \lambda_r$.
 Como $\lambda_p$ es valor propio dominante tenemos,
 $$r(J^{\star}) = \max \{ |\lambda_i| : i = 2, \dots , r \} < \lambda_p $$
-Esto equivale a $r(\frac{1}{\lambda_p} J^{\star}) < 1$, si aplicamos el resultado \ref{res1} a la matriz $\frac{1}{\lambda_p} J^{\star}$ obtenemos que $\frac{1}{\lambda_p}^n (J^{\star})^n \rightarrow 0$.
+Esto equivale a $r(\frac{1}{\lambda_p} J^{\star}) < 1$, si aplicamos el resultado \ref{res1} a la matriz $\frac{1}{\lambda_p} J^{\star}$ obtenemos que $\frac{1}{\lambda_p}^k (J^{\star})^k \rightarrow 0$.
 
 Si vemos $J$ como una matriz diagonal por bloques podemos deducir:
-$$J^n =      \left(
+$$J^k =      \left(
       \begin{array}{{c|ccc}}
-        \lambda_p^n     &    0      &   \dots    & 0\\\hline
+        \lambda_p^k     &    0      &   \dots    & 0\\\hline
             0         &           &        &  \\
-            \vdots    &           & (J^{\star})^n &  \\
+            \vdots    &           & (J^{\star})^k &  \\
            0          &           &        &
       \end{array}
     \right)$$
 Utilizando la continuidad del producto tenemos
-$$\frac{1}{\lambda_p^n} A^n = P (\frac{1}{\lambda_p^n}  J^n)P^{-1} \rightarrow P \left(
+$$\frac{1}{\lambda_p^k} A^k = P (\frac{1}{\lambda_p^k}  J^k)P^{-1} \rightarrow P \left(
       \begin{array}{{c|ccc}}
             1         &    0      &   \dots    & 0\\\hline
             0         &    0       &    \dots    & 0 \\
@@ -614,7 +692,7 @@ $$\frac{1}{\lambda_p^n} A^n = P (\frac{1}{\lambda_p^n}  J^n)P^{-1} \rightarrow P
            0          &     0       &    \dots    & 0
       \end{array}   \right) P^{-1}$$
 Por lo que queda probada la existencia del límite
-$$\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n  = Q \  \textrm{con} \ Q = P \left(
+$$\lim_{k \to \infty} \frac{1}{\lambda_p^k} A^k  = Q \  \textrm{con} \ Q = P \left(
       \begin{array}{{c|ccc}}
             1         &    0      &   \dots    & 0\\\hline
             0         &    0       &    \dots    & 0 \\
@@ -625,9 +703,9 @@ Comprobamos la propiedades que debe cumplir $Q$.
 \begin{itemize}
 \item $Im Q = Ker (A - \lambda_p I)$.
 
-Si expresamos la matriz de paso por columnas $P = (p_1 | p_2 | \dots | p_d)$ de la identidad $AP = PJ$ podemos deducir que $Ap_1 = \lambda_p p_1$, ya que:
-$$AP = A (p_1 | p_2 | \dots | p_d) = (A p_1 |A p_2 | \dots |A p_d)$$
-$$PJ =  (p_1 | p_2 | \dots | p_d) \left(
+Si expresamos la matriz de paso por columnas $P = (p_1 | p_2 | \dots | p_n)$ de la identidad $AP = PJ$ podemos deducir que $Ap_1 = \lambda_p p_1$, ya que:
+$$AP = A (p_1 | p_2 | \dots | p_n) = (A p_1 |A p_2 | \dots |A p_n)$$
+$$PJ =  (p_1 | p_2 | \dots | p_n) \left(
   \begin{array}{{c|ccc}}
     \lambda_p     &    0      &   \dots    & 0\\\hline
         0         &           &        &  \\
@@ -645,21 +723,21 @@ $$QP = P \left(
             \vdots    &    \vdots  &  \ddots &  \vdots \\
            0          &     0       &    \dots    & 0
       \end{array}   \right) $$
-$$QP = Q (p_1 | p_2 | \dots | p_d) = (Q p_1 |Q p_2 | \dots |Q p_d) $$
+$$QP = Q (p_1 | p_2 | \dots | p_n) = (Q p_1 |Q p_2 | \dots |Q p_n) $$
 $$P \left(
       \begin{array}{{c|ccc}}
             1         &    0      &   \dots    & 0\\\hline
             0         &    0       &    \dots    & 0 \\
             \vdots    &    \vdots  &  \ddots &  \vdots \\
            0          &     0       &    \dots    & 0
-      \end{array}   \right) = (p_1 | p_2 | \dots | p_d) \left(
+      \end{array}   \right) = (p_1 | p_2 | \dots | p_n) \left(
             \begin{array}{{c|ccc}}
                   1         &    0      &   \dots    & 0\\\hline
                   0         &    0       &    \dots    & 0 \\
                   \vdots    &    \vdots  &  \ddots &  \vdots \\
                  0          &     0       &    \dots    & 0
             \end{array}   \right) = (p_1 | 0 | \dots | 0) $$
-Por lo que $Qp_1 = p_1$, $Qp_2 = 0$ , $\dots$, $Qp_d = 0$. Y como $p_1, \dots , p_d$ es una base de \mathbb{C}^d$ deducimos que $ImQ = <p_1>$.
+Por lo que $Qp_1 = p_1$, $Qp_2 = 0$ , $\dots$, $Qp_n = 0$. Y como $p_1, \dots , p_n$ es una base de \mathbb{C}^n$ deducimos que $ImQ = <p_1>$.
 \item $Q^2 = Q$.
 
 $$Q^2 = P \left(
@@ -678,7 +756,7 @@ $$Q^2 = P \left(
 \item $QA = AQ$
 
 Utilizando la continuidad del producto tenemos que
-$$QA = (\lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n)A = \lim_{n \to \infty} (\frac{1}{\lambda_p^n} A^n \cdot A) = \lim_{n \to \infty} (A \cdot \frac{1}{\lambda_p^n} A^n) \overset{\textrm{c.p.}} = A ( \lim_{n \to \infty} \frac{1}{\lambda_p^n} A^n) = AQ$$
+$$QA = (\lim_{k \to \infty} \frac{1}{\lambda_p^k} A^k)A = \lim_{k \to \infty} (\frac{1}{\lambda_p^k} A^k \cdot A) = \lim_{k \to \infty} (A \cdot \frac{1}{\lambda_p^k} A^k) \overset{\textrm{c.p.}} = A ( \lim_{k \to \infty} \frac{1}{\lambda_p^k} A^k) = AQ$$
 
 \end{itemize}
 \end{proof}
@@ -690,9 +768,9 @@ Tras estos resultados, vemos la importancia de que una matriz $A$ tenga valor pr
 Comenzamos esta sección enumerando algunas propiedades elementales de las matrices positivas y no negativas, cuya demostración es un simple ejercicio.
 
 \begin{nprop}
-Sean $A \in M_d(\mathbb{C})$ y $\vec{x},\vec{y} \in \mathbb{C}^d$. Entonces se veirfica lo siguiente:
+Sean $A \in M_n(\mathbb{C})$ y $\vec{x},\vec{y} \in \mathbb{C}^n$. Entonces se veirfica lo siguiente:
 \begin{equation}\label{eq1} A > 0, \vec{x} \geq 0, \vec{x} \neq 0 \Rightarrow A \vec{x} > 0 \end{equation}
-\begin{equation} A \geq 0, \vec{x} \geq y \geq 0 \Rightarrow A \vec{x} > Ay \end{equation}
+\begin{equation} A \geq 0, \vec{x} \geq \vec{y} \geq 0 \Rightarrow A \vec{x} > A\vec{y} \end{equation}
 \begin{equation} A \geq 0, \vec{x} > 0, A \vec{x} = 0 \Rightarrow A = 0 \end{equation}
 \begin{equation} \label{eq4} A > 0, \vec{y} > \vec{x} > 0 \Rightarrow A\vec{y} > A\vec{x} \end{equation}
 \end{nprop}
@@ -714,14 +792,14 @@ Donde $|\vec{x}|$ es el módulo del vector \vec{x}. Por comodidad llamamos $\vec
 $$\frac{A}{1 + \epsilon} \vec{z} > \vec{z} $$
 Si escribimos esta inecuación como $B \vec{z} > \vec{z}$ donde $B = A /(1 + \epsilon)$, y multiplicamos sucesivamente a ambos lados por $B$ utilizando \ref{eq4} tenemos que:
 $$B^2 \vec{z} > B \vec{z} > \vec{z} \ , \ B^3 \vec{z} > B^2 \vec{z} > \vec{z} \ , \ \dots \Rightarrow B^k \vec{z} > \vec{z} \ \ \forall k = 1, 2, \dots $$
-Pero $\lim_{k \to \infty}B^k = \vec{0}$ porque $\rho(B) = \sigma(A/(1 + \epsilon)) = 1/(1 + \epsilon) < 1$, por lo tanto en el limite temenos que $\vec{0} > \vec{z}$ lo que contradice el hecho de que $\vec{z} >0$, es decir nuestra suposición de que $\vec{y} \neq 0$ es incorrecta, por lo que se cumple que $0 = \vec{y} = A |\vec{x}| - |\vec{x}|$. Este $|\vex{x}|$ es un vector propio de $A$ asociado con el valor propio $1 = \rho(A)$ y concluimos demostrando que $|\vec{x}|>0$ ya que $|\vec{x}| = A |\vec{x}| = \vec{z} > 0$.
+Pero $\lim_{k \to \infty}B^k = \vec{0}$ porque $\rho(B) = \sigma(A/(1 + \epsilon)) = 1/(1 + \epsilon) < 1$, por lo tanto en el limite temenos que $\vec{0} > \vec{z}$ lo que contradice el hecho de que $\vec{z} >0$, es decir nuestra suposición de que $\vec{y} \neq 0$ es incorrecta, por lo que se cumple que $0 = \vec{y} = A |\vec{x}| - |\vec{x}|$. Este $|\vec{x}|$ es un vector propio de $A$ asociado con el valor propio $1 = \rho(A)$ y concluimos demostrando que $|\vec{x}|>0$ ya que $|\vec{x}| = A |\vec{x}| = \vec{z} > 0$.
 \end{proof}
 
 \begin{nprop}
 Sea $A \in M_n(\mathbb{C}), A > 0$. Si $\lambda \in \sigma(A)$ y $|\lambda| = \rho(A)$. Entonces $\lambda = \rho(A)$.
 \end{nprop}
 \begin{proof}
-Supongamos de nuevo que $\rho(A) = 1$ sin perder generalidad. Sabemos por \ref{existevector} que si $(\lambda , \vec{x})$ es un par propio de $A$ tal que $|\lambda| = 1$, entonces $0 < |\vec{x}| = A |\vec{x}|$, y $0 < |x_k| = (A|x|)_k = \sum_{j = 1}^n a_{kj} |x_j|$. Pero también es cierto que $|x_k| = |\lambda||x_k| = |(\lambda x)_k| = |(Ax)_k| = |\sum_{j=1}^n a_{kj} x_j|$, y entonces se da que
+Supongamos de nuevo que $\rho(A) = 1$ sin perder generalidad. Sabemos por \ref{existevector} que si $(\lambda , \vec{x})$ es un par propio de $A$ tal que $|\lambda| = 1$, entonces $0 < |\vec{x}| = A |\vec{x}|$, y $0 < |x_k| = (A|\vec{x}|)_k = \sum_{j = 1}^n a_{kj} |x_j|$. Pero también es cierto que $|x_k| = |\lambda||x_k| = |(\lambda \vec{x})_k| = |(A\vec{x})_k| = |\sum_{j=1}^n a_{kj} x_j|$, y entonces se da que
 \begin{equation}\label{igualdad} \left| \sum_{j} a_{kj}x_j \right| = \sum_j a_{kj} |x_j| = \sum_j |a_{kj} x_j| \end{equation}
 Para vectores no negativos $\{\vec{z}_1, \dots, \vec{z}_n\} \subset \mathbb{C}^n$, es cierto que $\| \sum_j \vec{z}_j \|_2 = \sum_j \|\vec{z}_j \|_2$ (igualdad en la desigualdad triangular) si y solo si cada $\vec{z}_j = \alpha_j \vec{z}_1$ para algun $\alpha_j$. En particular, esto se mantiene para escalares, por lo que \ref{igualdad} nos asegura la existencia de un número $\alpha_j > 0$ tal que
 $$a_{kj}x_j = \alpha_j (a_{k1}x_1) \textrm{ o equivalentemente } x_j = \pi_j x_1 \textrm{ con } \pi_j = \frac{\alpha_j a_{k1}}{a_{kj}} > 0$$
@@ -770,7 +848,7 @@ Sea $A \in M_n(\mathbb{C}), A > 0$ entonces $m(\rho(A))=1$ y $\rho(A)$ es el val
 Supongamos de nuevo que $\rho(A) = 1$ sin perder generalidad y supongamos también que $m(\lambda = 1) = m_1 > 1$. Sabemos de la proposición anterior que $\lambda = 1$ es un valor semisimple ($m(\lambda) = \nu(\lambda)$), por lo tanto hay $m_1$ vectores propios linealmente independientes asociados con $\lambda = 1$. Sean $\vec{x}$ e $\vec{y}$ dos vectores propios asociados con $\lambda = 1$, entonces $\vec{x} \neq \alpha \vec{y}$ para todo $\alpha \in \mathbb{C}$. Si elegimos una componente de $\vec{y}$ no nula, por ejemplo $y_i \neq 0$, y definimos $\vec{z} = \vec{x} - (x_i/y_i)\vec{y}$, entonces $A\vec{z} = \vec{z}$, además de \ref{existevector} sabemos que $A |\vec{z}| = |\vec{z}| >0$. Pero esto contradice el hecho de $z_i = x_i - (x_i/y_i)y_i = 0$. Por lo tanto la suposición $m_1 > 1$ es falsa, concluimos que $m_1 = 1$.
 \end{proof}
 
-Dado que $m(\lambda_p) = 1$, $\nu(\lambda_p) = 1$ denotaremos por $\vec{p}$ al vector propio asociado a $\lambda_p$ que cumple $\|\vec{p}\|_1 = 1 = \sum \|p_i\|_1 = 1$ y lo llamaremos \textbf{vector de Perron}.
+Dado que $m(\lambda_p) = 1$, $\nu(\lambda_p) = 1$ denotaremos por $\vec{p}$ al vector propio asociado a $\lambda_p$ que cumple $\|\vec{p}\|_1 = 1 = \sum |p_i| = 1$ y lo llamaremos \textbf{vector de Perron}. Donde $\|.\|_1$ es la norma 1 de un vector y se calcula de la siguiente forma $\|\vec{x}\|_1 = \sum_{i=1}^n |x_i|}$
 
 Otro resultado importante de las matrices positivas, que posteriormente tomará un papel importante en la demostración del Teorema de Perron-Frobenius es el siguiente:
 
@@ -779,8 +857,8 @@ Otro resultado importante de las matrices positivas, que posteriormente tomará 
 Sea $A \in M_n(\mathbb{C})$, $A> 0$. Entonces no hay más vectores propios no negativos ($\vec{x} \geq 0$) de $A$ que no sean el vector de Perron y sus múltiplos positivos.
 \end{nprop}
 \begin{proof}
-Llamamos $(\lambda, \vec{y})$ al par propio de $A$ tal que $\vec{y} \geq 0$ y llamamos $\vec{p}^T > 0$ al vector de Perron para $A^T$. Como $y \neq \vec{0}$ por ser vector propio, entonces por \ref{eq1} tenemos que $\langle \vec{p}^T, \vec{y} \rangle> 0$. Por lo tanto:
-$$\rho(A)\vec{p}^T = \vec{p}^T A \Rightarrow \langle \rho(A)\vec{p}^T, \vec{y} \rangle = \langle \vec{p}^TA, \vec{y} \rangle = \langle \lambda \vec{p}^T, \vec{y}\rangle \Rightarrow \rho(A) = \lambda $$
+Llamamos $(\lambda, \vec{y})$ al par propio de $A$ tal que $\vec{y} \geq 0$ y llamamos $\vec{p_t} > 0$ al vector de Perron para $A^T$. Como $\vec{y} \neq \vec{0}$ por ser vector propio, entonces por \ref{eq1} tenemos que $\langle \vec{p_t}, \vec{y} \rangle> 0$. Por lo tanto:
+$$\rho(A)\vec{p_t} = A^T \vec{p_t} \Rightarrow \langle \rho(A)\vec{p_t}, \vec{y} \rangle = \langle A^T \vec{p_t}, \vec{y} \rangle = \langle \vec{p_t}, A \vec{y} \rangle = \langle \vec{p_t} , \lambda \vec{y} \rangle = \langle \lambda \vec{p_t}, \vec{y}\rangle  \Rightarrow $$ $$\rho(A) = \lambda $$
 \end{proof}
 
 Todas esta propiedades sobre las matrices positivas las podemos resumir en el teorema de Perron.
@@ -809,23 +887,24 @@ En la siguiente sección vemos como se adapta del Teorema de Perron a las matric
 Como hemos dicho antes en esta sección vemos como se adaptan los resultados anteriores a las matrices no negativas. Comenzamos con unas definiciones y propiedades básicas sobre las matrices no negativas.
 
 \begin{nprop}
+\label{geq}
 Sea $A \in M_n(\mathbb{C})$, $A \geq 0$ con $r = \rho(A)$, entonces se cumple:
 \begin{equation} r \in \sigma(A) \textrm{(r = 0 es posible)} \end{equation}
-\begin{equation} \label{vectorpropio} A\vec{z} = r\vec{z} \textrm{ para algún } z \in N = \{x | x \geq 0 \textrm{ con } x \neq 0 \} \end{equation}
+\begin{equation} \label{vectorpropio} A\vec{z} = r\vec{z} \textrm{ para algún } \vec{z} \in N = \{\vec{x} | \vec{x} \geq 0 \textrm{ con } \vec{x} \neq 0 \} \end{equation}
 \end{nprop}
 
 \begin{proof}
-Consideramos la secuencia de matrices positivas $A_k = A + (1/k)E > 0$, donde $E$ es la matriz cuyas entradas son todo 1, y sean $\lambda_{p_k} >0$ y $\vec{p}_k >0$ al valor propio dominante y al vector de perron de $A_k$ respectivamente. Observamos que $\{\vec{p}_k\}_{k=1}^{\infty}$ es un conjunto acotado ya está contenido en la esfera unidad de $\mathbb{R}^n$. El teorema de Bolzano-Weierstrass que esa sucesión admite una subsucesión parcial convergente.
+Consideramos la secuencia de matrices positivas $A_k = A + (1/k)E > 0$, donde $E$ es la matriz cuyas entradas son todo 1, y sean $\lambda_{p_k} >0$ y $\vec{p}_k >0$ al valor propio dominante y al vector de Perron de $A_k$ respectivamente. Observamos que $\{\vec{p}_k\}_{k=1}^{\infty}$ es un conjunto acotado ya está contenido en la esfera unidad de $\mathbb{R}^n$. El teorema de Bolzano-Weierstrass que esa sucesión admite una subsucesión parcial convergente.
 
-Por lo tanto $\{p_{k_i}\}_{i = 1}^{\infty} \rightarrow z$, donde $z \geq 0$ con $z \neq 0$ (ya que $p_{k_i} > 0$ y $\|p_{k_i} \|_1 = 1$). Como $A_1 > A_2 > \dots > A$ se cumple que $\lambda_{p_1} \geq \lambda_{p_2} \geq \dots \geq r $, por lo tanto $\{\lambda_{p_k}\}_{k = 1}^{\infty}$ es una sucesión monótona de números positivos acotada inferiormente por $r$. Un resultado estandar del análisis garantiza que
+Por lo tanto $\{\vec{p}_{k_i}\}_{i = 1}^{\infty} \rightarrow \vec{z}$, donde $\vec{z} \geq 0$ con $\vec{z} \neq 0$ (ya que $p_{k_i} > 0$ y $\|p_{k_i} \|_1 = 1$). Como $A_1 > A_2 > \dots > A$ se cumple que $\lambda_{p_1} \geq \lambda_{p_2} \geq \dots \geq r $, por lo tanto $\{\lambda_{p_k}\}_{k = 1}^{\infty}$ es una sucesión monótona de números positivos acotada inferiormente por $r$. Un resultado estandar del análisis garantiza que
 $$\lim_{k \to \infty} \lambda_{p_k} = \lambda_p^* \textrm{ existe, y } \lambda_p^* \geq r \textrm{. En particular, } \lim_{i \to \infty} \lambda_{p_{k_i}} = \lambda_p^* \geq r$$
 Pero $\lim_{k \to \infty} A_k = A$ implica que $lim_{i \to \infty} A_{k_i} \rightarrow A$ asi que utilizando que el limite del producto es el producto de los límites (asegurando previamente que todos los límites existen), se tiene que:
 $$A \vec{z} = \lim_{i \to \infty} A_{k_i} \vec{p}_k_i = \lim_{i \to \infty} \lambda_{p_{k_i}} \vec{p}_{k_i} = \lambda_p^* \vec{z}  \Rightarrow \lambda_p^* \in \sigma(A) \Rightarrow \lambda_p^* \leq r$$
-Concluimos $\lambda_p^* = r$, y $A \vec{z} = r \vec{z}$ con $z \geq 0$ y $z \neq 0$.
+Concluimos $\lambda_p^* = r$, y $A \vec{z} = r \vec{z}$ con $\vec{z} \geq 0$ y $\vec{z} \neq 0$.
 \end{proof}
 
-\begin{ndef}[Matriz irreducible]
-Se dice que una matriz $A \in M_d(\mathbb{R})$ no negativa ($A \geq 0$) es irreducible si no existe ninguna permutación simétrica (de filas y columnas) que transforma $A$ en una matriz del tipo:
+\begin{ndef}[Matriz reducible]
+Se dice que una matriz $A \in M_n(\mathbb{R})$ no negativa ($A \geq 0$) es reducible si existe una permutación simétrica (de filas y columnas) que transforma $A$ en una matriz del tipo:
 $$\left(
       \begin{array}{{c|c}}
             A_{11}    &    A_{12}  \\\hline
@@ -862,7 +941,7 @@ Vamos a demostrar que $\vec{v} \in \ker(B - \mu I)$. En efecto
 $$B \vec{v} = \left( \sum_{j = 0}^k {k \choose j} A^j \right) \vec{v} = \sum_{j=0}^k {k \choose j} A^j \vec{v} = \sum_{j = 0}^k {k \choose j} \lambda^j \vec{v} = \left(\sum_{j = 0}^k {k \choose j} \lambda^j \right) \vec{v} = (1 + \lambda)^k \vec{v} = \mu \vec{v}$$
 entonces $\mu \in \sigma(B)$ y $\ker(A - \lambda I) \subseteq \ker(B - \mu I)$.
 Veamos ahora que $\ker(A - \lambda I)^2 \subseteq \ker(B - \mu I)^2$.
-Sea $\vec{w} \in \ker(A - \lambda I)^2$. Como $\ker(A - \lambda I) \subseteq \ker(B - \mu I) \subseteq \ker(B - \mu I)^2$ solo tenemos que probarlo para $\vec{w} \in \ker(A - \lambda I)^2 \textbackslash \ker(A -\lambda I)$. Si tal $\vec{w}$ existe, entonces lamando $\vec{v} = (A - \lambda I)\vec{w}$, tenemos que   $\vec{v} \neq 0$ y $\vec{v} \in \ker(A - \lambda I)$.
+Sea $\vec{w} \in \ker(A - \lambda I)^2$. Como $\ker(A - \lambda I) \subseteq \ker(B - \mu I) \subseteq \ker(B - \mu I)^2$ solo tenemos que probarlo para $\vec{w} \in \ker(A - \lambda I)^2 \textbackslash \ker(A -\lambda I)$. Si tal $\vec{w}$ existe, entonces llamando $\vec{v} = (A - \lambda I)\vec{w}$, tenemos que   $\vec{v} \neq 0$ y $\vec{v} \in \ker(A - \lambda I)$.
 Ahora bien, $\vec{v} = (A - \lambda I)\vec{w}$ implica que $A \vec{w} = \vec{v} + \lambda \vec{w}$, por tanto $$A^2 \vec{w} = A \vec{v} + \lambda A \vec{w} = \lambda \vec{v} + \lambda \vec{v} + \lambda^2 \vec{w} = 2 \lambda \vec{v} + \lambda^2 \vec{w}$$
 Por recurrencia,
 $$A^j \vec{w} = j \lambda^{j - 1} \vec{v} + \lambda^j \vec{w} $$
@@ -873,46 +952,54 @@ con $a \in \mathbb{C}$, luego $(B - \mu I)\vec{w} = a \vec{v} \in \ker(A - \lamb
 
 \newpage
 
-
 \subsection{Enunciado del teorema}
 
 Unos años después Frobenius publica un resultado similar para matrices no negativas e irreducibles.
 
 \begin{nth}[Frobenius, 1908-1912]
-Sea $A $ una matriz cuadrada ($A \in M_d(\mathbb{C})$) no negativa ($A \geq 0$). Si $A$ es irreducible, entonces para $r = \rho(A)$ se cumple que:
+Sea $A $ una matriz cuadrada ($A \in M_n(\mathbb{C})$) no negativa ($A \geq 0$). Si $A$ es irreducible, entonces para $r = \rho(A)$ se cumple que:
 \begin{enumerate}
-\item $r >0$.
+\item $r >0$ , $r \in \sigma(A)$ y
 \item $m(r) = 1$.
-\item Existe un vector propio $\vec{x} > 0$.
+\item Existe un vector propio $\vec{x} > 0$ asociado a $r$.
 \item El único vector definido por:
-$$Ap = \lambda_p \vec{p}  \ , \ \vec{p}> 0 \ , \textrm{y} \ \|\vec{p}\|_1 = 1 $$
+$$A \vec{p} = r \vec{p}  \ , \ \vec{p}> 0 \ , \textrm{y} \ \|\vec{p}\|_1 = 1 $$
 es el vector de Perron. No hay ningún vector propio no negativo para $A$ excepto los múltiplos positivos de $\vec{p}$, independientemente del valor propio.
-\item Si hay $k$ valores propios de módulo máximo, entonces son las soluciones de $x^k - \lambda^k = 0$.
 \end{enumerate}
 \end{nth}
 
-Esencialmente el teorema de Perron-Frobenius nos asegura que toda matriz no negativa e irreducible siempre tiene un valor propio que es mayor en módulo que todos los demás valores propios y que lleva asociado un vector propio positivo.
+Esencialmente el teorema de Perron-Frobenius nos asegura que toda matriz no negativa e irreducible siempre tiene un valor propio que es mayor o igual en módulo que todos los demás valores propios y que lleva asociado un vector propio positivo.
 
 \subsection{Demostración del teorema}
-\underline{Demostración del apartado 1, 2, 3 y 4}
 \begin{proof}
-Por la proposición anterior \ref{antes} tenemos que $\mu = (1+ r)^{n-1} \in \sigma(B)$ y $\vec{v} \in \ker(B - \mu I)$. Además como $A$ es irreducible, entonces $(A + I)^{n-1} = B >0$. Por el teorema de Perron \ref{perron} necesariamente $\mu = \rho(B)$. Aplicando la propiedad \ref{eq1}, como $B > 0$, $\vec{v} \geq 0$, entonces $\mu \vec{v} = B \vec{v} > 0$ y como $\mu > 0$ por el teorema de Perron \ref{perron} tenemos $\vec{v} > 0$.
+Por la proposición anterior \ref{antes} tenemos que $\mu = (1+ r)^{n-1} \in \sigma(B)$ y $\vec{v} \in \ker(B - \mu I)$. Además como $A$ es irreducible, entonces $(A + I)^{n-1} = B >0$. Por el teorema de Perron \ref{perron} necesariamente $\mu = \rho(B)$. Aplicando la propiedad \ref{eq1}, como $B > 0$, $\vec{v} \geq 0$, entonces $\mu \vec{v} = B \vec{v} > 0$ y como $\mu > 0$  tenemos $\vec{v} > 0$.
 
-Sea $\vec{x}$ el vector propio asociado a $r$ para $A$, entonces $\vec{x}$ es vector propio asociado a $\mu$ para la matriz $B$ ya que por la proposición anterior $\ker(A - rI) \subseteq \ker(B - \mu I)$. Por lo tanto $\vec{x} > 0$ por lo demostrado anteriormente.
+Sea $\vec{x} \geq 0$ un vector propio asociado a $r$ para $A$, que existe por la proposición \ref{geq}, entonces $\vec{x}$ es vector propio asociado a $\mu$ para la matriz $B$ ya que por la proposición anterior $\ker(A - rI) \subseteq \ker(B - \mu I)$. Por lo tanto $\vec{x} > 0$ por lo demostrado anteriormente.
 
 Por reducción al absurdo $r$ es positivo, pues si $r = 0$ entonces $ 0 = r \vec{x} = A \vec{x}$, lo cual es una contradicción pues $A \geq 0$ y $\vec{x} > 0$ implica que $A\vec{x} > 0$.
 
 Por otro lado $\mu$ es un valor propio dominante para $B$. En particular $m_B(\mu) = \nu_B (1) = 1$ (multpilicidades algebraica y geométrica de $\mu$ como valor propio de $B$). Pero por la proposición anterior, $\ker(A - r I) \subseteq \ker(B - \mu I)$, luego $\nu_A(r) = 1$ y se tiene que
 $$1 \leq m_A(r) \leq \nu_A(r) = 1 \Rightarrow r \textrm{ es simple} $$
 
-El mismo argumento que prueba \ref{nomasvalores}
-demuestra el apartado 4.
+Veamos por último que no hay ningún vector no negativo para $A$ excepto los múltiplos positivos de $\vec{p}$. Llamamos $(\lambda, \vec{y})$ al par propio de $A$ tal que $\vec{y} \geq 0$ y llamamos $\vec{p_t} > 0$ al vector de Perron para $A^T$. Como $\vec{y} \neq \vec{0}$ por ser vector propio, entonces por \ref{eq1} tenemos que $\langle \vec{p_t}, \vec{y} \rangle> 0$. Por lo tanto:
+$$\rho(A)\vec{p_t} = A^T \vec{p_t} \Rightarrow \langle \rho(A)\vec{p_t}, \vec{y} \rangle = \langle A^T \vec{p_t}, \vec{y} \rangle = \langle \vec{p_t}, A \vec{y} \rangle = \langle \vec{p_t} , \lambda \vec{y} \rangle = \langle \lambda \vec{p_t}, \vec{y}\rangle  \Rightarrow $$ $$\rho(A) = \lambda $$
+
 \end{proof}
 
-\underline{Demostración del apartado 5}
-\textbf{?`?}
+El teorema anterior nos garantiza que el radio espectral es positivo y simple. Sin embargo, para poder afirmar que es dominante, éste debe ser mayor estricto en módulo que los demás valores propios. En el teorema anterior nada nos asegura que sea único, de hecho podría existir otro valor propio en el circulo espectral cuyo módulo sea igual al radio espectral. De hecho en \cite{algebralineal}
+se demuestra la siguiente proposición.
 
-El teorema anterior nos garantiza que el radio espectral es positivo y simple. Sin embargo, para poder afirmar que es dominante, éste debe ser mayor estricto en módulo que los demás valores propios. En el teorema anterior nada nos asegura que sea único, de hecho podría existir otro valor propio en el circulo espectral cuyo módulo sea igual al radio espectral. Por lo tanto para garantizar que el el radio espectral sea el valor propio dominante debemos exigirle a la matriz que sea también primitiva.
+\begin{nprop}
+Si $A \geq 0$ es irreducible y tiene $k$ valores propios $\{ \lambda_1, \lambda_2, \dots, \lambda_k \}$ en su círculo espectral, entonces se cumple:
+\begin{itemize}
+\item $m(\lambda_i)=1$ para $i = 1,2, \dots , k$.
+\item $\{ \lambda_1, \lambda_2, \dots, \lambda_k \}$ son las raíces complejas de $r^k$.
+$$\{r , rw, rw^2, \dots, r w^{k-1} \}, \textrm{ donde } w = e^{2 \pi i /k} $$
+\end{itemize}
+\end{nprop}
+
+
+Por lo tanto para garantizar que el radio espectral sea el valor propio dominante debemos exigirle a la matriz una condición adicional.
 
 \begin{ndef}[Matriz primitiva]
 Una matriz $A$ no negativa e irreducible se dice que es una matriz primitiva si tiene un solo valor propio, $r = \rho(A)$, en su circulo espectral.
@@ -922,45 +1009,69 @@ Una matriz $A$ no negativa e irreducible se dice que es una matriz primitiva si 
 Una matriz no negativa e irreducible se dice que es imprimitiva si tiene $h > 1$ valores propios en su circulo espectral y $h$ se conoce como el índice de imprimitividad.
 \end{ndef}
 
-Por lo tanto si nuestra matriz $A \geq 0$ es irreducible y primitiva si podemos asegurar que el radio espectral es dominante. Por otro lado, el teorema anterior nos garantiza la existencia del vector de Perrón de la matriz de nuestro problema inicial, pero ?`como hallamos este vector cuando nuestra matriz es de grandes dimensiones?. En la siguiente sección se explicará un método para poder aproximar este vector.
+Veamos a continuación dos proposiciones que son una herramienta para saber cuando una matriz es primitiva. Se demuestran ver \cite{algebralineal}.
+
+\begin{nprop}
+Una matriz $A \geq  0$ irreducible es primitiva si y solo si existe $m \in \mathbb{N}$ tal que $A^m >0$
+\end{nprop}
+
+\begin{nprop}
+Si una matriz $A \geq 0$ irreducible tiene al menos un elemento positivo en la diagonal, entonces $A$ es primitiva.
+\end{nprop}
+
+Por lo tanto si nuestra matriz $A \geq 0$ es irreducible y primitiva, podemos asegurar que el radio espectral es dominante. Por otro lado, el teorema anterior nos garantiza la existencia del vector de Perron de la matriz de nuestro problema inicial, pero ?`como hallamos este vector cuando nuestra matriz es de grandes dimensiones?. En la siguiente sección se explicará un método para poder aproximar este vector.
 
 \newpage
 
 \subsection{Método de las potencias}
 
-El \textbf{método de las potencias} es el método que implementaremos posteriormente para aproximarnos al vector de Perrón, se trata de ir multiplicando la matriz original por un vector inicial iterativamente hasta conseguir un vector asociado al valor propio dominante. Explicamos a continuación su funcionamiento.
+El \textbf{método de las potencias} es el método que implementaremos posteriormente para aproximarnos al vector de Perron, se trata de ir multiplicando la matriz original por un vector inicial iterativamente hasta conseguir una aproximación de un vector asociado al valor propio dominante. Explicamos a continuación su funcionamiento.
 
-Sabemos que si $A \geq 0$ tiene valor propio dominante, por otro lado $A^t$ también ($A^t \geq 0$) y
-ambos coinciden ($\sigma(A) = \sigma(A^t)$).
+Sabemos que si $A \geq 0$ tiene valor propio dominante, $A^T$ también ($A^T \geq 0$) y
+ambos coinciden ($\sigma(A) = \sigma(A^T)$).
 
-Llamamos $\vec{p}_t$ al vector de Perron de $A^t$ (que existe porque $A^t \geq 0$). Dado $\vec{v} \in \mathbb{R}^n , \ \vec{v} \geq 0$ y como $A^t \vec{p}_t = \lambda_p \vec{p}_t $ tenemos que:
-$$0 \leq \langle \vec{p}_t, \vec{v} \rangle = \frac{1}{\lambda_p} \langle A^t \vec{p}_t, \vec{v} \rangle = \cdots = \frac{1}{\lambda_p^k} \langle (A^t)^k \vec{p}_t , \vec{v} \rangle =  \frac{1}{\lambda_p^k} \langle \vec{p}_t , (A)^k v \rangle \overset{\ref{converge}} \rightarrow \langle \vec{p}_t , c(\vec{v})\vec{p} \rangle$$
+Llamamos $\vec{p}_t$ al vector de Perron de $A^T$. Dado $\vec{v} \in \mathbb{R}^n , \ \vec{v} \geq 0$ no nulo y como $A^T \vec{p}_t = \lambda_p \vec{p}_t $ tenemos que:
+$$0 < \langle \vec{p}_t, \vec{v} \rangle = \frac{1}{\lambda_p} \langle A^T \vec{p}_t, \vec{v} \rangle = \cdots = \frac{1}{\lambda_p^k} \langle (A^T)^k \vec{p}_t , \vec{v} \rangle =  \frac{1}{\lambda_p^k} \langle \vec{p}_t , (A)^k \vec{v} \rangle \overset{\ref{converge}} \rightarrow \langle \vec{p}_t , c(\vec{v})\vec{p} \rangle$$
 Puesto que la proposición \ref{converge} nos asegura que $\frac{1}{\lambda_p^k} A^k \vec{v}$ converge a un múltiplo de $\vec{p}$, que denotamos como $c(\vec{v})\vec{p}$, porque depende de $\vec{v}$.
 
-Por lo tanto, $\langle \vec{p}_t , \vec{v} \rangle = c(\vec{v}) \langle \vec{p}_t , \vec{p} \rangle \geq 0$, es decir $c(\vec{v}) >0$ cualquiera que sea $\vec{v} \geq 0$
+Por lo tanto, $\langle \vec{p}_t , \vec{v} \rangle = c(\vec{v}) \langle \vec{p}_t , \vec{p} \rangle > 0$, es decir $c(\vec{v}) >0$ cualquiera que sea $\vec{v} \geq 0$
 
-El método de las potencias comienza con un vector inicial $\vec{x}^{(0)}$ sin ninguna restricción, para calcular $v_1$ se utiliza la siguiente fórmula recurrente:
-$$\vec{x}^{(k+1)} = A \vec{x}^{(k)} \textrm{ con } k \in \mathnn{N} \textrm{, esta fŕomula la podemos desarrollar obteniendo } \vec{x}^k = A^k \vec{x}^{(0)}$$
+El método de las potencias comienza con un vector inicial $\vec{x}^{(0)} \in \mathbb{R}^n  \ , \vec{x}^{(0)} \geq 0$, para calcular los siguiente $\vec{x}^{(k)}$ se utiliza la siguiente fórmula recurrente:
+$$\vec{x}^{(k+1)} = A \vec{x}^{(k)} \textrm{ con } k \in \mathbb{N} \textrm{, esta fórmula la podemos desarrollar obteniendo } \vec{x}^{(k)} = A^k \vec{x}^{(0)}$$
 
 Por la proposición \ref{converge} sabemos que:
 $$\frac{1}{\lambda_p^k} \vec{x}^{(k)} \rightarrow c(\vec{x}^{(0)})\vec{p} \ , c(\vec{x}^{(0)}) > 0 \textrm{ porque } \vec{x}^{(0)} \geq 0$$
 Pongamos que
 $$\lambda_k = \frac{\left\|\vec{x}^{(k+1)}\right\|_1}{\left\|\vec{x}^{(k)}\right\|_1} \textrm{ y } \lambda_k = \lambda_p \frac{\left\|\frac{1}{\lambda_p^{k+1}} \vec{x}^{(k+1)}\right\|_1}{\left\|\frac{1}{\lambda_p^k} \vec{x}^{(k)}\right\|_1}$$
 O bien
-$$\left\|\frac{1}{\lambda_p^k} \vec{x}^{(k)} \right\|_1 \cdot \lambda_k  = \lambda_p \left\| \frac{1}{\lambda_p^{(k+1)}} \vec{x}^{(k+1)} \right\|_1$$
+$$\left\|\frac{1}{\lambda_p^k} \vec{x}^{(k)} \right\|_1 \cdot \lambda_k  = \lambda_p \left\| \frac{1}{\lambda_p^{k+1}} \vec{x}^{(k+1)} \right\|_1$$
 Tomando límites en ambos lados y teniendo en cuenta que $\|.\|$ es continua:
-$$c(\vec{x}^{(0)}) \lim_{k} \lambda_k = \lambda_p c(\vec{x}^{(0)}) \textrm{ como }  \Rightarrow \lambda_p = \lim_{k} \lambda_k $$
+$$c(\vec{x}^{(0)}) \lim_{k} \lambda_k = \lambda_p c(\vec{x}^{(0)}) \textrm{ como } c(\vec{x}^{(0)}) \neq 0  \Rightarrow \lambda_p = \lim_{k} \lambda_k $$
 Si consideramos ahora:
-$$\frac{\vec{x}^{(k)}}{\|\vec{x}^{(k)}\|_1} = \frac{1}{\lambda_p^{(k)}} A^k \vec{x}^{(0)} \frac{\lambda_p^k}{\|\vec{x}^{(k)}\|_1} $$
+$$\frac{1}{\|\vec{x}^{(k)}\|_1} \vec{x}^{(k)}= \frac{1}{\lambda_p^{k}} A^k \vec{x}^{(0)} \frac{\lambda_p^k}{\|\vec{x}^{(k)}\|_1} $$
 Tomando de nuevo límite en ambos lados y teniendo en cuenta que $\|. \|$ es continua tenemos:
-$$\lim_{k \to \infty} \frac{\vec{x}^k}{\|\vec{x}^{(k)}\|_1} = \lim_{k \to \infty} \frac{1}{\lambda_p^k} A^k \vec{x}^{(0)} \frac{\lambda_p^k}{\|\vec{x}^{(k)}\|_1} = c(\vec{x}^{(0)}) \vec{p} \frac{1}{c(\vec{x}^{(0)}) \|\vec{p}\|_1} $$
+$$\lim_{k \to \infty} \frac{1}{\|\vec{x}^{(k)}\|_1} \vec{x}^{(k)}= \lim_{k \to \infty} \frac{1}{\lambda_p^k} A^k \vec{x}^{(0)} \frac{\lambda_p^k}{\|\vec{x}^{(k)}\|_1} = c(\vec{x}^{(0)}) \vec{p} \frac{1}{c(\vec{x}^{(0)}) \|\vec{p}\|_1} $$
 Como $c(\vec{x}^{(0)}) \neq 0$ y $\|p \|_1 = 1$ concluimos que:
-$$\lim_{k \to \infty} \frac{\vec{x}^k}{\|\vec{x}^{(k)}\|_1} = \vec{p} $$
+$$\lim_{k \to \infty} \frac{1}{\|\vec{x}^{(k)}\|_1} \vec{x}^{(k)} = \vec{p} $$
 
+Como acabamos de demostrar, con este método conseguimos un vector $\vec{x}^{(k)}$ que se aproxima tanto como queramos (aumentando las iteraciones) a un vector proporcional al vector de Perron.
 
 \newpage
 
 \part{Informática}
+
+\section{Esquema del proyecto}
+En esta sección explicaremos el esquema del proyecto realizado. El objetivo de este proyecto es implementar un buscador capaz de ordenador los archivos mediante el algoritmo de PageRank, filtrar estos archivos mediante una consulta y mostrar un resultado más personalizado dependiendo del usuario que realice la consulta. Se ha elegido como lenguaje de programación \textit{python} por su sencillez y por que cuenta con librerías como \textit{numpy} con muchas herramientas para trabajar con matrices.
+
+Debido a la limitación de los recursos utilizados, para realizar la primera parte del proyecto se ha realizado una selección de 3000 documentos relacionados entre ellos los cuales constan de unas 26000 palabras. Esta división ha sido necesaria puesto que en el intento de implementar el algoritmo con todos los artículos la matriz creada alcanzaba una dimensión muy grande impidiendo que el ordenador utilizado pudiera operar con ella.
+
+En la segunda parte del proyecto utilizamos la teoría de la recuperación de información para implementar un buscador capaz de reordenar los archivos mediante una consulta.
+
+En esta segunda parte inicialmente se implementa un modelo binario donde se eligen aquellos documentos que contienen alguna de las palabras introducidas en la consulta. No se tiene en cuenta su frecuencia en el documento ni su importancia. En un segundo intento se implementa un modelo vectorial, donde se consiguen solventar los problemas del primer modelo. Por último, se implementa una expansión de consulta basada en la relevancia que le otorga el usuario a cada documento. En este último caso los usuarios serán los propios autores ya que no poseemos más información para elaborar algún perfil. Por lo tanto, para cada usuario o autor serán relevantes los documentos que ha publicado.
+
+Comenzamos retomando el modelo matemático del PageRank y tras su explicación, pasaremos a explicar los métodos de Recuperación de Información.
+
+\newpage
 
 \section{Modificaciones previas}
 
@@ -1014,7 +1125,7 @@ p_1 \\
 p_n \end{pmatrix} (1, \dots, 1)$$
 
 \spanishdecimal{.}
-Donde $p_1, \dots , p_n$ es una distribución de probabilidad y $c$ es un parámetro entre $0$ y $1$, el cual Google estima que se encuentra sobre $0,85$. La distribución de probabilidad a tomar puede ser una distribución uniforme que asigne una probabilidad de $p_i = 1/n$ a cada página, aunque también se podría elegir otras, ponderando unas páginas más que otras consiguiendo así búsquedas más personalizadas.
+Donde $p_1, \dots , p_n$ es una distribución de probabilidad y $c$ es un parámetro entre $0$ y $1$, el cual Google estima que se encuentra sobre $0,85$ \footnote{Valor extraido de \url{https://en.wikipedia.org/wiki/PageRank}}. La distribución de probabilidad a tomar puede ser una distribución uniforme que asigne una probabilidad de $p_i = 1/n$ \footnote{Donde $n$ es el número de Páginas web o documentos.} a cada página, aunque también se podría elegir otras, ponderando unas páginas más que otras consiguiendo así búsquedas más personalizadas.
 
 \newpage
 
@@ -1219,10 +1330,10 @@ Por último, nos preguntamos si las dos páginas tienen el mismo número de enla
 
 \newpage
 
-\section{Base de datos}
-
-Para implementar el algoritmo de PageRank se ha utilizado la base de datos \textbf{PMSC-UGR} con
-$26759991$ artículos. Esta base de datos basada en artículos científicos de MEDLINE/PubMed  pero
+\section{Conjunto de datos}
+\label{Base de datos}
+Para implementar el algoritmo de PageRank se ha utilizado la conjunto de datos \textbf{PMSC-UGR} con
+$26759991$ artículos. Esta conjunto de datos basada en artículos científicos de MEDLINE/PubMed  pero
 también utilizando SCopus herramienta de Elsevier. En PSMC-UGR se ha hecho el esfuerzo de
 quitar las ambigüedades de los nombres de autores, para ello se ha establecido el ORCID, un número
 que identifica a cada autor de manera unívoca. Cada archivo esta estructurado de la siguiente forma:
@@ -1243,79 +1354,519 @@ que identifica a cada autor de manera unívoca. Cada archivo esta estructurado d
 
 A estos datos se añaden las citas, el $66.78 \%$ de los artículos tienen alguna cita. La media de citas por artículo es de 7 y el total de citas es $3593931$. El numero de citas por articulo sigue una típica distribución \textit{ley de potencia} donde pocos artículos tienen muchas citas y muchos artículos tienen pocas citas. Por ejemplo, hay $116365$ artículos que tienen solo una cita y hay un artículo que tiene 713 citas.
 
-Además esta base de datos ha sido procesada añadiendo las referencias de cada artículo, es decir, cada artículo conoce quien lo ha citado. Este dato no se utiliza en el algoritmo ya que por lo general no se suele conocer, cada artículo solo sabe que artículos ha citado y no llega a conocer los otro artículos que lo han citado. Sin embargo, se utilizará esta información para comprobar que son lógicos los resultados del Pagerank.
+Además esta conjunto de datos ha sido procesada añadiendo las referencias de cada artículo, es decir, cada artículo conoce quien lo ha citado. Este dato no se utiliza en el algoritmo ya que por lo general no se suele conocer, cada artículo solo sabe que artículos ha citado y no llega a conocer los otro artículos que lo han citado.
 
+\newpage
+
+\section{Modelos de Recuperación de Información}
+La Recuperación de Información (RI) busca acceder a contenidos mediante modelos que posteriormente se diseñan e implementan. Su finalidad es estimar la relevancia de los datos a la necesidad de información de un usuario la cual se expresa en una consulta.
+En nuestro caso, buscamos acceder a la información de nuestra conjunto de datos formada por una selección de documentos. A través de una consulta buscamos mostrar información relevante para el usuario que la ha introducido.
+
+Según el libro \cite{ri} podemos definir un modelo de RI como una cuádrupla $[D,Q,F,R(q_i,f_j)]$, donde:
+\begin{itemize}
+\item $D$ es el conjunto de representaciones de los documentos.
+\item $Q$ es el conjunto de representaciones de necesidades de información de los usuarios.
+\item $F$ es le conjunto de representaciones de las relaciones entre documentos y consultas.
+\item $R(q_i,d_j)$ es la función de selección y ordenación que permite entregar al usuario unos documentos (ordenados o no) en respuesta a una consulta.
+\end{itemize}
+
+\subsection{Modelo binario}
+Este modelo se basa en la teoría de conjuntos y la lógica booleana, como ya comentamos anteriormente solo tiene en cuenta la presencia de alguna de las palabras de la consulta en el documento, no tiene en cuenta la frecuencia ni la importancia de la palabra.
+
+Según el libro \cite{ri} definimos el conjunto de todos los términos de la colección de documentos como $V = \{t_1, t_2, \dots, t_M \}$ y el conjunto de todos los documentos de la colección como $D = \{ d_1, d_2, \dots, d_N \}$. Cada documento $d_j$ los representamos como un subconjunto de $V$ donde se encuentran los términos que aparecen en ese documento. Además para cada término $t_i$ se define el conjunto $T_i$ formado por los documentos que contienen el término $t_i$ por lo tanto $T_i$ es un subconjunto de $D$.
+
+En este modelo se representan las consultas mediante expresiones booleanas en las cuales se utilizan los operadores booleanos AND, OR y NOT.
+
+El operador AND es un operador binario (necesita dos términos) que indica que se desea buscar los documentos que contentan ambos términos. Por ejemplo, si el usuario escribe ``perro AND gato'' está buscando los documentos que contienen tanto la palabra ``perro'' como la palabra ``gato''. Formalmente lo que indica es que se realiza la intersección de dos conjuntos, el conjunto formado por los documentos que contienen la palabra ``perro'' ($T_1$) y los que tienen la palabra ``gato'' ($T_2$).
+
+Si por ejemplo tuvieramos los siguientes cuatro documentos:
+\begin{itemize}
+\item $d_1 = $ \{gato, gato, gato, tortuga, pez\}
+\item $d_2 = $ \{perro, caballo\}
+\item $d_3 = $ \{gato, perro, águila\}
+\item $d_4 = $ \{pez, tortuga, tortuga\}
+\end{itemize}
+Entonces la consulta obtendría el siguiente resultado:
+$$\textrm{perro AND gato } = T_1 \cap T_2 = \{d_2, d_3\} \cap \{d_1, d_3\} = \{d_3\}$$
+
+El operador OR también binario, indica que se desea buscar los documentos que contengan un término o el otro. Siguiendo el ejemplo anterior si el usuario escribe ``perro OR gato'' está buscando los documentos que contengan la palabra ``perro'', o que contengan la palabra ``gato'' o que contenga ambas. Formalmente lo podemos representar como la unión de los conjuntos formados por los documentos que contienen la palabra ``perro'' ($T_1$) y los que tienen la palabra ``gato'' ($T_2$).
+$$\textrm{perro OR gato } = T_1 \cup T_2 = \{d_2, d_3\} \cup \{d_1, d_3\} = \{d_1, d_2, d_3\}$$
+
+Por último, el operador NOT es un operador unario (solo necesita un término) e indica que se desean buscar todos los documentos que no contengan ese término. Este operador se suele combinar con los dos anteriores ya que hace referencia a un conjunto de documentos muy amplio. Este operador se puede representar como la diferencia de conjuntos, el primero conjunto formado por todos los documentos $D$ y el segundo conjunto formado por las palabras que contienen el término. Por ejemplo:
+$$\textrm{perro AND NOT gato } = T_1 \cap T_2 = \{d_2, d_3\} \cap \{d_2, d_4\} = \{d_2\}$$
+$$\textrm{perro OR NOT gato } = T_1 \cup T_2 = \{d_2, d_3\} \cup \{d_2, d_4\} = \{d_2, d_3, d_4\}$$
+
+Estos operadores se pueden anidar formando consultas más complejas. Por ejemplo, si llamamos, al igual que antes, $T_1$ a los documentos que tienen la palabra ``perro'', $T_2$ a los que tienen la palabra ``gato'' y llamamos ahora $T_3$ a los documentos que contienen la palabra ``tortuga'', la siguiente consulta tendría el resultado:
+$$(\textrm{tortuga OR gato}) \textrm{ AND perro } = (T_3 \cup T_2) \cap T_1 = (\{d_1, d_4\} \cup \{d_1, d_3\}) \cap \{d_2, d_3\} =$$ $$= \{d_1, d_3, d_4\} \cap \{d_2 , d_3\} = \{d_3\} $$
+
+El orden de los documento del resultado vendría dado por el PageRank, calculado previamente.
+
+Una de las ventajas de este modelo es su sencillez de implementación, además posee una gran flexibilidad a la hora de realizar las distintas consultas gracias al uso de los operadores lógicos.
+
+Por otro lado, solo se tiene en cuenta la presencia del término de la consulta en cada uno de los documentos. Esto puede ser un error ya que hay términos que cobran más importancia que otros y cuya aparición en el documento debería aumentar la relevancia de éste. Por otro lado, tampoco se tiene en cuenta la frecuencia de cada término en los documentos, no es lo mismo que la palabra aparezca solo una vez que aparezca más de una. Estos inconvenientes se resuelven en el siguiente modelo.
+
+\subsection{Modelo vectorial}
+En este modelo se construye un vector por cada documento y consulta en donde se reflejan los términos de cada una de ellas. Es decir, se crea un espacio vectorial de tamaño el número de términos de la colección de documentos.
+
+Según el libro \cite{ri}, definimos $V$ y $D$ al igual que en el modelo anterior y definimos un documento $d_j$ como un vector de términos $d_j = (w_{1,j}, w_{2,j}, \dots, w_{M,j})$ donde $w_{i,j}$ indica el peso del término $i$ en el documento $j$. Este peso valdrá cero si el término no está presente en el documento y en caso de que aparezca tendrá peso positivo.
+
+Con los datos anteriores creamos una matriz de pesos en donde representamos por filas todos los términos y por columnas todos los documentos, quedando la siguiente estructura:
+
+\begin{center}
+\includegraphics[scale=0.6]{./img/matrizpesos}
+\end{center}
+
+Este modelo se basa en dos conceptos fundamentales:
+\begin{itemize}
+\item Esquema de pesos.
+\item Similitud entre dos vectores de términos (por ejemplo, entre un documento y una consulta).
+\end{itemize}
+La similitud entre dos vectores de términos $q$ y $d$ la calcularemos mediante la distancia coseno que se define según el libro \cite{ri} como:
+$$sim(q,d) = cos(\alpha) = \frac{\sum_{i = 1}^M w_{i,q} \cdot w_{i,d}}{\sqrt{\sum_{i = 1}^M w_{i,d}^2} \cdot \sqrt{\sum_{i = 1}^M w_{i,q}^2}} = \frac{q}{|q|} \cdot \frac{d}{|d|} $$
+
+Por otro lado, a la hora de calcular el peso de un término en cada documento debemos tener en cuenta dos conceptos:
+\begin{itemize}
+\item La frecuencia del término en el documento ya que cuanto más se repita más importancia tendrá este término en el documento.
+\item La especificidad del término en el documento; es decir, cuanto menos usual sea la palabra dentro de la colección de documentos más peso tendrá esta al considerarse relevante su aparición.
+\end{itemize}
+Utilizaremos el modelo \textit{tf.idf}, mencionado en el libro \cite{ri},  formado por dos componentes que representan los conceptos explicados anteriormente:
+\begin{itemize}
+\item \textit{Term frequency} (tf): indica la frecuencia del término en el documento.
+\item \textit{Inverse document frequency} (idf): número de documentos en donde aparece referenciado el término pero a la inversa. Se da mayor peso a loa términos que se encuentran en un número menor de documentos.
+\end{itemize}
+
+Por lo tanto, calcularemos el peso de un término de la siguiente forma:
+$$w_{i,j} = tf_{i,j} \cdot idf_i = tf_{i,j} \cdot \log \left(\frac{N}{n_i} \right) $$
+Donde $tf_{i,j}$ es la frecuencia del término $i$ en el documento $j$, $N$ es el número de documento que tiene la colección y $n_i$ es el número de documentos en donde aparece el término $i$.
+
+Tras calcular estos pesos se normaliza cada vector $d_j$, es decir, dividimos el vector por su longitud:
+$$d_j = \frac{d_j}{|d_j|} \textrm{ donde } |v| = \sqrt{\sum_{i = 1}^M v_i^2} $$
+
+Por último, el procedimiento consistirá en calcular los pesos de la consulta $q$ y calcular la similitud de la consulta con los demás documentos. Tras estas operaciones se obtiene un vector de relevancia donde queda reflejada la similitud de cada documento a la consulta, estas similitudes son multiplicadas por el vector del PageRank para obtener el nuevo orden.
+
+Retomamos el anterior ejemplo, donde el conjunto $D$ estaba formado por los documentos:
+\begin{itemize}
+\item $d_1 = $ \{gato, gato, gato, tortuga, pez\}
+\item $d_2 = $ \{perro, caballo\}
+\item $d_3 = $ \{gato, perro, águila\}
+\item $d_4 = $ \{pez, tortuga, tortuga\}
+\end{itemize}
+Por tanto, los términos son $V=$\{gato, tortuga, pez, perro, caballo, águila\}, y supongamos que la consulta es $q =$\{gato, tortuga\}.
+La matriz $tf$ sería la siguiente:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$tf$    & $d_1$ & $d_2$ & $d_3$ & $d_4$ & $q$ \\ \hline
+gato    & 3     & 0     & 1     & 0     & 1   \\ \hline
+tortuga & 1     & 0     & 1     & 2     & 1   \\ \hline
+pez     & 1     & 0     & 0     & 1     & 0   \\ \hline
+perro   & 0     & 1     & 1     & 0     & 0   \\ \hline
+caballo & 0     & 1     & 0     & 0     & 0   \\ \hline
+águila  & 0     & 0     & 1     & 0     & 0   \\ \hline
+\end{tabular}
+\end{table}
+Mostramos a continuación la matriz $w$ ya normalizada:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$tf$    & $d_1$ & $d_2$ & $d_3$ & $d_4$ & $q$  \\ \hline
+gato    & 0.94  & 0     & 0.40  & 0     & 0.92 \\ \hline
+tortuga & 0.13  & 0     & 0.17  & 0.64  & 0.38 \\ \hline
+pez     & 0.31  & 0     & 0     & 0.77  & 0    \\ \hline
+perro   & 0     & 0.45  & 0.40  & 0     & 0    \\ \hline
+caballo & 0     & 0.89  & 0     & 0     & 0    \\ \hline
+águila  & 0     & 0     & 0.81  & 0     & 0    \\ \hline
+\end{tabular}
+\end{table}
+El resultado de calcular la similitud de la consulta entre todos los documentos se muestra en la siguiente tabla:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+sim & $d_1$ & $d_2$ & $d_3$ & $d_4$ \\ \hline
+$q$ & 0.92  & 0     & 0.43  & 0.24  \\ \hline
+\end{tabular}
+\end{table}
+Por último, se multiplicaría este vector con el vector del PageRank componente a componente.
+
+\subsection{Técnicas de modificación de la consulta}
+Dentro del modelo vectorial buscamos personalizar las consultas, es decir, que dependiendo del usuario que realice la consulta se muestre antes los documentos más relevantes para ese usuario. Para ello empleamos la pseudo-realimentación de consultas la cual busca expandir la consulta utilizando los primeros documentos más relevantes para ello.
+
+Una de las mayores ventajas de esta técnica es que se trata de un proceso automático, no necesita de la intervención del usuario. Sin embargo, la efectividad de la técnica depende de la bondad del primer resultado, si la consulta devuelve un resultado donde los documentos son relevantes la extensión de la consulta conseguirá recuperar los documentos más relevantes, pero si por el contrario la primera recuperación no es buena aparecerán en la consulta expandida términos relacionados con ella por lo que esta será menos relevante aún para el usuario.
+
+El objetivo de esta técnica consiste en conseguir una consulta expandida $q'$ a partir de una consulta $q$, para ello se utiliza la fórmula de Rocchio extraída del libro \cite{ri}:
+$$q' = \alpha q + \frac{\beta}{D_r} \sum_{d_j \in D_r} d_j - \frac{\gamma}{D_{nr}} \sum_{d_j \in D_{nr}} d_j $$
+Donde $D_{r}$ es el conjunto de documentos que previamente se han fijado como relevantes para el usuario y $D_{nr}$ son los documentos no relevantes. Mientras que $\alpha$, $\beta$ y $\gamma$ son parámetros que hay que fijar. Usualmente se le da valores $\alpha = 1$, $\beta = 0.75$ y $\gamma = 0$, ya que no buscamos ampliar la consulta con documentos no relevantes.
+
+Tras calcular la nueva consulta $q'$ se vuelve a calcular la similitud entre esta y los documentos, obteniendo un vector que refleja la similitud de la nueva consulta $q'$ y los documentos, este vector se multiplica por el vector del PageRank para obtener el nuevo orden.
+
+Reutilizamos el ejemplo anterior donde la matriz de pesos era:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$tf$    & $d_1$ & $d_2$ & $d_3$ & $d_4$ & $q$  \\ \hline
+gato    & 0.94  & 0     & 0.40  & 0     & 0.92 \\ \hline
+tortuga & 0.13  & 0     & 0.17  & 0.64  & 0.38 \\ \hline
+pez     & 0.31  & 0     & 0     & 0.77  & 0    \\ \hline
+perro   & 0     & 0.45  & 0.40  & 0     & 0    \\ \hline
+caballo & 0     & 0.89  & 0     & 0     & 0    \\ \hline
+águila  & 0     & 0     & 0.81  & 0     & 0    \\ \hline
+\end{tabular}
+\end{table}
+Aplicamos la ecuación de Rocchio con parámetros $\alpha = 1$, $\beta = 0.75$ y $\gamma = 0$ suponiendo que los documentos que tienen interés para el usuario son, por ejemplo $d_1$ y $d_3$:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+ & $1 \cdot q$ & $(0.75/2) \cdot d_1$ & $(0.75/2) \cdot d_3$ & Rocchio \\ \hline
+gato    & 0.92        & 0.35                 & 0.15                 & 1.42 \\ \hline
+tortuga & 0.38        & 0.05                 & 0.06                 & 0.49 \\ \hline
+pez     & 0           & 0.12                 & 0                    & 0.12 \\ \hline
+perro   & 0           & 0                    & 0.15                 & 0.15 \\ \hline
+caballo & 0           & 0                    & 0                    & 0    \\ \hline
+águila  & 0           & 0                    & 0.30                 & 0.30 \\ \hline
+\end{tabular}
+\end{table}
+A continuación nos quedaríamos con los 10 ó 15 términos con mayor valor, pero como en este caso solo tenemos 6 términos, nos quedaremos con los 4 mayores, por lo tanto $q'$ tendría el siguiente valor:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+        & $q'$  \\ \hline
+gato    & 1.42 \\ \hline
+tortuga & 0.49 \\ \hline
+pez     & 0    \\ \hline
+perro   & 0.15 \\ \hline
+caballo & 0    \\ \hline
+águila  & 0.30 \\ \hline
+\end{tabular}
+\end{table}
+La similitud de la nueva consulta $q'$ es:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+sim  & $d_1$ & $d_2$ & $d_3$ & $d_4$ \\ \hline
+$q'$ & 0.91  & 0.04  & 0.62  & 0.20  \\ \hline
+\end{tabular}
+\end{table}
+Vemos que al contrario que en la anterior consulta el documento $d_2$ obtiene algo de relevancia ($0.04$) esto es debido a que uno de los documentos importantes para el usuario es el $d_3$ y ambos contienen el término ``perro''.
+Por último, al igual que en el método anterior este vector de relevancias se multiplicará término a término por el vector de PageRank.
+
+\newpage
+
+\section{Interfaz gráfica}
+Para mostrar mejor los resultados del buscador y mejorar la comunicación entre el usuario y el sistema se ha desarrollado una interfaz gráfica cuya apariencia es la siguiente:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{interfaz}
+\caption{Interfaz gráfica del buscador.}
+\end{figure}
+
+En el desplegable situado en la parte superior a la izquierda se puede seleccionar el modelo que deseamos utilizar (Vectorial o Booleano).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{modelo}
+\caption{Desplegable para seleccionar el modelo.}
+\end{figure}
+
+Como ya explicamos anteriormente dependiendo del modelo las consultas se realizan de forma distinta:
+\begin{itemize}
+\item \textbf{\underline{Modelo booleano}}. En este modelo se puede elegir en que parte del documento se quiere realizar la búsqueda: título, abstrac, palabras clave o todos las partes. Este dato se indica en en el desplegable situado en la parte superior izquierda.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sitio}
+\caption{Desplegable para seleccionar la parte del documento en donde se desea realizar la búsqueda.}
+\end{figure}
+
+Una vez seleccionado en que parte del documento deseamos realizar la búsqueda, introducimos la consulta con las correspondientes expresiones lógicas y pulsamos en el botón ``Buscar''. Por ejemplo, introducimos la consulta ``cognitive AND papers''.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{consultabool}
+\caption{Celda donde se introduce la consulta y botón que dispara la búsqueda.}
+\end{figure}
+El resultado de la búsqueda se mostrará en el espacio situado justo debajo de la celda donde se introduce la consulta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{bool}
+\caption{Resultado de la búsqueda en el modelo booleano.}
+\end{figure}
+
+\item \textbf{\underline{Modelo vectorial}}. En este modelo podemos elegir entre realizar una búsqueda normal o una búsqueda personalizada. Para realizar una búsqueda normal solo hay que introducir la consulta en la celda y pulsar el botón ``buscar'' (en este modelo no se utilizan esquemas lógicos). Por ejemplo, podemos buscar las palabras ``extension network''.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{consultavec}
+\caption{Celda donde se introduce la consulta y botón que dispara la búsqueda.}
+\end{figure}
+\end{itemize}
+Cuyo resultado sería:
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{vec}
+\caption{Resultado de la búsqueda en el modelo vectorial (búsqueda normal).}
+\end{figure}
+Para realizar una búsqueda personalizada, primero debemos elegir el usuario que la realiza. Como ya se ha comentado anteriormente los usuarios son los propios autores de los documentos, que han sido previamente identificados por un ORCID. Para elegir que usuario realiza la consulta se utiliza el desplegable situado justo encima de la celda de la consulta y se selecciona uno de los ORCID.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{autores}
+\caption{Desplegable para elegir el ORCID del autor que realiza la búsqueda.}
+\end{figure}
+
+Por ejemplo, seleccionamos el autor $0000-0001-6983-0641$, introducimos la consulta de nuevo en la celda y pulsamos el botón ``Búsqueda personalizada'' para disparar la búsqueda. Por ejemplo, realizamos la consulta ``activation scale''.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{consultaper}
+\caption{Celda donde se introduce la consulta y botón que dispara la búsqueda.}
+\end{figure}
+\end{itemize}
+Cuyo resultado es el siguiente:
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{per}
+\caption{Resultado de la búsqueda en el modelo vectorial (búsqueda personalizada).}
+\end{figure}
+
+Además podemos mostrar el resultado del algoritmo PageRank, pulsando el botón ``Mostrar Ranking Inicial''. Este botón es independiente del modelo en el que se encuentre el buscador.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{pg}
+\caption{Resultado del algoritmo PageRank.}
+\end{figure}
+
+Por último, en cualquier consulta podemos mostrar los pesos de esta, para ello se selecciona en la pestaña ``Mostrar Ranking'' para mostrarlo y ``No mostrar Ranking'' para ocultarlo.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{mostrarranking}
+\caption{Desplegable para elegir so mostrar el ranking o no.}
+\end{figure}
+Los pesos se moestraría de la siguiente forma.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{pgconranking}
+\caption{Ranking inicial con los pesos del ranking.}
+\end{figure}
+
+\newpage
+
+\section{Esquema de las consultas}
+Como se ha comentado anteriormente según el modelo en el se encuentre el sistema la consulta debe introducirse de una forma o de otra.
+\begin{itemize}
+\item \textbf{\underline{Modelo booleano}}. En este modelo se debe seguir el esquema de la lógica booleana la cual cumple las siguiente reglas:
+\begin{itemize}
+\item Los operadores binarios (AND y OR) deben aparecer entre dos términos. En caso de que la consulta no lo cumpla se mostrará el siguiente error.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{erroroperador}
+\caption{Mensaje de error en el operador lógico.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{erroror}
+\caption{Mensaje de error en el operador lógico.}
+\end{figure}
+\item En el caso del operador unario NOT el término a consultar debe ir precedido por el operador. En caso contrario se mostrará el siguiente error.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{errornot}
+\caption{Mensaje de error en el operador lógico.}
+\end{figure}
+\item Al combinar los dos operadores, el operador unario debe ir precedido del operador binario, en caso contrario también se mostrará un mensaje de error.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{errororden}
+\caption{Mensaje de error en el operador lógico.}
+\end{figure}
+\item En el caso de anidar esquemas lógicos y de utilizar paréntesis, deberán aparecer el paréntesis de abrir y el de cerrar. En caso contrario, se mostrará un mensaje de error.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{errorabrir}
+\caption{Mensaje de error en los paréntesis.}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{errorcerrar}
+\caption{Mensaje de error en los paréntesis.}
+\end{figure}
+\item En el caso de querer introducir un término compuesto en la consulta este deberá introducirse entre comillas dobles. En el caso de que no se introduzcan las comillas en alguno de los dos extremos del término se mostrará el error por pantalla.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{errorcomillas}
+\caption{Mensaje de error en las comillas dobles.}
+\label{errorcomillasdobles}
+\end{figure}
+\end{itemize}
+\item \textbf{\underline{Modelo vectorial}}. En este modelo las consultas no tienen ninguna restricción. También se pueden introducir términos compuestos, como en el anterior modelo, introduciendo estos términos entre comillas, en el caso de que el usuario se olvide de cerrar las comillas el sistema mostrará un mensaje de error (Figura \ref{errorcomillasdobles}).
+
+\end{itemize}
+
+\newpage
+
+\section{Resultados}
+En esta sección mostraremos los resultados de varias ejecuciones para verificar que estos son lógicos. Realizaremos distintas pruebas dependiendo de las condiciones de cada modelo.
+
+Para ilustrar mejor los ejemplos elegimos dos archivos, por ejemplo el quinto y el décimo clasificados según el PageRank. Estos son:
+
+\underline{Quinto clasificado}
+\begin{itemize}
+\item Título: Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis.
+\item ORCID autor: 0000-0003-0267-3180
+\item Abstract: Amyotrophic lateral sclerosis (ALS) is a progressive neurodegenerative, clinically heterogeneous syndrome pathologically overlapping with frontotemporal dementia. To date, therapeutic trials in animal models have not been able to predict treatment response in humans, and the revised ALS Functional Rating Scale, which is based on coarse disability measures, remains the gold-standard measure of disease progression. Advances in neuroimaging have enabled mapping of functional, structural, and molecular aspects of ALS pathology, and these objective measures may be uniquely sensitive to the detection of propagation of pathology in vivo. Abnormalities are detectable before clinical symptoms develop, offering the potential for neuroprotective intervention in familial cases. Although promising neuroimaging biomarker candidates for diagnosis, prognosis, and disease progression have emerged, these have been from the study of necessarily select patient cohorts identified in specialized referral centers. Further multicenter research is now needed to establish their validity as therapeutic outcome measures.
+\item Keywords: 'Amyotrophic lateral sclerosis' 'biomarker.'
+  'magnetic resonance imaging' 'motor neuron disease' 'trial'
+\end{itemize}
+
+\underline{Decimo clasificado}
+\begin{itemize}
+\item Título: Pathology and MRI: exploring cognitive impairment in MS.
+\item ORCIRD autor: 0000-0002-6378-0070
+\item Abstract: Cognitive impairment is a frequent symptom in people with multiple sclerosis, affecting up to 70\% of patients. This article reviews the published association of cognitive dysfunction with neuroimaging findings. Cognitive impairment has been related to focal T2 hyperintense lesions, diffuse white matter damage and corical and deep gray matter atrophy. Focal lesions cannot sufficiently explain cognitive dysfunction in MS; microstructural tissue damage detectable by diffusion tensor imaging and gray matter atrophy are probably at least as relevant. Resting state functional magnetic resonance imaging is increasingly used to investigate the contribution of functional connectivity changes to cognitive function in MS. The fact that at least one third of MS patients are not overtly cognitively impaired despite significant radiographic tissue damage argues for protective factors (brain reserve, cognitive reserve) that require further clarification. It is concluded that the reported correlations between imaging findings and cognitive function do not imply causality. Well conceived and sufficiently powered longitudinal studies are lacking. Such studies would help unravel protective mechanisms against cogniitve decline and identify suitable imaging techniques to monitor cognitive function in individual patients with MS.
+\item Keywords: 'cognitive impairment' 'functional connectivity' 'gray matter'
+  'magnetic resonance imaging' 'multiple scerosis' 'white matter'
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{\underline{Modelo booleano}}. Elegimos, por ejemplo, una palabra que esté en los dos documentos, por ejemplo, \textit{sclerosis} y otra palabra que solo aparezca en uno de ellos, por ejemplo, \textit{patients} que solo se encuentra en el segundo documento. Realizamos las siguientes búsquedas.
+
+En primer lugar buscamos solo la palabra \textit{sclerosis} y nos aseguramos de que se muestran los dos documentos. Vemos que efectivamente el documento ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis'' aparece en primera posición, mientras que el documento ``Pathology and MRI: exploring cognitive impairment in MS'' aparece en tercera posición.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consulta}
+\caption{Resultado de la consulta \textit{sclerosis}.}
+\label{errorcomillas}
+\end{figure}
+
+A continuación realizamos la consulta \textit{sclerosis AND patients}. Y comprobamos que efectivamente de los dos documentos solo aparece el documento ``Pathology and MRI: exploring cognitive impairment in MS''.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaAND}
+\caption{Resultado de la consulta \textit{sclerosis AND patients}.}
+\label{errorcomillas}
+\end{figure}
+
+Probamos a realizar la ocnsulta \textit{sclerosis AND NOT patients}. Comprobamos ahora que de los dos documentos solamente aparece ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis''
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaNOT}
+\caption{Resultado de la consulta \textit{sclerosis AND NOT patients}.}
+\label{errorcomillas}
+\end{figure}
+
+Elegimos ahora una palabra que solo se encuentre en el documento ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis'', por ejemplo, \textit{neurodegenerative}, y realizamos la consulta \textit{neurodegenerative OR patients}. Comprobamos que efectivamente aparecen los dos documentos, ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis'' situado en la primera posición y ``Pathology and MRI: exploring cognitive impairment in MS'' en la tercera.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaOR}
+\caption{Resultado de la consulta \textit{neurodegenerative OR patients}.}
+\label{errorcomillas}
+\end{figure}
+
+A continuación seleccionamos que el sistema solo haga la búsqueda en el Título, realizamos la consulta \textit{Sclerosis OR Pathology} y efectivamente aparecen los dos documentos. Uno situado el primero del ranking y el otro situado en tercer lugar.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaTitulo}
+\caption{Resultado de la consulta \textit{Sclerosis OR Pathology}.}
+\label{errorcomillas}
+\end{figure}
+
+\item \textbf{\underline{Modelo vectorial}}. Para realizar las pruebas en este modelo utilizaremos los mismos documentos. Realizamos la búsqueda \textit{sclerosis patients} y comprobamos que efectivamente aparecen los dos documentos encabezando el ranking. Vemos que aunque el documento ``Pathology and MRI: exploring cognitive impairment in MS'' contiene las dos palabras, su peso no es suficiente como para superar al otro documento (que solo contiene una palabra), puesto que el peso del orden del PageRank tiene más fuerza (recordemos que es el quinto posicionado según el PageRank mientras que ``Pathology and MRI: exploring cognitive impairment in MS'' es el décimo).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaVEC}
+\caption{Resultado de la consulta \textit{sclerosis patients}.}
+\label{errorcomillas}
+\end{figure}
+\end{itemize}
+
+Si a la consulta anterior le añadimos el término \texit{Pathology} conseguimos situar el documento ``Pathology and MRI: exploring cognitive impairment in MS'' por encima de ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis'' ya que el primero contiene todas las palabras mientras que el otro solo contiene la palabra \textit{sclerosis}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaVEC2}
+\caption{Resultado de la consulta \textit{sclerosis patients Pathology}.}
+\label{errorcomillas}
+\end{figure}
+\end{itemize}
+
+Por último, si realizamos la consulta anterior siendo el usuario $0000-0003-0267-3180$, es decir, el autor de ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis.'' vemos como este se sitúa por delante del otro documento aún conteniendo menos palabras de la consulta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{consultaPER}
+\caption{Resultado de la consulta \textit{sclerosis patients Pathology}.}
+\label{errorcomillas}
+\end{figure}
+\end{itemize}
+
+A continuación mostramos los pesos de las distintas consultas del modelo vectorial.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Consulta                                                                                                      & Título                                                                                               & PageRank  & Similitud & Resultado final \\ \hline
+\multirow{2}{*}{"sclerosis patients"}                                                                         & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.0532    & 6.822e-14       \\ \cline{2-5}
+                                                                                                              & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.0711    & 2.741e-14       \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}"sclerosis patients \\ Pathology"\end{tabular}}                    & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.021     & 2.680e-14       \\ \cline{2-5}
+                                                                                                              & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.144     & 5.540e-14       \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}"sclerosis patients \\ Pathology" \\ (personalizada)\end{tabular}} & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.076     & 9.780e-14       \\ \cline{2-5}
+                                                                                                              & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.141     & 5.437e-14       \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{grafica}
+\caption{Ranking de las consultas del modelo vectorial.}
+\label{errorcomillas}
+\end{figure}
+
+\newpage
+\section{Conclusiones y trabajos futuros}
+Concluimos que el algoritmo PageRank obtiene resultados bastante buenos a la hora de ordenar los archivos por relevancia. Además los modelos implementados consiguen buenos resultados, consiguiendo personalizar las búsquedas.
+
+Sería interesante, como futuros proyectos, crear perfiles de usuario con distintos intereses para poder personalizar mejor la búsqueda consiguiendo mostrar en los primeros resultados los archivos más interesantes para el usuario dependiendo de su perfil.
+
+\newpage
 
 \section{Sistema basado en la información}
-Un sistema de acceso a la información es un sistema dotado de un conjunto de técnicas para buscar, categorizar, modificar y acceder a la información que se encuentra en un sistema: base de datos, bibliotecas, archivos o internet.
+Un sistema de acceso a la información es un sistema dotado de un conjunto de técnicas para buscar, categorizar, modificar y acceder a la información que se encuentra en un sistema: conjunto de datos, bibliotecas, archivos o internet.
 
 \textbf{?`?` Poner esto en algún lado ??}
-
-\textbf{Para borrar}
-\begin{ndef}[Radio espectral]
-Sea $A \in M_d(\mathbb{C})$ una matriz y $\sigma (A)$ el conjunto de valores propios de $A$. Definimos el radio espectral de una matriz, denotado por $\rho(A)$,  como:
-$$\rho(A) = \max \{ | \lambda| : \lambda \in \sigma (A) \} $$
-\end{ndef}
-
-\begin{ndef}[Multiplicidad algebraica]
-Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada y $\lambda_1, \lambda_2, \dots, \lambda_r$ los distintos valores propios de $A$. LLamamos multiplicidad algebraica de $\lambda_i$, a la multiplicidad de $\lambda_i$ como raíz de $p(\lambda)$. A la multiplicidad algebraica de $\lambda_i$ la notamos como $m_i$ y se cumple que $m_1 + m_2 + \dots + m_r = d$.
-\end{ndef}
-
-\begin{ndef}[Multiplicidad geométrica]
-Sea $A \in M_d(\mathbb{C})$ matriz cuadrada y $\lambda_1, \lambda_2, \dots, \lambda_r$ los distintos valores propios de $A$. LLamamos multiplicidad geométrica de $\lambda_i$ a la dimensión del subespacio propio $\mathscr{V}_\lambda_i$. A la multiplicidad geométrica de $\lambda_i$ la denotaremos como $\sigma_i$.
-\end{ndef}
-
-\begin{ndef}[Subespacio propio]
-Sea $A \in M_d(\mathbb{C})$ una matriz cuadrada denotamos como $\mathscr{V}_\lambda$ al subespacio vectorial formado por vectores propios asociados al vector propio $\lamdba$. Además se cumple que  $\mathscr{V}_\lambda = Ker(A - \lambda I) = \{ v \in \mathbb{C}^d : Av = \lambda v \}$.
-\end{ndef}
-
-\begin{ndef}[Matrices semejantes]
-Sean $A, B \in M_d(\mathbb{C})$ dos matrices cuadradas. Se dice que $A$ y $B$ son semejantes si existe una matriz $P \in M_d(\mathbb{C})$ invertible tal que:
-$$A = P B P^{-1} $$
-\end{ndef}
-
-Sea $A \in M_n(\mathbb{C}), A > 0$, se cumplen las siguientes propiedades:
-\begin{enumerate}
-\item Si $\lambda \in \sigma(A)$ y $|\lambda| = \rho(A) \Rightarrow \lambda = \rho(A)$.
-\end{enumerate}
-
-\begin{proof}
-Para demostrar que $\lambda_p$ es un valor propio dominante, veamos primero que es una raíz simple del polinomio característico, es decir que su multiplicidad algebraica sea $1$. Para ello llamamos $B = (I + A)^{n-1}$, la cual sabemos que es positiva por \ref{positiva}. Por \ref{funcionjordan} sabemos que $\lambda \in \sigma(A)$ si y solo si $(1 + \lambda)^{n-1} \in \sigma (B)$ y $alg mult_A(\lambda) = alg mult_B((1 + \lambda)^{n-1}).
-
-Si llamamos $\mu = \rho(B)$, entonces tenemos:
-$$\mu = \max_{\lambda \in \sigma(A)} |(1+ \lambda)|^{n-1} = \Big\{ \max_{\lambda \in \sigma(A)} |(1 + \lambda )| \Big\}^{n-1} = (1 + \lambda_p)^{n-1} $$
-
-ya que si trasladamos el disco $|z| \leq \rho$ una unidad a la derecha obtenemos que el punto de módulo máximo del disco $|z+1| \leq \rho$ se alcanza en el punto $z = 1 + \rho$. \colorbox{yellow}{ Por lo tanto $alg\ mult_A(\lambda_p)=1$, ya que en otro caso $alg\ mult_B(\mu) > 1$, algo imposible} \colorbox{yellow}{ya que $B > 0$. ?`Por el teorema de Perron sobre B?}
-
-Para ver que $A$ tiene un vector propio positivo asociado con $\lambda_p$, recordamos de \ref{vectorpropio} que existe un vector propio no negativo $\vec{x} \geq 0$ asociado con $\lambda_p$.
-\colorbox{yellow}{Una consecuencia de \ref{radioespectral} es que si $(\lambda, \vec{x})$} \colorbox{yellow}{es un par propio de $A$, entonces $(f(\lambda),\vec{x})$ es un par propio de $f(A)$}:
-
-Por \ref{radioespectral} sabemos que:
-$$f(A) = \sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i$$
-Supongamos que $\vec{x}$ es el valor propio de $\lambda_h$. Multiplicando por el vector $\vec{x}$ a ambos lados tenemos:
-$$f(A)x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (A - \lambda_iI)^j G_i \right] x = \left[ \sum_{j = 0}^{k_h -1} \frac{f^{(j)}(\lambda_h)}{j!} (A - \lambda_hI)^j \right] x = $$ $$ = \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} A^l \right) \right]x = \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l x \right) = $$ $$=  \left[ \sum_{j = 0}^{k_h - 1} \frac{f^{(j)}(\lambda_h)}{j!} \left( \sum_{l = 1}^j {\from j \choose l} (-\lambda_h)^{j-l} \lambda_h^l \right) \right]x = \left[\sum_{i = 1}^s \sum_{j = 0}^{k_i -1} \frac{f^{(j)}(\lambda_i)}{j!} (\lambda_h - \lambda_i)^j G_i \right] x = f(\lambda_h)x $$
-\begin{center} \colorbox{yellow}{?`Es por lo que he puesto antes?} \end{center}
-Por lo tanto que $(\lambda_p, \vec{x})$ sea un par propio para $A$ implica que $(\mu, \vec{x})$ sea un par propio para $B$. De \ref{nomasvalores} se deduce que $x$ será un múltiplo positivo del vector de Perron de $B$, por lo que $\vec{x}$ es positivo.
-
-Además $\lambda_p$ es positivo, ya que de lo contrario $A\vec{x} = 0$, algo imposible ya que si $A \geq 0$ y $\vec{x} > 0$ entonces se da que $A\vec{x} > 0$. El mismo argumento que prueba \ref{nomasvalores}
-demuestra el apartado 3.
-\end{proof}
 
 
 \newpage
 
 \begin{thebibliography}{9}
 \bibitem{algebralineal}
-Carl D. Meyer
+Carl D. Meyer.
 \textit{Matrix Analysis and Applied Linear Algebra}. Siam. 2000.
 
 \bibitem{jordan}
-Luis Merino y Evangelina Santos
+Luis Merino y Evangelina Santos.
 \textit{Álgebra lineal con métodos elementales}. Paraninfo. 1999.
 
 \bibitem{modelos}
 Rafael Ortega Rios.
 \textit{Modelos matemáticos}. Editorial Universidad de Granada. 2013.
+
+\bibitem{ri}
+Fidel Cacheda Seijo, Juan Manuel Fernández Luna y Juan Francisco Huete Guadix.
+\textit{Recuperación de Información. Un enfoque práctica y multidisciplinar}. RA-MA Editorial y Publicaciones. 2011.
 
 \end{thebibliography}
 %printbibliography
