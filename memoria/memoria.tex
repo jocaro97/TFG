@@ -1,4 +1,4 @@
-\documentclass[size=a4, parskip=half, titlepage=false, toc=flat, toc=bib, 12pt]{scrartcl}
+\documentclass[size=a4, parskip=half, titlepage=false, toc=flat, toc=bib, 12pt, twoside]{scrartcl}
 
 % ---------------------------------------------------------------------------
 %  PAQUETES
@@ -386,12 +386,10 @@
 % REFERENCIAS
 \usepackage[bookmarks = true, colorlinks=true, linkcolor = black, citecolor = black, menucolor = black, urlcolor = black]{hyperref}
 
-
-
 \renewcommand{\proofname}{\normalfont\tgpaella\bfseries\small DEMOSTRACIÓN}
 
 \title{Método de ranking en el diseño de un sistema de acceso a la información}
-\subject{Trabajo fin de grado}
+\subject{Trabajo de fin de grado}
 \author{Johanna Capote Robayna\\
     Doble Grado en Ingeniería Informática y Matemáticas}
 \date{}
@@ -399,7 +397,10 @@
 \vfill
 \vspace{2cm}
 \Large
-
+Facultad de Ciencias \\
+E.T.S de Ingeniería Informática y de Telecomunicación\\
+\vspace{2cm}
+\Large
 
 Tutoras: \\
 Silvia Acid Carrillo \\
@@ -411,6 +412,29 @@ Margarita Arias López}
 \thispagestyle{empty}
 
 \newpage
+\thispagestyle{empty}
+\afterpage{\null\newpage}
+
+\newpage
+\section*{Agradecimientos}
+\thispagestyle{empty}
+
+\vspace{1cm}
+
+Quiero agradecer a la Universidad de Granada por darme la oportunidad de formarme en estos estudios y a todos y cada uno de los profesores que me han impartido clase a lo largo de estos cinco años, ya que cada uno de ellos con sus enseñanzas han contribuido en mi formación.
+
+A mis tutoras, Margarita Arias y Silvia Acid, por su esfuerzo y dedicación, quienes con sus conocimientos y experiencias han logrado motivarme para que yo pueda llevar a cabo este trabajo.
+
+A mis amigos y compañeros de carrera, por estar siempre ahí, alegrándose conmigo en los buenos momentos y consolándome en los malos. Por su amistad incondicional, porque gracias a ellos, estos cinco años serán un recuerdo inolvidable y formarán una parte importante de mi vida.
+
+Y por último y no menos importante, a mi familia, sin cuyo apoyo no habría podido realizado estos estudios y quienes me han ayudado a sobrellevar estos meses de confinamiento.
+
+\newpage
+\thispagestyle{empty}
+\afterpage{\null\newpage}
+
+\newpage
+
 \pagestyle{empty}
 \tableofcontents
 \clearpage
@@ -418,48 +442,103 @@ Margarita Arias López}
 \newpage
 
 \section{Resumen}
-El objetivo de este trabajo es estudiar y entender el funcionamiento del algoritmo PageRank, además se implementa un buscador, cuya base es este algoritmo, que a través de consultas consiga recuperar información útil para el usuario.
+El objetivo de este trabajo es estudiar y entender el funcionamiento del algoritmo PageRank, además se implementa un buscador, cuya base es este algoritmo, que en respuesta a una consulta consiga recuperar información útil para el usuario dentro de una colección grande de documentos en los que podría estar potencialmente interesado.
 
-En cuanto a la parte matemática se ha realizado un estudio del modelo utilizado en dicho algoritmo adaptándolo a un problema de valores y vectores propios. Se ha estudiado las propiedades de las matrices y los requisitos que deben cumplir estas para que nuestro problema tenga solución. Además se han estudiado métodos numéricos como el método de las potencias, algoritmo clave para calcular el vector solución de nuestro problema, ya que se utiliza una cantidad de datos considerablemente grandes.
+La parte matemática se centra en el teorema de Perron-Frobenius para matrices no negativas. Este resultado permite determinar cuándo una matriz no negativa admite un valor propio dominante y constituye la base del algoritmo de PageRank. Se demuestra que el radio espectral de una matriz positiva es valor propio dominante y admite un vector propio con todas las entradas positivas (teorema de Perron) y se determina bajo qué condiciones se puede extender este resultado a matrices no negativas. Se estudia el comportamiento límite de las potencias de matrices con valor propio dominante y se justifica cómo este comportamiento permite aplicar un método iterativo, el conocido método de las potencias, para aproximar numéricamente el valor propio dominante y el llamado vector de Perron, cuando se trabaja con matrices de gran dimensión
 
-Para la parte de informática se ha implementado un buscador en lenguaje python, que consigue ordenar los archivos de la conjunto de datos siguiendo el algoritmo PageRank. Adicionalmente se ha implementado una interfaz gráfica para mostrar con mayor comodidad los resultados del algoritmo. Para poder realizar consultas en el sistema se ha estudiado e implementado los diferentes modelos de la Recuperación de Información, tanto el modelo booleano como el modelo vectorial. Por último, con el objetivo de realizar consultas personalizadas se ha estudiado e implementado la pseudo-realimentación de consulta, la cual extiende la consulta dependiendo de los documentos que le hayan resultado relevantes al usuario que realiza la consulta.
+Para la parte de informática se ha implementado un buscador en lenguaje python, que consigue ordenar los archivos del conjunto de datos siguiendo el algoritmo PageRank. Adicionalmente se ha implementado una interfaz de usuario para facilitar la forma de introducir las consultas y mostrar los resultados de la búsqueda. Para poder realizar consultas en el sistema se han estudiado e implementado dos modelos diferentes, el modelo booleano y el modelo vectorial. Por último, con el objetivo de realizar consultas personalizadas se han estudiado e implementado la pseudo-realimentación de consulta, la cual extiende la consulta dependiendo de los documentos que le hayan resultado relevantes al usuario que realiza la consulta.
 
-\textbf{\underline{Palabras clave}}: PageRank, Perron-Frobenius, método de las potencias, Recuperación de Información, buscador.
+\textbf{\underline{Palabras clave}}: PageRank, Perron-Frobenius, método de las potencias, Recuperación de Información, buscador, modelo booleano, modelo vectorial, realimentación de consultas.
 
 \newpage
 
 \section{Extended Abstract}
+The objective of this work is to study, understand and implement the PageRank algorithm, in addition the implementation of a search engine for a specific dataset, which by means of queries manages to retrieve useful information for th user. The main problem we will deal with is how to obtain an algorithm to order a certain group of web pages with cross references among them. This order must ensure that the most relevant pages for the user appear in the first few positions of the ranking.
+
+\underline{Maths}
+
+For the mathematical part, a study of the model used in said algorithm has been carried out, adapting it to a problem of eigenvalues and eigenvectors. To do this, first of all, a graph has been built where the links between the web pages have been represented. Next, the importance of a web page has been defined as the sum of the importances of the pages that it cites. When constructing the adjacency matrix we realize that the problem of granting certain relevance or importance to a web page coincides with the problem of calculating a certain eigenvector of that matrix.
+
+Once the problem has been identified in the mathematical field, we study what properties the matrices must fulfill to guarantee the existence of a solution. For this we begin with the study of matrices, where we define the key term in this work: the dominant eigenvalue of a matrix. This eigenvalue complies with being positive, greater in modulus than the rest of eigenvalues ​​and verify that its algebraic multiplicity is equal to one. The study of this dominant eigenvalue becomes interesting since the eigenvector associated with it is the solution to our problem. The study continues with positive matrices, where several propositions that we can summarize in Perron's Theorem are demonstrated, which assures us that for every positive matrix its spectral radius is the dominant eigenvalue and defines the Perron vector as the only one associated with the dominant eigenvalue with norm equal to one. This theorem would solve our problem, if our matrix were positive, since the solution to our problem would be the Perron vector. However, our matrix can have null inputs, so we continue to study non-negative matrices. Several properties that these matrices fulfill are studied and the Perron-Frobenius Theorem is proved, which ensures that every non-negative and irreducible (a property that is adequately defined) matrix always has an eigenvalue that is greater or equal in modulus than all other eigenvalues ​​and that it has a positive eigenvector associated with this eigenvalue. This vector is the solution to our initial problem. Finally, we study the method of powers, a key algorithm to approximate the solution vector of our problem, since a considerably large amount of data is used and the calculation of exact solution can be computationally expensive and many times imposible.
+
+\underline{Computer Engineering}
+
+For the computing part, a practical study of the algorithm has been carried out, adapting the theoretical model, obtaining a matrix with no null elements in its inputs. This model is implemented in the Python programming language and a study is carried out on a PMSC-UGR dataset. This dataset consists of 26759991 articles based on scientific articles from MEDLINE / PubMed. We extract 3,000 files from this data set, summing up to some 26,000 different words between the title, abstract and keywords. The reason for this selection is the limitation of resources, because in the attempt to implement the algorithm with all the articles the resulting matrix reached a very large dimension, preventing the computer used from operating with it.
+
+Two models of Information Retrieval are implemented to be able to make queries about the data set. We seek through a query to show relevant information for the user. For this, two models are implemented: the Boolean model and the vectoria model.
+
+The Boolean model is based on Boolean logic, this model only takes into account the presence of any of the query words in the document, it does not take into account the frequency or importance of the word. Documents or files are considered as sets of words. The logical operators (AND, OR and NOT) are used to structure the queries, and subsequently more complex queries can be obtained. The results of the query will be ordered according to the PageRank weights. The advantage of this model is its simplicity of implementation, as well as having great flexibility when making different queries thanks to the use of logical operators. On the other hand, only the presence of the query term is taken into account in each of the documents. This may be a mistake since there are terms that are more important than others and whose appearance in the document should increase its relevance. In addition, the frequency of each term in the documents is not taken into account, it is not the same that the word appears only once more than one appears. These drawbacks are solved in the following model.
+
+In the vector model, a vector is built for each document and query where the terms of each one are reflected. That is, a vector space of size the number of terms in the document collection is created. To evaluate the importance of each term in the documents, a weight matrix is constructed, these weights take into account the frequency and specificity of the term in the document. Once the weights of all the terms and the query have been calculated, the similarity between the query vector and the document vectors is calculated. This similarity is calculated using the cosine distance. After these operations, a relevance vector is obtained where the similarity of each document to the query is reflected. These similarities are multiplied by the PageRank vector to obtain the new order.
+
+Finally, a pseudo-feedback of queries is implemented, which seeks to expand the initial query entered by the user using documents that are interesting to them. From the terms of these documents, using the Rocchio formula, a new expanded query is achieved. After calculating the new query, the similarity between it and the documents is calculated again, obtaining a vector that is subsequently multiplied by the PageRank vector. The study considers that the users are the authors themselves and that the relevant documents are the written documents. One of the biggest advantages of this technique is that it is an automatic process, it does not require user intervention. However, the effectiveness of the technique depends on the goodness of the first result, if the query returns a result where the documents are relevant, the extension of the query will recover the most relevant documents, but if, on the contrary, the first recovery is not good, terms related to it will appear in the expanded query, making it less relevant to the user.
+
+To better display the search engine results and improve communication between the user and the system, a graphical interface is developed, where the user can comfortably enter the query and view the results. You can also select the model to use and, in the case of a personalized query, choose which user is the one that performs it.
+
+\underline{Conclusion}
+
+In conclusion, the PageRank algorithm gets quite good results in ordering the files by relevance. In addition, the implemented models achieve good results, managing to personalize the searches.
+
+It would be interesting, as future projects, to create user profiles with different interests in order to better personalize the search, showing in the first results the most interesting files for the user depending on their profile.
+
+\textbf{\underline{Palabras clave}}: PageRank, Perron-Frobenius, mthod of powers, Data recovery, search engine, boolean model, vectorial model, query feedback.
 
 \newpage
 
 \section{Introducción}
+\subsection{Contextualización}
 Fue en la década de los 80 cuando Internet empezaba a darse a conocer con unas primeras páginas web \footnote{En el contexto de R.I. se suelen denominar documentos.} de estilo muy básico y sencillo que tardaban mucho en cargarse. Con el transcurso del tiempo la Red fue creciendo a pasos agigantados almacenando un gran volumen de información lo que provocó  un sinfín de procesos y cambios en las formas de gestionarla, y es en ese contexto donde surgen los buscadores para dar respuesta a la necesidad de clasificar y gestionar gran cantidad de información lo más rápido posible.
 
 Un buscador o motor de búsqueda es un sistema de recuperación de información, donde el usuario introduce un conjunto de términos \footnote{En el contexto de R.I. se suele denominar consulta (\textit{query}).} o palabras clave y el buscador le devuelve una lista de resultados \footnote{En el contexto de R.I. los resultados son los documentos o páginas relevantes de la consulta.} ordenados bajo una serie de criterios. WebCrawler, Lycos, AltaVista o Yahoo entre otros, son los primeros buscadores de la Historia que funcionaban de una forma muy similar, rastreaban la Red y clasificaban las páginas en función de las veces que contenían las palabras clave introducidas. Eran los más utilizados en esa época hasta que en 1998 son desbancados por Google, el mayor motor de búsqueda de todos los tiempos,  que consigue imponerse al resto de buscadores gracias a un nuevo algoritmo de búsqueda (PageRank), capaz de ordenar una gran cantidad de información en poco tiempo.
 
 PageRank es un algoritmo basado en el Álgebra lineal, Teoría de Grafos y Probabilidad, fue diseñado por Sergey Brin y Lawrence Page, el primero graduado en Matemáticas y el segundo en Informática y ambos estudiantes de doctorado de Informática de la Universidad de Standford. La pregunta que buscaban resolver era clara ``?`en qué orden mostrar los resultados de la búsqueda?''. En 1997 cuando Brin y Page empezaron a trabajar en el diseño del algoritmo se plantearon como objetivo principal que en el gran número de los casos, al menos una de las primeras páginas que se muestran como resultado contenga información útil para el usuario. Hay que tener en cuenta que en esta época Internet no era tan grande como ahora, habían censadas en torno a 100 millones de páginas web y los buscadores más famosos de la época eran capaces de atender 20 millones de consultas al día, mientras que hoy en día Google es capaz de atender a 200 millones de consultas diarias. Pasaremos a explicar cómo el algoritmo de PageRank es capaz de ordenar estas millones de páginas web en tan poco tiempo.
 
-\section{Introducción al modelo}
+\subsection{Introducción al modelo}
 Lo primero que hace Google, incluso antes de que el usuario realice la búsqueda es organizar el contenido de Internet ayudándose de un índice. Este índice se va actualizando y va añadiendo páginas nuevas y modificando la información de las páginas ya existentes en un proceso llamado ``rastreo'', en el cual adquiere información de esas páginas incluyendo los enlaces hacia otra páginas. El índice se ordena con el algoritmo de \textbf{PageRank}, se explicará a continuación, que ordena la lista asignando un PageRank más alto a las páginas que calificará de ``más interesantes'' y un PageRank bajo a las páginas ``menos interesantes''.
 
-En un buscador cuando el usuario introduce su búsqueda esta pasa por varias fases:
+En un buscador cuando el usuario introduce su búsqueda esta pasa por varias fases \footnote{Información extraida de \url{https://www.google.com/search/howsearchworks/algorithms/}}:
 \begin{itemize}
-\item Análisis de las palabras del usuario. En esta fase se busca entender el significado de la búsqueda, para ello se analiza las palabras usadas y se interpreta lo que el usuario quiere decir con ellas. Este proceso incluye varios pasos como \textbf{interpretar los errores de ortografía} o entender el significado que el usuario le está dando a una palabra con varias acepciones ayudándose de un \textbf{sistema de sinónimos}. Otro aspecto importante de esta fase es el \textbf{algoritmo de novedades}, el cual deduce que en ciertas búsquedas debe mostrar la información más actual, como por ejemplo si el usuario busca ``horóscopo'' o ``resultados del fútbol club Granada'' se está interesando por las últimas publicaciones.
-\item Búsqueda de coincidencias. En esta fase se busca entre las páginas del índice aquellas con información coincidente con la búsqueda. Se analiza la frecuencia con la que aparecen las palabras introducidas en las páginas web candidatas y su localización; es decir, si aparecen en el título, encabezamientos o en el cuerpo del texto. Además existen otros algoritmos que analizan si las páginas candidatas pueden resultar interesantes para el usuario, ya que si por ejemplo el usuario busca ``pájaros'' lo más probable es que no quiera encontrar una página con poca información relevante sobre el tema pero en la que se repite muchas veces la palabra ``pájaro''.
-\item Mejora del posicionamiento de las páginas útiles. Una vez obtenidas las páginas web con información potencialmente válida se pasa a clasificar su utilidad con el objetivo de mostrar primero las páginas más útiles para el usuario. En esta fase se analizan varios factores como el número de veces que aparece el término buscado en la página, la fecha de publicación y la calidad de experiencia del usuario en la página. Además se descartan aquellos sitios web con contenido fraudulento o \textit{spam} y se potencia las páginas que en consultas similares hayan sido fiables.
-\item Devolver los mejores resultados. En esta parte se busca la diversidad de respuestas. Antes de mostrar el resultado de la búsqueda se analiza el resultado en conjunto, se evalúa si hay muchas páginas centradas en la misma interpretación de la búsqueda o si solo existe un tema en los resultados.
-\item Análisis del contexto. Esta fase no se realiza siempre, en ella se busca ``personalizar'' la búsqueda con datos como la ubicación o historial de búsqueda. Con ello se consigue reducir la búsqueda a su entorno, por ejemplo si el usuario es español y busca ``baloncesto'' le saldrá antes información sobre el baloncesto en España que sobre el de otros países o si el usuario busca ``conciertos cerca de mi'' aparecerán los conciertos más cercanos a su residencia. Además mediante el historial de búsqueda personal el buscador consigue mejorar la interpretación de la búsqueda, por ejemplo si el usuario ha buscado anteriormente ``Granada vs Osasuna'' y más adelante busca ``Granada'' puede considerar que el usuario se refiere al equipo de fútbol y no a la ciudad.
+\item \textbf{Análisis de las palabras del usuario}. En esta fase se busca entender el significado de la búsqueda, para ello se analiza las palabras usadas y se interpreta lo que el usuario quiere decir con ellas. Este proceso incluye varios pasos como \textbf{interpretar los errores de ortografía} o entender el significado que el usuario le está dando a una palabra con varias acepciones ayudándose de un \textbf{sistema de sinónimos}. Otro aspecto importante de esta fase es el \textbf{algoritmo de novedades}, el cual deduce que en ciertas búsquedas debe mostrar la información más actual, como por ejemplo si el usuario busca ``horóscopo'' o ``resultados del fútbol club Granada'' se está interesando por las últimas publicaciones.
+\item \textbf{Búsqueda de coincidencias}. En esta fase se busca entre las páginas del índice aquellas con información coincidente con la búsqueda. Se analiza la frecuencia con la que aparecen las palabras introducidas en las páginas web candidatas y su localización; es decir, si aparecen en el título, encabezamientos o en el cuerpo del texto. Además existen otros algoritmos que analizan si las páginas candidatas pueden resultar interesantes para el usuario, ya que si por ejemplo el usuario busca ``pájaros'' lo más probable es que no quiera encontrar una página con poca información relevante sobre el tema pero en la que se repite muchas veces la palabra ``pájaro''.
+\item \textbf{Mejora del posicionamiento de las páginas útiles}. Una vez obtenidas las páginas web con información potencialmente válida se pasa a clasificar su utilidad con el objetivo de mostrar primero las páginas más útiles para el usuario. En esta fase se analizan varios factores como el número de veces que aparece el término buscado en la página, la fecha de publicación y la calidad de experiencia del usuario en la página. Además se descartan aquellos sitios web con contenido fraudulento o \textit{spam} y se potencia las páginas que en consultas similares hayan sido fiables.
+\item \textbf{Devolver los mejores resultados}. En esta parte se busca la diversidad de respuestas. Antes de mostrar el resultado de la búsqueda se analiza el resultado en conjunto, se evalúa si hay muchas páginas centradas en la misma interpretación de la búsqueda o si solo existe un tema en los resultados.
+\item \textbf{Análisis del contexto}. Esta fase no se realiza siempre, en ella se busca ``personalizar'' la búsqueda con datos como la ubicación o historial de búsqueda. Con ello se consigue reducir la búsqueda a su entorno, por ejemplo si el usuario es español y busca ``baloncesto'' le saldrá antes información sobre el baloncesto en España que sobre el de otros países o si el usuario busca ``conciertos cerca de mi'' aparecerán los conciertos más cercanos a su residencia. Además mediante el historial de búsqueda personal el buscador consigue mejorar la interpretación de la búsqueda, por ejemplo si el usuario ha buscado anteriormente ``Granada vs Osasuna'' y más adelante busca ``Granada'' puede considerar que el usuario se refiere al equipo de fútbol y no a la ciudad.
 \end{itemize}
 
 \newpage
 
-\section{Descripción del problema}
+\subsection{Descripción del problema}
 El problema que se va a abordar en este trabajo es conseguir un método de \textit{ranking} para ordenar la información según el interés del usuario. Para ello se investigarán las ténicas utilizadas por uno de los mayores motores de búsqueda, Google, y se aplicarán sobre un conjunto de datos específico PMSC-UGR para realizar la parte experimental, que se detallará en la sección \ref{Base de datos}. Para abordar el problema nos centramos en la parte preliminar a una búsqueda. Como ya se comentó anteriormente, antes de que el usuario realice una búsqueda en Google las páginas web ya se encuentran previamente ordenadas por el algoritmo PageRank. Este algoritmo  es en el que se centrará este trabajo dividido en dos grandes partes:
 \begin{itemize}
 \item En la primera parte se realizará un estudio teórico del algoritmo PageRank, en el que se datallará la base matemática de manera formal. En primer lugar se ajustara nuestro problema a un problema de valores y vectores propios y a continuación se desarrollaran varios resultados matemáticos que garantizan la existencia de una solución.
-\item En la segunda parte se realizará un estudio práctico del algoritmo PageRank sobre el conjunto de datos comentado, además se utilizan distintos modelos de Recuperación de Información en los cuales a partir de consultas el usuario podrá obtener documentos que le resulten interesantes.
+\item En la segunda parte se realizará un estudio práctico del algoritmo PageRank sobre el conjunto de datos comentado, además se utilizan distintos modelos de Recuperación de Información en los cuales a partir de consultas el usuario podrá obtener documentos que le resulten relevantes o más interesantes.
 \end{itemize}
 
+\newpage
+
+\subsection{Principales fuentes}
+Las principales fuentes utilizadas son:
+\begin{itemize}
+\item  Carl D. Meyer.
+\textit{Matrix Analysis and Applied Linear Algebra}. Siam. 2000. \cite{algebralineal}
+\item Fidel Cacheda Seijo, Juan Manuel Fernández Luna y Juan Francisco Huete Guadix.
+\textit{Recuperación de Información. Un enfoque práctica y multidisciplinar}. RA-MA Editorial y Publicaciones. 2011. \cite{ri}.
+\end{itemize}
+
+La mayoría de resultados de Álgebra Lineal de este trabajo han sido extraídos del primer libro, el cual desarrolla la mayoría de las propiedades, proposiciones y teoremas sobre las matrices utilizados en este trabajo. Por otro lado el segundo libro es utilizado para la parte de informática, el cual detalla los algoritmos y modelos de la Recuperación de Información, que son  estudiados e implementados en este trabajo.
+
+\newpage
+
+\section{Objetivos}
+Como ya se comentó anteriormente el problema que se busca resolver es conseguir un método de \textit{ranking} para ordenar información según el interés del usuario. Para resolverlo se estudian e implementan algoritmos como el PageRank y varios modelos de Recuperación de Información. Por lo tanto los objetivos de este trabajo son:
+\begin{itemize}
+\item Demostrar la existencia de solución del problema (Teorema de Perron-Frobenius).
+\item Estudiar y demostrar un método para obtener una solución aproximada (método de las potencias).
+\item Implementar el algoritmo PageRank.
+\item Implementar los modelos de Recuperación de Información y estudiar sus resultados.
+\end{itemize}
+
+Todos los objetivos son alcanzados.
 \newpage
 
 \section{Planificación}
@@ -505,11 +584,10 @@ En esta sección mostramos las distintas tareas desarrolladas durante el proyect
 \end{itemize}
 
 La planificación temporal que se ha seguido en este trabajo es la siguiente:
-\begin{figure}[H]
-\centering
+\begin{center}
 \includegraphics[width=1.1\textwidth]{grantt}
-\caption{Diagrama de Gantt del proyecto.}
-\end{figure}
+\end{center}
+
 \newpage
 
 \part{Matemáticas}
@@ -523,7 +601,7 @@ En primer lugar, vamos a definir el marco donde nos encontramos. Nuestro problem
 Esta importancia la utilizaremos para elegir qué páginas web son las primeras que mostramos en el buscador, ordenándolas de mayor  a menor valor de importancia.
 Para calcular este número nos basamos en la información que podemos extraer de la red (sitios, contenido, enlaces de una página web a otra, etc).
 
-En el primer modelo nos quedamos solo con los enlaces entre páginas web. Estos enlaces los podemos representar mediante un grafo dirigido (G), en el cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_j$ a $P_i$ indicando el final con una punta de flecha, como se muestra en la imagen.
+En el primer modelo nos quedamos solo con los enlaces entre páginas web. Estos enlaces los podemos representar mediante un grafo dirigido (G), en el cual representamos cada $P_i$ como un nodo del grafo y por cada enlace de una página $P_i$ a $P_j$ añadimos una arista de $P_i$ a $P_j$ indicando el final con una punta de flecha, como se muestra en la imagen.
 
 \includegraphics[width=1.0\textwidth]{./img/grafogrande}
 
@@ -543,10 +621,10 @@ Sin embargo, la realidad es que el número de enlaces a una cierta página no re
 Nos damos cuenta de que la importancia de la página citadora también es relevante, por lo que en una segunda aproximación pasamos a decidir que la importancia $x_j$ de una página $P_j$ es proporcional a la suma de las importancias de las páginas que enlazan con $P_j$. El cambio reside en que en la primera aproximación del modelo la importancia de $P_i$ era proporcional al número de páginas que enlazan con $P_i$, mientras que en esta segunda aproximación la importancia de $P_i$ es proporcional a la suma de las importancias de las páginas que enlazan con $P_i$.
 
 Supongamos, por ejemplo, que la página $P_1$ es citada desde las páginas $P_{200}$ y $P_{n}$ ,
- que $P_2$ se cita desde $P_1$ , $P_{50}$ , $P_{200}$ y $P_n$ , mientas que en la última página $P_n$ hay enlaces desde $P_1$ , $P_2$ , $P_{50}$ , $P_{200}$ y $P_{n-1}$. En nuestra asignación anterior, $x_1, \dots , x_n$ deberían
+ que $P_2$ se cita desde $P_1$, $P_{200}$ y $P_{n-1}$ , mientas que en la última página $P_n$ hay enlaces desde $P_1$ , $P_2$ , $P_{50}$ , $P_{200}$ y $P_{n-1}$. En nuestra asignación anterior, $x_1, \dots , x_n$ deberían
  cumplir entonces que:
  $$ x_1 = K (x_{200} + x_n) $$
- $$ x_2 = K (x_{50} + x_{200} + x_{n-1}) $$
+ $$ x_2 = K (x_1 + x_{200} + x_{n-1}) $$
  $$ \vdots $$
  $$x_n = K (x_1 + x_2 + x_{50} + x_{200} + x_{n-1}) $$
 
@@ -555,7 +633,6 @@ donde las soluciones son los posibles valores de $x_1, \dots , x_n$. Este sistem
 lo podemos escribir en términos matriciales:
 
 \includegraphics[width=1.0\textwidth]{./img/matrizejemplo}
-%% TODO: cambiar plantilla
 Si llamamos $\vec{x}$ al vector de importacias $(x_1 \dots x_n)$, $\lambda = \frac{1}{K}$ y
 $M$ a la matriz de dimensiones $n x n$ del sistema (matriz asociada al grafo). Nos encontramos
 con un problema de valores propios y vectores propios:
@@ -650,7 +727,7 @@ cumple:
 \item $|\lambda_i| < \lambda_1$ para $i = 2, \dots , r$.
 \end{itemize}
 \end{ndef}
-En lo sucesivo, si una matriz tiene valor propio dominante lo notaremos como $\lambda_p$. El siguiente resultado nos va a resultar fundamental. La demostración ha sido extraída de \cite{modelos}
+En lo sucesivo, si una matriz tiene valor propio dominante lo notaremos como $\lambda_p$. El siguiente resultado sobre el comportamiento asintótico de las potencias de una matriz, nos va a resultar fundamental. La demostración ha sido extraída de \cite{modelos}
 
 \begin{nprop} Sea $A \in M_n(\mathbb{C})$ una matriz con valor propio dominante $\lambda_p$. Entonces la sucesión $\{\frac{1}{ \lambda_p^k } A^k \}_{k\geq 0}$ converge a una matriz $Q \in M_n(\mathbb{C})$ que cumple:
 $$ImQ = Ker ( A - \lambda_p I) \ , Q^2 = Q \ , QA = AQ $$
@@ -1057,19 +1134,21 @@ $$\lim_{k \to \infty} \frac{1}{\|\vec{x}^{(k)}\|_1} \vec{x}^{(k)} = \vec{p} $$
 Como acabamos de demostrar, con este método conseguimos un vector $\vec{x}^{(k)}$ que se aproxima tanto como queramos (aumentando las iteraciones) a un vector proporcional al vector de Perron.
 
 \newpage
+\thispagestyle{empty}
+\afterpage{\null\newpage}
+\newpage
 
 \part{Informática}
 
 \section{Esquema del proyecto}
-En esta sección explicaremos el esquema del proyecto realizado. El objetivo de este proyecto es implementar un buscador capaz de ordenador los archivos mediante el algoritmo de PageRank, filtrar estos archivos mediante una consulta y mostrar un resultado más personalizado dependiendo del usuario que realice la consulta. Se ha elegido como lenguaje de programación \textit{python} por su sencillez y por que cuenta con librerías como \textit{numpy} con muchas herramientas para trabajar con matrices.
 
-Debido a la limitación de los recursos utilizados, para realizar la primera parte del proyecto se ha realizado una selección de 3000 documentos relacionados entre ellos los cuales constan de unas 26000 palabras. Esta división ha sido necesaria puesto que en el intento de implementar el algoritmo con todos los artículos la matriz creada alcanzaba una dimensión muy grande impidiendo que el ordenador utilizado pudiera operar con ella.
+En esta sección explicaremos el esquema del proyecto realizado. El objetivo de este proyecto es aplicar el modelo teórico del PageRank desarrollado en la primera parte de la memoria, para lo que se ha implementado un buscador donde ha sido incorporado dicho el mencionado algoritmo. La función del buscador es dada una consulta de un usuario y una colección de documentos\footnote{El conjunto de páginas que denominamos en el capítulo \ref{Base de datos}} seleccionar aquellos que sean útiles o más relevantes al usuario. Para la realización de la interfaz de usuario del buscador, la implementación de los modelos de datos y de los algoritmos de emparejamiento de pesos a documentos o selección (PageRank, ampliación de consulta) se ha elegido como lenguaje de programación \textit{Python} por su sencillez y por que cuenta con librerías como \textit{numpy} con una variada colección de herramientas para trabajar con matrices.
 
-En la segunda parte del proyecto utilizamos la teoría de la recuperación de información para implementar un buscador capaz de reordenar los archivos mediante una consulta.
+Como recurso hardware, para la realización del proyecto, se ha utilizado un ordenador portátil de 16 GB de memoria RAM y un procesador Intel-i7. En la primera parte del proyecto hubo que procesar datos de una colección de documentos o páginas para poder aplicar el cálculo del PageRank. Los datos iniciales de dicha colección se redujeron a 3000 documentos relacionados entre sí, los cuales constan de unas 26000 palabras. Esta división ha sido necesaria puesto que en el intento de implementar el algoritmo con todos los artículos la matriz creada alcanzaba una dimensión muy grande impidiendo que el ordenador utilizado pudiera operar con ella, lo que habría requerido técnicas de paralelización de tareas para hacerlas más escalable, sin embargo esto quedaba fuera de los objetivos iniciales del proyecto. Los 3000 documentos tomarán el papel de las páginas, ya que con las citas se puede construir un grafo dirigido al que aplicar el PageRank.
 
-En esta segunda parte inicialmente se implementa un modelo binario donde se eligen aquellos documentos que contienen alguna de las palabras introducidas en la consulta. No se tiene en cuenta su frecuencia en el documento ni su importancia. En un segundo intento se implementa un modelo vectorial, donde se consiguen solventar los problemas del primer modelo. Por último, se implementa una expansión de consulta basada en la relevancia que le otorga el usuario a cada documento. En este último caso los usuarios serán los propios autores ya que no poseemos más información para elaborar algún perfil. Por lo tanto, para cada usuario o autor serán relevantes los documentos que ha publicado.
+En la segunda parte del proyecto utilizamos la teoría de la Recuperación de Información para implementar un buscador capaz de reordenar los documentos mediante una consulta. En esta segunda parte inicialmente se implementa un modelo binario donde se eligen aquellos documentos que contienen alguna de las palabras introducidas en la consulta, el conocido como modelo booleano en el campo de la Recuperación de Información. No se tiene en cuenta la frecuencia de los términos en el documento ni su importancia. En un segundo intento se implementa un modelo vectorial, donde se consiguen solventar los problemas del primer modelo. Por último, se implementa una expansión de consulta basada en la relevancia que le otorga el usuario a cada documento. Con el objetivo de obtener resultados más personalizados, se ha creado un perfil de usuario. Para este propósito se ha tomado como criterio que los usuarios serán los propios autores ya que no poseemos más información para elaborar algún perfil. Por lo tanto, para cada usuario o autor serán relevantes los documentos que ha publicado.
 
-Comenzamos retomando el modelo matemático del PageRank y tras su explicación, pasaremos a explicar los métodos de Recuperación de Información.
+Para la descripción del desarrollo del proyecto, comenzamos retomando el modelo matemático del PageRank, tras su explicación y adaptación pasaremos a describir los métodos de R.I. utilizados.
 
 \newpage
 
@@ -1077,7 +1156,7 @@ Comenzamos retomando el modelo matemático del PageRank y tras su explicación, 
 
 En primer lugar, vamos a enfocar el problema desde otro punto de vista. Supongamos que el usuario se encuentra navegando por la red, por ejemplo, en la primera página $P_1$ y cuando se aburre decide saltar a una de las páginas con las que enlaza $P_1$. Supongamos que hay $N_1$ páginas que enlazan desde $P_1$, es lógico pensar que todas tienen una probabilidad de ser elegidas del $\frac{1}{N_1}$ es decir que siguen una distribución de probabilidad uniforme (discreta) en $[1, N_1]$.
 
-Construimos entonces un modelo probabilístico, es decir no sabemos que camino elegirá el usuario pero si sabemos con que probabilidad estará en cada uno de los destinos posibles. Por ejemplo, en el siguiente grafo, si el usuario se encuentra en $P_1$ puede elegir entre dos páginas $P_2$ y $P_3$. Por lo que el usuario tiene una probabilidad de $\frac{1}{2}$ de elegir cada una de ellas. Si por ejemplo, finalmente elige la página $P_3$, entonces volvería a sortear su elección pero esta vez cada página de destino tiene una probabilidad de $\frac{1}{4}$ de ser elegida.
+Construimos entonces un modelo probabilístico, es decir no sabemos que camino elegirá el usuario pero si sabemos con que probabilidad estará en cada una de las páginas posibles. Por ejemplo, en el siguiente grafo, si el usuario se encuentra en $P_1$ puede elegir entre dos páginas $P_2$ y $P_3$. Por lo que el usuario tiene una probabilidad de $\frac{1}{2}$ de elegir cada una de ellas. Si por ejemplo, finalmente elige la página $P_3$, entonces volvería a sortear su elección pero esta vez cada página de destino tiene una probabilidad de $\frac{1}{4}$ de ser elegida.
 
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./img/grafoprob}
@@ -1093,7 +1172,7 @@ La transformación sería la siguiente:
 
 La nueva matriz $M'$ esta compuesta por números no negativos entre $0$ y $1$, a esta matriz así construida se le llama una matriz estocástica (o de Markov).
 
-Con este modelo podemos conocer con que probabilidad estará el usuario en cada una de las páginas tras cada instante de tiempo. Por ejemplo, si el usuario parte de la página k-ésima $P_k$ para saber que probabilidad tiene de cambiar a cada uno de los posibles destinos solo tenemos que multiplicar la matriz $M'$ por el vector inicial. En este caso el vector inicial es un vector de ceros y un $1$ en la posición k-ésima, ya que sabemos que el usuario se encuentra en la página $P_k$ con una probabilidad del $100\%$.
+Con este modelo podemos conocer con que probabilidad estará el usuario en cada una de las páginas tras cada instante de tiempo, entendiendo instante de tiempo como transiciones o saltos. Por ejemplo, si el usuario parte de la página k-ésima $P_k$ para saber que probabilidad tiene de cambiar a cada uno de los posibles destinos solo tenemos que multiplicar la matriz $M'$ por el vector inicial. En este caso el vector inicial es un vector de ceros y un $1$ en la posición k-ésima, ya que sabemos que el usuario se encuentra en la página $P_k$ con una probabilidad 1.
 
 Si multiplicamos $M'$ por el vector inicial, obtenemos:
 $$\begin{pmatrix}
@@ -1130,7 +1209,7 @@ Donde $p_1, \dots , p_n$ es una distribución de probabilidad y $c$ es un parám
 \newpage
 
 \section{Pseudocódigo}
-En esta sección comentaremos la estructura del algoritmo. Para implementarlo hemos separado el algoritmo en dos funciones. La primera función (\verb|pagerank|) se encarga de construir la matriz de adyacencia del grafo formado por todos los archivos y sus citas, además normaliza esta matriz por columnas para conseguir la matriz de transición del sistema y por último se le añade la el parámetro $c$ y la distribución de probabilidad uniforme como se comenta anteriormente, consiguiendo la matriz $M''$. La segunda función (\verb|metodopotencias|) tiene como objetivo calcular el vector propio de nuestra matriz $M''$, para ello se utiliza el método de las potencias.
+En esta sección comentaremos la estructura del algoritmo. Para implementarlo hemos separado el algoritmo en dos funciones. La primera función (\verb|pagerank|) se encarga de construir la matriz de adyacencia del grafo formado por todos los archivos y sus citas, además normaliza esta matriz por columnas, como se indicó anteriormente, para conseguir la matriz de transición del sistema y por último se le añade la el parámetro $c$ y la distribución de probabilidad uniforme como se comenta anteriormente, consiguiendo la matriz $M''$. La segunda función (\verb|metodopotencias|) tiene como objetivo calcular el vector propio de nuestra matriz $M''$, para ello se utiliza el método de las potencias.
 
 \begin{algorithm}[H]
   \KwData{Vector que contiene todos los nodos (v)}
@@ -1168,15 +1247,16 @@ En el primer pseudocódigo \verb|m.T| se refiere a la traspuesta de \verb|m| y l
 \newpage
 
 \section{Ejemplos}
-Para ilustrar como funciona el algoritmo del PageRank vamos a mostrar unos ejemplos. Comenzamos con el primer ejemplo, en este nos damos cuenta de que tanto $P_4$ como $P_5$ tienen dos enlaces entrantes, sin embargo, queda primero en la clasificación $P_5$, después $P_1$ y en tercer lugar $P_4$. Esto se debe a que una de los enlaces entrantes de $P_5$ es de $P_4$ una de las páginas con más enlaces. Recordemos que este algoritmo premia también si la página que cita es importante.
+Para ilustrar como funciona el algoritmo del PageRank vamos a mostrar unos ejemplos que van a ilustrar como la estructura de una página, lo que se traduce por una topología del grafo, afecta en el cálculo de los pesos\footnote{Recordemos que estos cambios pueden llevarse a cabo a diario, lo que implica un cambio de posicionamiento en el ranking.}. Comenzamos con el primer ejemplo \ref{ejemplo1}, en este nos damos cuenta de que tanto $P_4$ como $P_5$ tienen dos enlaces entrantes, sin embargo, queda primero en la clasificación $P_5$, después $P_1$ y en tercer lugar $P_4$. Esto se debe a que  una de los enlaces entrantes de $P_5$ es de $P_4$ una de las páginas con más enlaces. Recordemos que este algoritmo premia también si la página que cita es importante.
 
 \underline{\textbf{Ejemplo 1}}
-
 \begin{figure}[!ht]
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej1}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 1}
+    \label{ejemplo1}
+
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1186,11 +1266,11 @@ Para ilustrar como funciona el algoritmo del PageRank vamos a mostrar unos ejemp
       3\textsuperscript{\underline{o}}} & $P_4$  & $0.20599017$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_2$  & $0.13803151$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_3$  & $0.13803151$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 1}
   \end{tabular}
 \end{figure}
 
-Añadimos al ejemplo dos páginas nuevas que también citan a $P_4$, sin embargo, esto no hace que $P_4$ se coloque en primera posición. Queda reflejado que el algoritmo da más puntuación a que la página tenga un enlace de una página importante que a una página con muchos enlaces.
+Para el ejemplo 2 le añadimos al ejemplo anterior dos páginas nuevas que también citan a $P_4$ como puede verse en \ref{ejemplo2}, sin embargo, esto no hace que $P_4$ se coloque en primera posición. Queda reflejado que el algoritmo da más puntuación a que la página tenga un enlace de una página importante que a una página con muchos enlaces, como puede verse en la tabla \ref{tablaejemplo2}
 
 \underline{\textbf{Ejemplo 2}}
 
@@ -1198,7 +1278,8 @@ Añadimos al ejemplo dos páginas nuevas que también citan a $P_4$, sin embargo
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej2}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 2}
+    \label{ejemplo2}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1210,13 +1291,13 @@ Añadimos al ejemplo dos páginas nuevas que también citan a $P_4$, sin embargo
       5\textsuperscript{\underline{o}}} & $P_3$  & $0.12318016$ \\ \hline
       6\textsuperscript{\underline{o}}} & $P_7$  & $0.02142857$ \\ \hline
       7\textsuperscript{\underline{o}}} & $P_6$  & $0.02142857$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 2}\label{tablaejemplo2}
     \end{tabular}
 \end{figure}
 
 \newpage
 
-Cambiamos la estrategía, en vez de añadir citas desde páginas nuevas hasta $P_4$ le añadimos una cita desde una de las páginas del grafo inicial, $P_1$, y obsevamos que tampoco conseguimos quitar a $P_5$ del primer puesto aunque la $P_4$ tenga más enlaces entrantes.
+Para el ejemplo 3, ver figura \ref{ejemplo3}, cambiamos la estrategia. Partimos del ejemplo 1 y en vez de añadir citas desde páginas nuevas hasta $P_4$ le añadimos una cita desde una de las páginas del grafo inicial, $P_1$, y observamos que tampoco conseguimos quitar a $P_5$ del primer puesto aunque la $P_4$ tenga más enlaces entrantes.
 
 \underline{\textbf{Ejemplo 3}}
 
@@ -1224,7 +1305,8 @@ Cambiamos la estrategía, en vez de añadir citas desde páginas nuevas hasta $P
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej3}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 3}
+    \label{ejemplo3}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1234,7 +1316,7 @@ Cambiamos la estrategía, en vez de añadir citas desde páginas nuevas hasta $P
       3\textsuperscript{\underline{o}}} & $P_4$  & $0.24083375$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_2$  & $0.10586099$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_3$  & $0.10586099$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 3}
     \end{tabular}
 \end{figure}
 
@@ -1246,7 +1328,7 @@ En el ejemplo anterior se comprueba la importancia del enlace saliente de $P_4$ 
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej4}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 4}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1256,13 +1338,13 @@ En el ejemplo anterior se comprueba la importancia del enlace saliente de $P_4$ 
       3\textsuperscript{\underline{o}}} & $P_2$  & $0.16695821$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_3$  & $0.16695821$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_5$  & $0.10095724$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 4}
     \end{tabular}
 \end{figure}
 
 \newpage
 
-Para conseguir que $P_4$, la página con más enlaces entrantes, se posicione la primera de la clasificación le quitamos los enlaces salientes.
+Para conseguir que $P_4$, la página con más enlaces entrantes, se posicione la primera de la clasificación, partiendo del grafo del ejemplo 1 se eliminan los enlaces salientes de $P_4$, como puede verse en \ref{ejemplo5}.
 
 \underline{\textbf{Ejemplo 5}}
 
@@ -1270,7 +1352,8 @@ Para conseguir que $P_4$, la página con más enlaces entrantes, se posicione la
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej5}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 5}
+    \label{ejemplo5}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1280,11 +1363,11 @@ Para conseguir que $P_4$, la página con más enlaces entrantes, se posicione la
       3\textsuperscript{\underline{o}}} & $P_5$  & $1.86281319e-13$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_2$  & $1.31449230e-13$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_3$  & $1.31449230e-13$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 5}
     \end{tabular}
 \end{figure}
 
-Hemos visto que para el algoritmo puntúa más un enlace que sale de una página ``importante'' que muchos enlaces de páginas ``poco importantes''. En el siguiente ejemplo vemos que la página que más enlaces tiene es $P_3$ y la segunda $P_4$. Siguiendo el razonamiento anterior $P_3$ sería una página ``importante'' y su enlace valdría mucho, tanto que es capaz de colocar a cualquier página en primera posición. En este caso $P_3$ cita a $P_5$ convirtiéndola en una página ``importante'' y colocandola en primer lugar en la clasificación. Sin embargo, en este ejemplo añadimos un enlace desde $P_5$, página importante, a $P_3$ que también es importante, el resultado es un ajustado desempate (& $1.48851482e-06$ frente a $1.37701780e-06$) en el que resulta ganador $P_5$.
+Con los ejemplos mostrados podemos observar que para el algoritmo puntúa más un enlace que sale de una página ``importante'' que muchos enlaces de páginas ``poco importantes''. En el siguiente ejemplo, ejemplo 6 \ref{ejemplo6}, vemos que la página que más enlaces tiene es $P_3$ y la segunda $P_4$. Siguiendo el razonamiento anterior $P_3$ sería una página ``importante'' y su enlace valdría mucho, tanto que es capaz de colocar a cualquier página en primera posición. En este caso $P_3$ cita a $P_5$ convirtiéndola en una página ``importante'' y colocandola en primer lugar en la clasificación. Sin embargo, en este ejemplo añadimos un enlace desde $P_5$, página importante, a $P_3$ que también es importante, el resultado es un ajustado desempate (& $1.48851482e-06$ frente a $1.37701780e-06$) en el que resulta ganador $P_5$.
 
 \underline{\textbf{Ejemplo 6}}
 
@@ -1292,7 +1375,8 @@ Hemos visto que para el algoritmo puntúa más un enlace que sale de una página
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej6}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 6}
+    \label{ejemplo6}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1302,11 +1386,11 @@ Hemos visto que para el algoritmo puntúa más un enlace que sale de una página
       3\textsuperscript{\underline{o}}} & $P_1$  & $8.80201594e-07$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_4$  & $6.61515329e-07$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_2$  & $4.46763904e-07$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 6}
     \end{tabular}
 \end{figure}
 
-Por último, nos preguntamos si las dos páginas tienen el mismo número de enlaces entrantes $P_3$ y $P_4$, quedando asi ``empatados'' y una de ellas no tiene enlaces salientes $P_4$. El resultado vuelve a ser ajustado, ganando $P_5$ (gracias al enlace desde $P_3$), en segundo puesto quedaría $P_3$ y en tercer lugar $P_4$. Por lo que no tener enlaces salientes solo te coloca en primer lugar si tienes más enlaces entrantes que las demás páginas.
+Por último, nos preguntamos si las dos páginas tienen el mismo número de enlaces entrantes $P_3$ y $P_4$, partiendo de una situación de ``empate'' y una de ellas no tiene enlaces salientes $P_4$. Como puede verse en figura~\ref{ejemplo7} y tabla~\ref{tablaejemplo7}. Observamos que los valores son muy ajustados, aunque $P_5$ se sitúa en primer lugar del \textit{ranking} (gracias al enlace desde $P_3$), en segundo puesto quedaría $P_3$ y en tercer lugar $P_4$. Por lo que una página sino dispone de enlaces salientes tan solo puede subir en el \textit{ranking} si tiene más enlaces entrantes que las demás páginas.
 
 \underline{\textbf{Ejemplo 7}}
 
@@ -1314,7 +1398,8 @@ Por último, nos preguntamos si las dos páginas tienen el mismo número de enla
   \begin{tabular}{*{2}{>{\centering\arraybackslash}b{\dimexpr0.5\linewidth-2\tabcolsep\relax}}}
   \centering
     \includegraphics[scale=0.5]{./img/grafoej7}
-    \caption{Grafo}
+    \caption{Grafo del ejemplo 7}
+    \label{ejemplo7}
     &
       \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{ccc}
@@ -1324,7 +1409,7 @@ Por último, nos preguntamos si las dos páginas tienen el mismo número de enla
       3\textsuperscript{\underline{o}}} & $P_4$  & $5.18659092e-09$ \\ \hline
       4\textsuperscript{\underline{o}}} & $P_1$  & $4.86047008e-09$ \\ \hline
       5\textsuperscript{\underline{o}}} & $P_2$  & $3.44565523e-09$ \\ \hline
-      \end{tabular}\captionof{table}{Clasificación}
+      \end{tabular}\captionof{table}{Clasificación del ejemplo 7}\label{tablaejemplo7}
     \end{tabular}
 \end{figure}
 
@@ -1332,11 +1417,7 @@ Por último, nos preguntamos si las dos páginas tienen el mismo número de enla
 
 \section{Conjunto de datos}
 \label{Base de datos}
-Para implementar el algoritmo de PageRank se ha utilizado la conjunto de datos \textbf{PMSC-UGR} con
-$26759991$ artículos. Esta conjunto de datos basada en artículos científicos de MEDLINE/PubMed  pero
-también utilizando SCopus herramienta de Elsevier. En PSMC-UGR se ha hecho el esfuerzo de
-quitar las ambigüedades de los nombres de autores, para ello se ha establecido el ORCID, un número
-que identifica a cada autor de manera unívoca. Cada archivo esta estructurado de la siguiente forma:
+Para implementar el algoritmo de PageRank se ha utilizado el conjunto de datos \textbf{PMSC-UGR} con $26759991$ artículos. Este conjunto de datos basado en artículos científicos de MEDLINE/PubMed  pero también utilizando SCopus herramienta de Elsevier. Por razones de eficiencia se ha tenido que procesar el conjunto de datos para poder aplicar el cálculo de PageRank, los datos de la colección inicial se redujeron a 3000 documentos, todos relacionados entre ellos, los cuales constan de una 26000 palabras. Esta división ha sido necesaria puesto que en el intento de implementar el algoritmo con todos los artículos la matriz creada alcanzaba una dimensión muy grande impidiendo que el ordenador utilizado pudiera operar con ella, lo que habría requerido técnicas de paralelización de tareas para hacerlas más escalable, sin embargo esto quedaba fuera de los objetivos iniciales del proyecto. Estos 3000 documentos tomarán el papel de las páginas, ya que con las citas se puede construir un grafo dirigido al que aplicar el PageRank. En PSMC-UGR se ha hecho el esfuerzo de quitar las ambigüedades de los nombres de autores, para ello se ha establecido el ORCID, un número que identifica a cada autor de manera unívoca. Cada archivo esta estructurado de la siguiente forma:
 \begin{itemize}
 \item \textit{PubMedID}. Es un identificador único del articulo proporcionado por PubMed.
 \item \textit{Journal}. Es el nombre de la revista donde el artículo ha sido publicado.
@@ -1352,17 +1433,17 @@ que identifica a cada autor de manera unívoca. Cada archivo esta estructurado d
 \item \textit{KeywordList}. Contiene términos controlados en palabras clave que también describen el contenido del artículo.
 \end{itemize}
 
-A estos datos se añaden las citas, el $66.78 \%$ de los artículos tienen alguna cita. La media de citas por artículo es de 7 y el total de citas es $3593931$. El numero de citas por articulo sigue una típica distribución \textit{ley de potencia} donde pocos artículos tienen muchas citas y muchos artículos tienen pocas citas. Por ejemplo, hay $116365$ artículos que tienen solo una cita y hay un artículo que tiene 713 citas.
+A estos datos se añaden las citas, el $66.78 \%$ de los artículos tienen alguna cita. La media de citas por artículo es de 7 y el total de citas es $3593931$. El número de citas por artículo sigue una típica distribución \textit{ley de potencia} donde pocos artículos tienen muchas citas y muchos artículos tienen pocas citas. Por ejemplo, hay $116365$ artículos que tienen solo una cita y hay un artículo que tiene 713 citas.
 
-Además esta conjunto de datos ha sido procesada añadiendo las referencias de cada artículo, es decir, cada artículo conoce quien lo ha citado. Este dato no se utiliza en el algoritmo ya que por lo general no se suele conocer, cada artículo solo sabe que artículos ha citado y no llega a conocer los otro artículos que lo han citado.
+Además este conjunto de datos ha sido procesado añadiendo las referencias de cada artículo, es decir, cada artículo conoce quien lo ha citado. Este dato no se utiliza en el algoritmo ya que por lo general no se suele conocer, cada artículo solo sabe que artículos ha citado y no llega a conocer los otro artículos que lo han citado.
 
 \newpage
 
 \section{Modelos de Recuperación de Información}
 La Recuperación de Información (RI) busca acceder a contenidos mediante modelos que posteriormente se diseñan e implementan. Su finalidad es estimar la relevancia de los datos a la necesidad de información de un usuario la cual se expresa en una consulta.
-En nuestro caso, buscamos acceder a la información de nuestra conjunto de datos formada por una selección de documentos. A través de una consulta buscamos mostrar información relevante para el usuario que la ha introducido.
+En nuestro caso, buscamos acceder a la información de nuestro conjunto de datos formada por una selección de documentos. A través de una consulta buscamos mostrar información relevante para el usuario que la ha introducido.
 
-Según el libro \cite{ri} podemos definir un modelo de RI como una cuádrupla $[D,Q,F,R(q_i,f_j)]$, donde:
+Según \cite{ri} podemos definir un modelo de RI como una cuádrupla $[D,Q,F,R(q_i,f_j)]$, donde:
 \begin{itemize}
 \item $D$ es el conjunto de representaciones de los documentos.
 \item $Q$ es el conjunto de representaciones de necesidades de información de los usuarios.
@@ -1370,12 +1451,12 @@ Según el libro \cite{ri} podemos definir un modelo de RI como una cuádrupla $[
 \item $R(q_i,d_j)$ es la función de selección y ordenación que permite entregar al usuario unos documentos (ordenados o no) en respuesta a una consulta.
 \end{itemize}
 
-\subsection{Modelo binario}
-Este modelo se basa en la teoría de conjuntos y la lógica booleana, como ya comentamos anteriormente solo tiene en cuenta la presencia de alguna de las palabras de la consulta en el documento, no tiene en cuenta la frecuencia ni la importancia de la palabra.
+\subsection{Modelo booleano}
+Este modelo se basa en la teoría de conjuntos y la lógica booleana, como ya comentamos anteriormente solo tiene en cuenta la presencia de alguna de las palabras o términos de la consulta en el documento. En él, no se tiene en cuenta ni la frecuencia, ni la importancia del término en el documento o en la colección.
 
-Según el libro \cite{ri} definimos el conjunto de todos los términos de la colección de documentos como $V = \{t_1, t_2, \dots, t_M \}$ y el conjunto de todos los documentos de la colección como $D = \{ d_1, d_2, \dots, d_N \}$. Cada documento $d_j$ los representamos como un subconjunto de $V$ donde se encuentran los términos que aparecen en ese documento. Además para cada término $t_i$ se define el conjunto $T_i$ formado por los documentos que contienen el término $t_i$ por lo tanto $T_i$ es un subconjunto de $D$.
+Según el libro \cite{ri} definimos el conjunto de todos los términos de la colección de documentos como $V = \{t_1, t_2, \dots, t_M \}$ y el conjunto de todos los documentos de la colección como $D = \{ d_1, d_2, \dots, d_N \}$. Cada documento $d_j$ se va a representar como un subconjunto de $V$ donde se encuentran los términos que aparecen en ese documento. Por otro lado, dispondremos de una estructura adicional, un índice invertido, cuya entrada es el termino, esto es, para cada término $t_i$ se define el conjunto $T_i$ formado por los documentos que contienen el término $t_i$ por lo tanto $T_i$ es un subconjunto de $D$.
 
-En este modelo se representan las consultas mediante expresiones booleanas en las cuales se utilizan los operadores booleanos AND, OR y NOT.
+En este modelo se representan las consultas mediante expresiones booleanas en las cuales se utilizan además de los términos, los operadores booleanos AND, OR y NOT. Como se detallará posteriormente se ha diseñado una interfaz para la introducción de consultas con las sintaxis de los operadores lógicos estándares. A continuación se muestra la forma de explotar el modelo con unas consultas de ejemplo.
 
 El operador AND es un operador binario (necesita dos términos) que indica que se desea buscar los documentos que contentan ambos términos. Por ejemplo, si el usuario escribe ``perro AND gato'' está buscando los documentos que contienen tanto la palabra ``perro'' como la palabra ``gato''. Formalmente lo que indica es que se realiza la intersección de dos conjuntos, el conjunto formado por los documentos que contienen la palabra ``perro'' ($T_1$) y los que tienen la palabra ``gato'' ($T_2$).
 
@@ -1421,7 +1502,7 @@ Este modelo se basa en dos conceptos fundamentales:
 \item Esquema de pesos.
 \item Similitud entre dos vectores de términos (por ejemplo, entre un documento y una consulta).
 \end{itemize}
-La similitud entre dos vectores de términos $q$ y $d$ la calcularemos mediante la distancia coseno que se define según el libro \cite{ri} como:
+Para definir una medida de adecuación de una consulta $q$ con cada documento $d$ se habla de similitud. La similitud entre los vectores de términos $q$ y $d$ se va a calcular mediante la distancia coseno que se define según el libro \cite{ri} como:
 $$sim(q,d) = cos(\alpha) = \frac{\sum_{i = 1}^M w_{i,q} \cdot w_{i,d}}{\sqrt{\sum_{i = 1}^M w_{i,d}^2} \cdot \sqrt{\sum_{i = 1}^M w_{i,q}^2}} = \frac{q}{|q|} \cdot \frac{d}{|d|} $$
 
 Por otro lado, a la hora de calcular el peso de un término en cada documento debemos tener en cuenta dos conceptos:
@@ -1442,7 +1523,7 @@ Donde $tf_{i,j}$ es la frecuencia del término $i$ en el documento $j$, $N$ es e
 Tras calcular estos pesos se normaliza cada vector $d_j$, es decir, dividimos el vector por su longitud:
 $$d_j = \frac{d_j}{|d_j|} \textrm{ donde } |v| = \sqrt{\sum_{i = 1}^M v_i^2} $$
 
-Por último, el procedimiento consistirá en calcular los pesos de la consulta $q$ y calcular la similitud de la consulta con los demás documentos. Tras estas operaciones se obtiene un vector de relevancia donde queda reflejada la similitud de cada documento a la consulta, estas similitudes son multiplicadas por el vector del PageRank para obtener el nuevo orden.
+Por último, el procedimiento consistirá en calcular los pesos de la consulta $q$ y calcular la similitud de la consulta con cada documento de la colección. Tras estas operaciones se obtiene un vector de relevancia donde queda reflejada la similitud de cada documento a la consulta, estas similitudes son multiplicadas por el vector del PageRank para obtener el nuevo orden.
 
 Retomamos el anterior ejemplo, donde el conjunto $D$ estaba formado por los documentos:
 \begin{itemize}
@@ -1489,10 +1570,10 @@ sim & $d_1$ & $d_2$ & $d_3$ & $d_4$ \\ \hline
 $q$ & 0.92  & 0     & 0.43  & 0.24  \\ \hline
 \end{tabular}
 \end{table}
-Por último, se multiplicaría este vector con el vector del PageRank componente a componente.
+Por último, se multiplicaría este vector con el vector del PageRank componente a componente. Para este modelo no estarán disponibles los operadores lógicos en la interfaz, ya que carece de sentido.
 
 \subsection{Técnicas de modificación de la consulta}
-Dentro del modelo vectorial buscamos personalizar las consultas, es decir, que dependiendo del usuario que realice la consulta se muestre antes los documentos más relevantes para ese usuario. Para ello empleamos la pseudo-realimentación de consultas la cual busca expandir la consulta utilizando los primeros documentos más relevantes para ello.
+Hasta el momento, ya sea utilizando el modelo booleano o el modelo vectorial, una misma consulta realizada por distintos usuarios obtiene el mismo conjunto de documentos relevantes o el mismo \textit{ranking} determinado por los términos y el PageRank. Sin embargo, nos planetamos la posibilidad de alterar estos resultados en función de quién realizará la consulta, tratando de personalizar las consultas en función de su perfil o interés habitual. Se trataba de explorar cómo se puede alterar este \textit{ranking}. Google cuenta con log, consultas y documentos explorados con anterioridad por un usuario para realizar esta alteración personalizada del \textit{ranking}. Con los datos disponibles de la colección determinamos utilizar un perfil de usuario formado por aquellos términos de los documentos que le son más relevantes, en el caso ideal por lo documentos redactados por ellos mismos. Con este propósito decidimos explorar la realimentación de consultas la cual busca expandir la consulta utilizando los primeros documentos más relevantes para ello.
 
 Una de las mayores ventajas de esta técnica es que se trata de un proceso automático, no necesita de la intervención del usuario. Sin embargo, la efectividad de la técnica depende de la bondad del primer resultado, si la consulta devuelve un resultado donde los documentos son relevantes la extensión de la consulta conseguirá recuperar los documentos más relevantes, pero si por el contrario la primera recuperación no es buena aparecerán en la consulta expandida términos relacionados con ella por lo que esta será menos relevante aún para el usuario.
 
@@ -1577,7 +1658,7 @@ En el desplegable situado en la parte superior a la izquierda se puede seleccion
 
 Como ya explicamos anteriormente dependiendo del modelo las consultas se realizan de forma distinta:
 \begin{itemize}
-\item \textbf{\underline{Modelo booleano}}. En este modelo se puede elegir en que parte del documento se quiere realizar la búsqueda: título, abstrac, palabras clave o todos las partes. Este dato se indica en en el desplegable situado en la parte superior izquierda.
+\item \textbf{\underline{Modelo booleano}}. En este modelo se puede elegir en que parte del documento se quiere realizar la búsqueda: título, abstract, palabras clave o todos las partes. Este dato se indica en el desplegable situado en la parte superior izquierda.
 
 \begin{figure}[H]
 \centering
@@ -1600,14 +1681,17 @@ El resultado de la búsqueda se mostrará en el espacio situado justo debajo de 
 \caption{Resultado de la búsqueda en el modelo booleano.}
 \end{figure}
 
-\item \textbf{\underline{Modelo vectorial}}. En este modelo podemos elegir entre realizar una búsqueda normal o una búsqueda personalizada. Para realizar una búsqueda normal solo hay que introducir la consulta en la celda y pulsar el botón ``buscar'' (en este modelo no se utilizan esquemas lógicos). Por ejemplo, podemos buscar las palabras ``extension network''.
+\item \textbf{\underline{Modelo vectorial}}. En este modelo podemos elegir entre realizar una consulta normal basada únicamente en términos o una consulta personalizada. Para realizar una consulta normal solo hay que introducir la consulta en la celda y pulsar el botón ``buscar'' (en este modelo no se utilizan esquemas lógicos). Por ejemplo, podemos buscar las palabras ``extension network''.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{consultavec}
 \caption{Celda donde se introduce la consulta y botón que dispara la búsqueda.}
 \end{figure}
 \end{itemize}
+
 Cuyo resultado sería:
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{vec}
@@ -1745,9 +1829,7 @@ En primer lugar buscamos solo la palabra \textit{sclerosis} y nos aseguramos de 
 \caption{Resultado de la consulta \textit{sclerosis}.}
 \label{errorcomillas}
 \end{figure}
-
 A continuación realizamos la consulta \textit{sclerosis AND patients}. Y comprobamos que efectivamente de los dos documentos solo aparece el documento ``Pathology and MRI: exploring cognitive impairment in MS''.
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{consultaAND}
@@ -1755,7 +1837,7 @@ A continuación realizamos la consulta \textit{sclerosis AND patients}. Y compro
 \label{errorcomillas}
 \end{figure}
 
-Probamos a realizar la ocnsulta \textit{sclerosis AND NOT patients}. Comprobamos ahora que de los dos documentos solamente aparece ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis''
+Probamos a realizar la consulta \textit{sclerosis AND NOT patients}. Comprobamos ahora que de los dos documentos solamente aparece ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis''
 
 \begin{figure}[H]
 \centering
@@ -1802,7 +1884,7 @@ Si a la consulta anterior le añadimos el término \texit{Pathology} conseguimos
 \end{figure}
 \end{itemize}
 
-Por último, si realizamos la consulta anterior siendo el usuario $0000-0003-0267-3180$, es decir, el autor de ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis.'' vemos como este se sitúa por delante del otro documento aún conteniendo menos palabras de la consulta.
+Por último, si realizamos la consulta anterior siendo el usuario $0000-0003-0267-3180$, es decir, el autor de ``Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis.'' vemos como este se sitúa por delante del otro documento aún conteniendo menos palabras de la consulta. Habiendo conseguido el propósito de especializar la consulta según el interés del propio usuario.
 
 \begin{figure}[H]
 \centering
@@ -1823,8 +1905,8 @@ Consulta                                                                        
                                                                                                               & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.0711    & 2.741e-14       \\ \hline
 \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}"sclerosis patients \\ Pathology"\end{tabular}}                    & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.021     & 2.680e-14       \\ \cline{2-5}
                                                                                                               & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.144     & 5.540e-14       \\ \hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}"sclerosis patients \\ Pathology" \\ (personalizada)\end{tabular}} & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.076     & 9.780e-14       \\ \cline{2-5}
-                                                                                                              & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.141     & 5.437e-14       \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}"sclerosis patients \\ Pathology" \\ (personalizada)\end{tabular}} & \begin{tabular}[c]{@{}c@{}}Neuroimaging Endpoints in \\ Amyotrophic Lateral Sclerosis\end{tabular} & 1.283e-12 & 0.973     & 1.248e-13       \\ \cline{2-5}
+                                                                                                              & \begin{tabular}[c]{@{}c@{}}Pathology and MRI: exploring \\ cognitive impairment in MS\end{tabular} & 3.855e-13 & 0.14041    & 5.413e-14       \\ \hline
 \end{tabular}
 \end{table}
 
@@ -1835,18 +1917,63 @@ Consulta                                                                        
 \label{errorcomillas}
 \end{figure}
 
+Para analizar la bondad de los resultados utilizaremos dos métricas extraídas de \cite{ri}, entre las cuales existe una relación inversa:
+\begin{itemize}
+\item Exhaustividad. Se define como la proporción de documentos relevantes que son recuperados en respuesta a una consulta.
+$$\textrm{Exhaustividad} = \frac{\textrm{número de docs relevantes recuperados}}{\textrm{número de docs relevantes en la colección}} $$
+\item Presición. Se define como la proporción de documentos recuperados que son relevantes en respuesta a una consulta.
+$$\textrm{Precisión} = \frac{\textrm{número de docs relevantes recuperados}}{\textrm{número de docs recuperados}} $$
+\end{itemize}
+
+
+Calculamos estos valores para la última consulta donde los documentos relevantes para el usuario que la realiza (el autor $0000-0003-0267-3180$) son los siguientes 25 documentos:
+\begin{itemize}
+\item Diffusion imaging of whole, post-mortem human brains on a clinical MRI scanner.
+\item Multiple kernel learning captures a systems-level functional connectivity biomarker signature in amyotrophic lateral sclerosis.
+\item Neuroimaging in amyotrophic lateral sclerosis.
+\item Widespread grey matter pathology dominates the longitudinal cerebral MRI and clinical landscape of amyotrophic lateral sclerosis.
+\item Magnetoencephalography.
+\item Diagnostic accuracy of diffusion tensor imaging in amyotrophic lateral sclerosis: a systematic review and individual patient data meta-analysis.
+\item Myelin imaging in amyotrophic and primary lateral sclerosis.
+\item Differential corticospinal tract degeneration in homozygous 'D90A' SOD-1 ALS and sporadic ALS.
+\item Increased functional connectivity common to symptomatic amyotrophic lateral sclerosis and those at genetic risk.
+\item Neuroimaging Endpoints in Amyotrophic Lateral Sclerosis.
+\item Voxel-based MRI intensitometry reveals extent of cerebral white matter pathology in amyotrophic lateral sclerosis.
+\item Eye-tracking in amyotrophic lateral sclerosis: A longitudinal study of saccadic and cognitive tasks.
+\item Corpus callosum involvement is a consistent feature of amyotrophic lateral sclerosis.
+\item Does variation in neurodegenerative disease susceptibility and phenotype reflect cerebral differences at the network level?
+\item What does imaging reveal about the pathology of amyotrophic lateral sclerosis?
+\item Fractional anisotropy in the posterior limb of the internal capsule and prognosis in amyotrophic lateral sclerosis.
+\item Quantifying disease progression in amyotrophic lateral sclerosis.
+\item A large-scale multicentre cerebral diffusion tensor imaging study in amyotrophic lateral sclerosis.
+\item Assessment of the upper motor neuron in amyotrophic lateral sclerosis.
+\item Whole-brain magnetic resonance spectroscopic imaging measures are related to disability in ALS.
+\item Mind the gap: the mismatch between clinical and imaging metrics in ALS.
+\item Psychiatric disorders prior to amyotrophic lateral sclerosis.
+\item Mechanisms, models and biomarkers in amyotrophic lateral sclerosis.
+\item Controversies and priorities in amyotrophic lateral sclerosis.
+\item EFNS guidelines on the use of neuroimaging in the management of motor neuron diseases.
+\end{itemize}
+
+De los cuales en la consulta \textit{sclerosis patients Pathology} aparecen 24, por lo tanto:
+$$\textrm{Exhaustividad} = \frac{\textrm{número de docs relevantes recuperados}}{\textrm{número de docs relevantes en la colección}} = \frac{24}{25} = 0.96 $$
+Por otro lado en la consulta \textit{sclerosis patients Pathology} se recuperan 2141 documentos, por lo tanto la \textit{Presición} será la siguiente:
+$$\textrm{Precisión} = \frac{\textrm{número de docs relevantes recuperados}}{\textrm{número de docs recuperados}} = \frac{24}{2141} = 0.0112$$
+
+Viendo los datos anteriores podemos concluir que nuestro sistema es bastante exhaustivo, pero poco preciso, resultado lógico ya que entre las dos métricas existe una relación inversa. Es decir, nuestro buscador consigue recuperar la mayoría de los archivos relevantes, aunque en el proceso aparecen también muchos documentos no relevantes. Sería interesante, para trabajos futuros, lograr mejorar la precisión del buscador modificando los pesos del algoritmo.
+
 \newpage
 \section{Conclusiones y trabajos futuros}
-Concluimos que el algoritmo PageRank obtiene resultados bastante buenos a la hora de ordenar los archivos por relevancia. Además los modelos implementados consiguen buenos resultados, consiguiendo personalizar las búsquedas.
+Se han alcanzado los objetivos propuestos ya que se resuelve el problema inicial de ordenar información según el interés del usuario. El método de las potencias proporciona una buena aproximación de la solución buscada.
+Por otro lado, el algoritmo PageRank obtiene resultados bastante buenos a la hora de ordenar los archivos por relevancia. Además los modelos implementados también obtienen buenos resultados, consiguiendo además personalizar las búsquedas.
 
-Sería interesante, como futuros proyectos, crear perfiles de usuario con distintos intereses para poder personalizar mejor la búsqueda consiguiendo mostrar en los primeros resultados los archivos más interesantes para el usuario dependiendo de su perfil.
+El algoritmo PageRank, como es bien conocido, es un algoritmo de gran interés y de aplicación en multitud de campos como hemos podido observar con su utilización en áreas para el que inicialmente no había sido pensado como se ha visto en la búsqueda de referencias bibliográficas. Por otro lado, la implementación de este en el contexto de documentos y términos, me ha iniciado en el área de la Recuperación de Información de la que no tenía ningún conocimiento previo.
 
-\newpage
+Problemas de índole organizativo me han impedido la utilización de un servidor del departamento de CCIA de mayor capacidad para la explotación del sistema con la colección completa como se había previsto, por lo que me he visto condicionada a reducir considerablemente el conjunto de datos inicial.
 
-\section{Sistema basado en la información}
-Un sistema de acceso a la información es un sistema dotado de un conjunto de técnicas para buscar, categorizar, modificar y acceder a la información que se encuentra en un sistema: conjunto de datos, bibliotecas, archivos o internet.
+Sería interesante, como futuros proyectos, crear perfiles de usuario con distintos intereses para poder personalizar mejor la búsqueda, consiguiendo mostrar en los primeros resultados los archivos más importantes para el usuario dependiendo de su perfil. Además, también se podría modificar el software para que se amoldarse a otra colección de datos, buscando que la interfaz sea capaz de adaptarse automáticamente a la estructura de estos. Otra posible ampliación, sería la paralelización del algoritmo buscando como objetivo adaptar el software a conjuntos de datos más grandes. Por último también sería interesante conseguir mejorar la precisión de nuestro actual sistema ajustando los pesos del modelo.
 
-\textbf{?`?` Poner esto en algún lado ??}
+
 
 
 \newpage
@@ -1870,5 +1997,31 @@ Fidel Cacheda Seijo, Juan Manuel Fernández Luna y Juan Francisco Huete Guadix.
 
 \end{thebibliography}
 %printbibliography
+
+\newpage
+
+\appendix
+\section{Guía de uso del código}
+La implementación del sistema se ha llevado a cabo en dos archivos \verb|pagerank.py| y \verb|interfazgrafica.py|. El primer fichero contiene el código de todos los algoritmos y modelos implementados, así como la lectura del conjunto de datos PMSC-UGR, mientras que el segundo contiene el código utilizado para la interfaz gráfica en la cual se comunica el usuario con el sistema.
+
+El sistema mostrado en el trabajo se ha ejecutado sobre un subconjunto del conjunto de datos PMSC-UGR. Este subconjunto ha sido previamente procesado originando tres archivos: \verb|vectorPG.csv|, \verb|matrizt.csv| y \verb|matrizw.csv|. En el caso de contar con los archivos y con el subconjunto de la colección de documentos, solo es necesario introducir la ruta de de la carpeta de la carpeta contenedora de los archivos al principio del fichero \verb|pagerank.py|:
+\begin{itemize}
+\item Para el conjunto de datos, introduciremos la ruta al principio del archivo \verb|pagerank.py| en la variable \verb|BBDPATH| de la siguiente forma:
+\begin{verbatim}
+BBDPATH = "/home/johanna/Documentos/TFG/base-de-datos/base"
+\end{verbatim}
+Donde \verb|base| es la carpeta contenedora.
+\item Para los archivos ya procesados, introduciremos la ruta de la capeta contenedora de los tres archivos comentados al principio (\verb|vectorPG.csv|, \verb|matrizt.csv| y \verb|matrizw.csv|) al principio del archivo \verb|pagerank.py| en la variable \verb|PATH|:
+\begin{verbatim}
+PATH = "/home/johanna/Documentos/TFG/implementacion/matrices/"
+\end{verbatim}
+\end{itemize}
+Una vez seleccionado las rutas solo es necesario ejecutar el archivo \verb|interfazgrafica.py| con Python.
+\begin{verbatim}
+python interfazgrafica.py
+\end{verbatim}
+
+En el caso de no tener alguno de los archivos de los datos procesados (\verb|vectorPG.csv|, \verb|matrizt.csv| y \verb|matrizw.csv|) se introducirá en la ruta \verb|PATH| la carpeta donde se desea almacenar la información y se ejecutará el programa con normalidad (\texttt{python interfazgrafica.py}). Esta ejecución puede tardar unas 20 horas, puesto que no están los datos procesados previamente. Tras esta ejecución se almacenarán en la carpeta introducida los datos procesados y comenzará el sistema automáticamente.
+
 
 \end{document}

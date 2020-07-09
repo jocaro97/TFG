@@ -6,11 +6,21 @@ from time import time
 import os.path
 import math
 import csv
-from numpy import genfromtxt
 
-# Constantes globales
+# Constantes globales.
 C = 0.85
+NUM_TERMINOS = 25
 
+# Rutas.
+PATH = "/home/johanna/Documentos/TFG/implementacion/matrices/"
+BBDPATH = "/home/johanna/Documentos/TFG/base-de-datos/base"
+
+# Clase que recoge toda la información de un documento del conjunto de datos
+# PMSC-UGR. En un objeto de la clase artículo se guarda:
+# Título, palabras_titulo (guarda en una lista las palabras del título), pmid,
+# abstract, palabras_abstract (guarda en una lista las palabras del abstract),
+# keywords, autores (lista con los autores), citasAutor (ORCID de los autores
+# citados), citasPmid (pmid de los documentos citados).
 class Articulo:
     def __init__(self, ruta):
         doc = xml.dom.minidom.parse(ruta)
@@ -72,20 +82,19 @@ class Articulo:
 
         self.keywords = np.array(self.keywords)
 
-
+# Clase que implementa el algoritmo PageRank y dos modelos del ámbito de la
+# Recuperación de Información (modelo booleano y modelo vectorial).
 class PageRank:
     m = 0
     v = 0
     def __init__(self):
         print("Carganco la base de datos\n")
-        if(os.path.exists("/home/johanna/Documentos/TFG/implementacion/matrices/vectorPG.csv")):
-            #self.m = np.load("/home/johanna/Documentos/TFG/implementacion/matriz.npy")
+        # Si existen los archivos preprocesados se utilizan estos.
+        if(os.path.exists(PATH + "vectorPG.csv")):
             start = time()
-            #archivos = devolverArchivos("/home/johanna/Documentos/TFG/base-de-datos/PMSC-UGR-XML")
-            #archivos = self.devolverArchivos("/home/johanna/Documentos/TFG/implementacion/prueba")
-            archivos = self.devolverArchivos("/home/johanna/Documentos/TFG/base-de-datos/base")
+            archivos = self.devolverArchivos(BBDPATH)
             self.pg = []
-            with open('/home/johanna/Documentos/TFG/implementacion/matrices/vectorPG.csv') as file:
+            with open(PATH + 'vectorPG.csv') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     self.pg.append(float(row[0]))
@@ -101,7 +110,6 @@ class PageRank:
                 for autor in a.autores:
                     self.autores.add(autor)
 
-
                 if a.keywords.size:
                     for palabra in a.keywords[0]:
                         self.palabras.add(palabra)
@@ -113,38 +121,22 @@ class PageRank:
                     self.palabras.add(tit)
 
 
-            elapsed_time = time() - start
-            print("Tiempo que tarda en cargar la base de datos: ", elapsed_time)
-            print(len(self.palabras))
             self.palabras = list(self.palabras)
             self.palabras.sort()
-            #print(self.palabras)
 
-            #resultado = self.metodopotencias(self.m)
-            #resultado = resultado.tolist()
             self.v, _ = self.ordenar(self.nodos.copy(),self.pg.copy())
 
+            self.w = np.loadtxt(PATH + 'matrizw.csv', dtype=np.float, delimiter=',', skiprows = 0)
 
+            self.t = np.loadtxt(PATH + 'matrizt.csv', dtype=np.float, delimiter=',', skiprows = 0)
+            elapsed_time = time() - start
+            print("Tiempo que tarda en cargar el conjunto de datos: ", elapsed_time)
 
-            self.w = np.loadtxt('/home/johanna/Documentos/TFG/implementacion/matrices/matrizw.csv', dtype=np.float, delimiter=',', skiprows = 0)
-            #with open('/home/johanna/Documentos/TFG/implementacion/matrizw.csv') as filew:
-            #    reader = csv.reader(filew)
-            #    for row in reader:
-            #        self.w.vstack(self.w, row)
-            print(self.w)
-
-            self.t = np.loadtxt('/home/johanna/Documentos/TFG/implementacion/matrices/matrizt.csv', dtype=np.float, delimiter=',', skiprows = 0)
-            #with open('/home/johanna/Documentos/TFG/implementacion/matrizt.csv') as filet:
-            #    reader = csv.reader(filet)
-            #    for row in reader:
-            #        self.t.append(row)
-            #self.calcularmatrizfrecuencias()
-            print(self.t)
-
+        # Si no existen los archivos, se crean.
         else:
             start = time()
-            archivos = self.devolverArchivos("/home/johanna/Documentos/TFG/base-de-datos/base")
-            #archivos = self.devolverArchivos("/home/johanna/Documentos/TFG/implementacion/prueba")
+            archivos = self.devolverArchivos(BBDPATH)
+
             self.nodos = []
             self.autores = set()
             self.palabras = set()
@@ -166,18 +158,18 @@ class PageRank:
                     self.palabras.add(tit)
 
             elapsed_time = time() - start
-            print("Tiempo que tarda en cargar la base de datos: ", elapsed_time)
+            print("Tiempo que tarda en cargar el conjunto de datos: ", elapsed_time)
             self.palabras = list(self.palabras)
             self.palabras.sort()
-            #print(self.palabras)
+
             start = time()
             self.v = self.construirmatriz(self.nodos.copy())
             elapsed_time = time() - start
             print("El tiempo en construir la matriz es: ", elapsed_time)
-            self.calcularmatrizfrecuencias()
-            print("Teminado")
+            self.calculamatrices()
+            print("Terminado")
 
-
+    # Función que devuelve todos los archivos PMSC-UGR de un directorio.
     def devolverArchivos(self, carpeta):
         archivos = []
         for archivo in os.listdir(carpeta):
@@ -186,6 +178,7 @@ class PageRank:
 
         return archivos
 
+    # Método de las potencias, utilizado para aproximar el vector de Perron.
     def metodopotencias(self, m, num_iterations=100):
         N = m.shape[1]
 
@@ -197,6 +190,7 @@ class PageRank:
 
         return v
 
+    # Método que ordena una lista de documentos por su peso.
     def ordenar(self, vector, valores, borrarceros = False):
         res = []
         ranking = []
@@ -215,6 +209,7 @@ class PageRank:
 
         return res, ranking
 
+    # Método que devuelve una lista con todos los pmids de los objetos artículo.
     def listapmid(self, v):
         pmids = []
         for articulo in v:
@@ -223,28 +218,12 @@ class PageRank:
         pmids = np.array(pmids)
         return pmids
 
+    # Método que construye la matriz de adyacencia para el algoritmo PageRank.
     def construirmatriz(self, v):
         m = np.zeros((len(v),len(v)))
         pmids = self.listapmid(v)
-        #for articulo in v:
-        #    for citas in articulo.citasAutor:
-        #        for cita in citas:
-        #            for art in aux:
-        #                for autor in art.autores:
-        #                    if(cita == autor):
-        #                        m[aux.index(art), v.index(articulo)] += 1
 
-        #for articulo in v:
-        #    for citas in articulo.citasPmid:
-        #        for cita in citas:
-        #            for art in aux:
-        #                for pmid in art.pmid:
-        #                    if(cita == pmid):
-        #                        m[aux.index(art), v.index(articulo)] += 1
-
-        i = 1
         for articulo in v:
-            i += 1
             for cita in articulo.citasPmid:
                 index = np.where(pmids == cita)
                 m[index, v.index(articulo)] += 1
@@ -257,30 +236,27 @@ class PageRank:
 
         self.m = m
 
-        print(m)
         N = m.shape[1]
         m_seg = (C * m + (1 - C)/N)
         resultado = self.metodopotencias(m_seg)
 
-        print(resultado)
         self.pg = resultado.flatten()
         resultado = resultado.tolist()
 
-        with open('/home/johanna/Documentos/TFG/implementacion/matrices/vectorPG.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        with open(PATH + 'vectorPG.csv', 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(resultado)
 
-        v = self.ordenar(v,resultado)
-        for articulo in v:
-            print(articulo.pmid)
+        v, _ = self.ordenar(v,resultado)
 
         return v
 
-    def calcularmatrizfrecuencias(self):
+    # Método que calcula la matriz de frecuencias y la matriz de pesos.
+    def calculamatrices(self):
         t = np.zeros((len(self.nodos), len(self.palabras)))
         nodos = np.array(self.nodos)
         palabras = np.array(self.palabras)
-        print(palabras)
+
         for i in range(len(t)):
             for j in range(len(t[i])):
                 if nodos[i].keywords.size:
@@ -292,8 +268,8 @@ class PageRank:
                 t[i,j] += len(index[0])
 
         self.t = t
-        print(t)
-        with open('/home/johanna/Documentos/TFG/implementacion/matrices/matrizt.csv', 'w', newline='', encoding='utf-8') as csvfile:
+
+        with open(PATH + 'matrizt.csv', 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(t)
 
@@ -308,11 +284,14 @@ class PageRank:
             w[i] = w[i] / np.linalg.norm(w[i])
 
         self.w = w
-        with open('/home/johanna/Documentos/TFG/implementacion/matrices/matrizw.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        with open(PATH + 'matrizw.csv', 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(w)
 
-
+    # Función de búsqueda para el modelo booleano.
+    # Dada una palabra o término y una lista de documentos, el método devuelve
+    # un subconjunto formado por los documentos que contienen la palabra o
+    # término.
     def buscar(self, palabra, sitio, v):
         res = set()
         if(sitio == "Abstract" or sitio == "Todos los campos"):
@@ -335,6 +314,8 @@ class PageRank:
                             res.add(v[i])
         return list(res)
 
+    # Función utilizada en el modelo booleano. Detecta las
+    # estructuras lógicas y devuelve una lista con el resultado
     def calcular(self, sentencia, resultados, sitio):
         i = 0
         if(sentencia[0] == "("):
@@ -344,7 +325,6 @@ class PageRank:
         if(sentencia[len(sentencia)-1] == ")"):
             sentencia.pop(len(sentencia)-1)
 
-        print(sentencia)
         while(len(sentencia) > 1):
             if(sentencia[0] == "NOT"):
                 if(sentencia[1] != "SeNtenCia"):
@@ -402,11 +382,10 @@ class PageRank:
         if(len(sentencia) == 1 and sentencia[0] != "SeNtenCia"):
             resultados[0] = self.buscar(sentencia[0], sitio, resultados[0])
 
-        print(resultados[0])
-        for i in range(len(resultados[0])):
-            print(resultados[0][i].titulo)
         return resultados[0]
 
+    # Ordena una lista de documentos por el PageRank. Se utiliza en el modelo
+    # booleano.
     def ordenarresultados(self, resultados):
         res = []
         ranking = []
@@ -418,10 +397,11 @@ class PageRank:
 
         return res, ranking
 
+    # Función principal de búsqueda en el modelo booleano.
     def filtrar(self, texto, sitio):
         ranking = 0
         texto = re.split('(\W)', texto)
-        print(texto)
+
         i = 0
         while(i < len(texto)):
             if(texto[i] == ''):
@@ -450,7 +430,7 @@ class PageRank:
         for i in texto:
             if(i == ' '):
                 texto.remove(i)
-        print(texto)
+
         resultados = []
         for j in range(len(texto)):
             resultados.append(self.v.copy())
@@ -496,6 +476,7 @@ class PageRank:
 
         return res, ranking
 
+    # Búsqueda del modelo vectorial.
     def busquedapersonalizada(self,texto, autor, personalizada):
         ranking = 0
         texto = re.split('(\W)', texto)
@@ -527,7 +508,6 @@ class PageRank:
         for i in texto:
             if(i == ' '):
                 texto.remove(i)
-        print(texto)
 
         t_q = np.zeros(len(self.palabras))
         nodos = np.array(self.nodos)
@@ -546,6 +526,7 @@ class PageRank:
 
         q = q / np.linalg.norm(q)
 
+        # Si es personalizada se utiliza la función de Rocchio
         if(personalizada):
 
             relevantes = []
@@ -555,8 +536,6 @@ class PageRank:
                         indices, = np.where(nodos == n)
                         relevantes.append(indices[0])
 
-            #for i in relevantes:
-                #print(nodos[i].titulo)
 
             aux = np.zeros(len(self.palabras))
             for i in relevantes:
@@ -564,7 +543,7 @@ class PageRank:
 
             rocchio = q + aux
             q_prima = np.zeros(len(self.palabras))
-            for i in range(5):
+            for i in range(NUM_TERMINOS):
                 q_prima[np.argmax(rocchio)] = np.max(rocchio)
                 rocchio[np.argmax(rocchio)] = -1
 
@@ -576,20 +555,13 @@ class PageRank:
             for i in range(len(sim)):
                 sim[i] = sum(q * self.w[i]) / (np.linalg.norm(self.w[i]) * np.linalg.norm(q))
 
-        #print(np.array(self.pg))
-        #print(sim)
-        #print(len(self.pg))
-        #print(len(sim))
         res = np.array(self.pg) * sim
         res = res.tolist()
-        #print(res)
         res, ranking = self.ordenar(self.nodos.copy(), res, True)
-        print(len(res))
+
         return res, ranking
 
 
 
 def main():
     pg = PageRank()
-
-#main()
